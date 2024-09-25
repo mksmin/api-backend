@@ -7,8 +7,10 @@ import pprint
 from typing import Annotated
 from fastapi import FastAPI, Body, UploadFile, Depends
 from fastapi.security import OAuth2PasswordBearer
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import app.database.requests as rq
+from app.config.config import logger
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 # app = FastAPI()
@@ -21,17 +23,33 @@ path_json = os.path.join(os.path.dirname(dirname), "file3.json")
 
 @app.get("/")
 async def start():
-    return {"Hello": "World", "text":"Это сервер для API. В целом тебе тут делать нечего"}
+    return {"Hello": "World", "text": "Это сервер для API. В целом тебе тут делать нечего"}
 
 
 @app.post('/registration/')
 async def create_user(data=Body()):
-    print('Пришли данные')
+    message_to_badreq = {"message": "Bad Request: You don't have "
+                                    "the necessary parameters in the request body"}
+    bad_request = JSONResponse(content=message_to_badreq, status_code=400)
+    if data.get("params") is None:
+        return bad_request
+    else:
+        params = data.get("params")
+        answers = params.get("answers")
+        date_bid = params.get("Date")
+        id_bid = params.get("ID")
 
-    params = data.get("params")
-    answers = json.loads(params['answers'])
-    date_bid = params['Date']
-    id_bid = params['Id']
+    if answers is None or date_bid is None or id_bid is None:
+        return bad_request
+    else:
+        answers = json.loads(params['answers'])
+        date_bid = params['Date']
+        id_bid = params['ID']
+
+    # print(f"{params = }, type = {type(params)}")
+    # print(f"{answers = }, type = {type(answers)}")
+    # print(f"{date_bid = }, type = {type(date_bid)}")
+    # print(f"{id_bid = }, type = {type(id_bid)}")
 
     return {"Awnser": "Кажется, что все ок"}
 
