@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_
 from app.config.config import get_tokens
 
 # create engine and connetion to DB
-post_host_token = asyncio.run(get_tokens('POSTGRESQL_HOST'))
+post_host_token = get_tokens('POSTGRESQL_HOST')
 engine = create_async_engine(url=post_host_token, echo=False)
 async_session = async_sessionmaker(engine)
 
