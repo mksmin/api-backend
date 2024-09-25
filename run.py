@@ -10,7 +10,7 @@ from app.endpoints import app
 
 async def main() -> None:
     try:
-        # await async_main()
+        await async_main()
         print('hello')
 
     except Exception as e:
@@ -24,7 +24,7 @@ if __name__ == '__main__':
                         level=logging.INFO)
     try:
         asyncio.run(main())
-        uvicorn.run(app, host='localhost', port=8000, log_level="info")
+        # uvicorn.run(app, host='localhost', port=8000, log_level="info")
 
     except KeyboardInterrupt:
         logger.warning('Произошел выход из программы KeyboardInterrupt')
