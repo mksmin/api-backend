@@ -6,6 +6,7 @@ from app.config.config import get_tokens, logger
 from app.database.models import async_main
 from app.endpoints import app
 
+
 async def main() -> None:
     try:
         await async_main()
@@ -14,7 +15,6 @@ async def main() -> None:
         logger.exception('Проблема с базой данных:', e)
     else:
         logger.info('Start database')
-
 
 
 if __name__ == '__main__':
@@ -28,4 +28,3 @@ if __name__ == '__main__':
 
     except KeyboardInterrupt:
         logger.warning('Произошел выход из программы KeyboardInterrupt')
-
