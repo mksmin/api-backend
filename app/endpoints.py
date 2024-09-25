@@ -10,7 +10,7 @@ from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 import app.database.requests as rq
 
-app = FastAPI(docs_url=None, redoc_url=None)
+app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 # app = FastAPI()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 # token: Annotated[str, Depends(oauth2_scheme)]
