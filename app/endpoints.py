@@ -61,8 +61,8 @@ async def create_user(data=Body()):
         return bad_request
     else:
         answers = params['answers']
-        date_bid = answers['created']
-        id_bid = answers['answer']['id']
+        # date_bid = answers['created']
+        # id_bid = answers['answer']['id']
 
     dict_ = {}
     for i in list(answers['answer']['data'].keys()):
@@ -75,7 +75,7 @@ async def create_user(data=Body()):
     #     name, type_name = split_list
     #     print(f"name: {name}, type_name: {type_name}")
 
-    print(f'date_bid = {date_bid}, id_bid = {id_bid}')
+    # print(f'date_bid = {date_bid}, id_bid = {id_bid}')
 
     return {"Awnser": "Кажется, что все ок"}
 
