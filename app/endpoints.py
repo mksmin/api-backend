@@ -74,7 +74,7 @@ async def create_user(data=Body()):
     for k, v in dict_.items():
         print(f'Name column: {k}, Value: {v}, type: {type(v[0])}')
 
-    print(f'id bid: {params['ID']}, date_bid: {params['Date']}')
+    print(f'id bid: {params["ID"]}, date_bid: {params["Date"]}')
     return {"Awnser": "Кажется, что все ок"}
 
 
