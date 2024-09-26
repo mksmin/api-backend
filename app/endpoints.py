@@ -5,7 +5,7 @@ import os
 import pprint
 
 from typing import Annotated
-from fastapi import FastAPI, Body, UploadFile, Depends
+from fastapi import FastAPI, Body, UploadFile, Depends, Request
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel
@@ -60,15 +60,16 @@ async def create_user(data=Body()):
     if answers is None or date_bid is None or id_bid is None:
         return bad_request
     else:
-        answers = params['answers']
+        # answers = params['answers']
         # date_bid = answers['created']
         # id_bid = answers['answer']['id']
+        pass
 
-    dict_ = {}
-    for i in list(answers['answer']['data'].keys()):
-        dict_[i] = answers['answer']['data'][i]['value']
-
-    print(f'dict_ = {dict_}')
+    # dict_ = {}
+    # for i in list(answers['answer']['data'].keys()):
+    #     dict_[i] = answers['answer']['data'][i]['value']
+    #
+    # print(f'dict_ = {dict_}')
 
     # for i in list(dict_.keys()):
     #     split_list = i.split("_")
@@ -78,6 +79,26 @@ async def create_user(data=Body()):
     # print(f'date_bid = {date_bid}, id_bid = {id_bid}')
 
     return {"Awnser": "Кажется, что все ок"}
+
+
+@app.post('/test/', include_in_schema=False)
+async def tmp_test(data=Body()):
+    body = json.dumps(data)
+    print(type(body))
+    print(f'body: {body} \n type: {type(body)}')
+    print(f'data: {data} \n type: {type(data)}')
+
+    # path = os.path.normpath(os.path.dirname(__file__))
+    # print(path)
+    # path_dirname = os.path.normpath(os.path.dirname(path))
+    # print(path_dirname)
+    # path_to_write = os.path.normpath(os.path.join(path_dirname, "file123.json"))
+    # print(path_to_write)
+    # exiting_data = []
+    # exiting_data.append(request.body())
+    # print(exiting_data)
+    # with open(path_to_write, "w") as f:
+    #     json.dump(body_, f, indent=4)
 
 
 @rq.connection
