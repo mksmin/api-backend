@@ -96,8 +96,8 @@ async def tmp_test(data=Body()):
     path_to_write = os.path.normpath(os.path.join(path_dirname, "file123.json"))
     print(path_to_write)
 
-    # with open(path_to_write, "w") as f:
-    #     json.dump(body_, f, indent=4)
+    with open(path_to_write, "w") as f:
+        f.write(body)
 
 
 @rq.connection
