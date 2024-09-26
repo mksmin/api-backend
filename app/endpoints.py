@@ -53,14 +53,16 @@ async def create_user(data=Body()):
         return bad_request
     else:
         params = data.get("params")
-        answers = params.get("answers")
-        date_bid = params.get("Date")
-        id_bid = params.get("ID")
+        answers_str = params.get("answers")
+        date_bid_str = params.get("Date")
+        id_bid_str = params.get("ID")
 
-    if answers is None or date_bid is None or id_bid is None:
+    if answers_str is None or date_bid_str is None or id_bid_str is None:
         return bad_request
     else:
-        # answers = params['answers']
+        answers = json.loads(answers_str)
+        print(list(answers.keys()))
+        # print(f'Answers: {answers}')
         # date_bid = answers['created']
         # id_bid = answers['answer']['id']
         pass
@@ -84,20 +86,23 @@ async def create_user(data=Body()):
 @app.post('/test/', include_in_schema=False)
 async def tmp_test(data=Body()):
     body = json.dumps(data)
-    print(type(body))
+    # print(type(body))
     print(f'body: {body} \n type: {type(body)}')
     print(f'data: {data} \n type: {type(data)}')
 
-
     path = os.path.normpath(os.path.dirname(__file__))
-    print(path)
     path_dirname = os.path.normpath(os.path.dirname(path))
-    print(path_dirname)
     path_to_write = os.path.normpath(os.path.join(path_dirname, "file123.json"))
-    print(path_to_write)
 
     with open(path_to_write, "w") as f:
         f.write(body)
+
+    params = data.get("params")
+    answers = params.get("answers")
+    print(answers)
+    print(type(answers))
+    d_ = json.loads(answers)
+    print(type(d_))
 
 
 @rq.connection
