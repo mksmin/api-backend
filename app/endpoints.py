@@ -52,10 +52,10 @@ async def create_user(data=Body()):
     if data.get("params") is None:
         return bad_request
     else:
-        params = data.get("params")
-        prms_answers = params.get("answers")
-        prms_date_bid = params.get("Date")
-        prms_id_bid = params.get("ID")
+        params = data.get("params")  # dict
+        prms_answers = params.get("answers")  # str
+        prms_date_bid = params.get("Date")  # str
+        prms_id_bid = params.get("ID")  # str
 
     if prms_answers is None or prms_date_bid is None or prms_id_bid is None:
         return bad_request
@@ -74,64 +74,15 @@ async def create_user(data=Body()):
     for k, v in dict_.items():
         print(f'Name column: {k}, Value: {v}, type: {type(v[0])}')
 
-    print(f"id bid: {params['ID']}")
-    print(f'date bid: {params["Date"]}')
+    # print(f"id bid: {params['ID']}")
+    # print(f'date bid: {params["Date"]}')
 
     return {"Awnser": "Кажется, что все ок"}
 
 
 @app.post('/test/', include_in_schema=False)
 async def tmp_test(data=Body()):
-    body = json.dumps(data)
-    # print(type(body))
-    print(f'body type: {type(body)}')  # str
-    print(f'data type: {type(data)}')  # dict
-
-    path = os.path.normpath(os.path.dirname(__file__))
-    path_dirname = os.path.normpath(os.path.dirname(path))
-    path_to_write = os.path.normpath(os.path.join(path_dirname, "file123.json"))
-
-    # with open(path_to_write, "w") as f:
-    #     f.write(body)
-
-    params = data.get("params")
-    answers = params.get("answers")
-    # print(answers)
-    print(f'type answers: {type(answers)}')  # str
-    d_ = json.loads(answers)  # делаю из строки словарь
-    print(list(d_.keys()))
-    answer = d_["answer"]['data']
-    print(f'answer type: {type(answer)}')  # dict
-    print(list(answer.keys()))
-
-
-@app.post('/prod/', include_in_schema=False)
-async def tmp_test2(data=Body()):
-    params = data.get("params")
-    prms_answers = params.get("answers")
-    answers_dict = json.loads(prms_answers)
-
-    dict_ = {}
-    for i in list(answers_dict['answer']['data'].keys()):
-        value = answers_dict['answer']['data'][i]['value']
-
-        if isinstance(value, list):
-            dict_[i] = value[0].get('text')
-        else:
-            dict_[i] = value
-
-    for k, v in dict_.items():
-        print(f'Name column: {k}, Value: {v}, type: {type(v[0])}')
-
-    # print(f'Type: {type(prms_answers)}, value: {prms_answers}')
-    print(f'Type: {type(params)}, value: {list(params.keys())}')
-    print(f"id bid: {params['ID']}, date: {params['Date']}")
-
-    # print(f'ID = {answers_dict['ID']}, Date = {answers_dict["Date"]}')
-    # for i in list(dict_.keys()):
-    #     split_list = i.split("_")
-    #     name, type_name = split_list
-    #     print(f"name: {name}, type_name: {type_name}")
+    pass
 
 
 @rq.connection
