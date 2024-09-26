@@ -60,80 +60,24 @@ async def create_user(data=Body()):
     if answers is None or date_bid is None or id_bid is None:
         return bad_request
     else:
-        answers = json.loads(params['answers'])
-        date_bid = params['Date']
-        id_bid = params['ID']
-
-    with open(os.path.join(path_dirname, "/file3.json"), 'w') as f:
-        f.write(str(data))
-
-    # print(f"{params = }, type = {type(params)}")
-    # print(f"{answers = }, type = {type(answers)}")
-    # print(f"{date_bid = }, type = {type(date_bid)}")
-    # print(f"{id_bid = }, type = {type(id_bid)}")
-
-    return {"Awnser": "Кажется, что все ок"}
-
-
-@app.post('/test/', include_in_schema=False)
-async def tmp_test(data=Body()):
-    message_to_badreq = {"message": "Bad Request: You don't have "
-                                    "the necessary parameters in the request body"}
-    bad_request = JSONResponse(content=message_to_badreq, status_code=400)
-    if data.get("params") is None:
-        return bad_request
-    else:
-        params = data.get("params")
-        answers = params.get("answers")
-        date_bid = params.get("Date")
-        id_bid = params.get("ID")
-
-    if answers is None or date_bid is None or id_bid is None:
-        return bad_request
-    else:
-        answers = json.loads(params['answers'])
-        date_bid = params['Date']
-        id_bid = params['ID']
-        test_ = json.loads(params['Test'])
+        answers = params['answers']
+        date_bid = answers['created']
+        id_bid = answers['answer']['id']
 
     dict_ = {}
-    for i in list(test_['answer']['data'].keys()):
-        dict_[i] = test_['answer']['data'][i]['value']
-    json_response = {
-        "answers": dict_
-    }
+    for i in list(answers['answer']['data'].keys()):
+        dict_[i] = answers['answer']['data'][i]['value']
 
-    for i in list(dict_.keys()):
-        split_list = i.split("_")
-        name, type_name = split_list
+    print(f'dict_ = {dict_}')
 
-    print()
+    # for i in list(dict_.keys()):
+    #     split_list = i.split("_")
+    #     name, type_name = split_list
+    #     print(f"name: {name}, type_name: {type_name}")
 
+    print(f'date_bid = {date_bid}, id_bid = {id_bid}')
 
-    return JSONResponse(content=json_response, status_code=200)
-
-
-
-def tmp_json_work():
-    with open(path_json, encoding='utf-8') as f:
-        data = json.load(f)
-        params = data.get("params")
-        answers = json.loads(params['answers'])
-        date_bid = params['Date']
-        id_bid = params['ID']
-        keys_data = list(answers.keys())
-        test_ = json.loads(params['Test'])
-        # print(data)
-        # print(answers)
-        pprint.pprint(answers)
-        print(type(test_))
-
-        pprint.pprint(test_['answer']['data'])
-        dict_ = {}
-
-        print(f'{dict_ = }')
-
-        return keys_data
+    return {"Awnser": "Кажется, что все ок"}
 
 
 @rq.connection
@@ -147,8 +91,7 @@ async def test(session, data_list):
 
 
 async def tmp_main():
-    result = tmp_json_work()
-    print(f'{result = }')
+    pass
     # await test(result)
 
 
