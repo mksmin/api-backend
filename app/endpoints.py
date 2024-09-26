@@ -36,8 +36,12 @@ async def favicon():
 
 @app.get('/html/{name_media}', include_in_schema=False)
 async def html_path(name_media: str):
-    media_to_return = os.path.join(path_dirname, "html/", name_media)
-    return FileResponse(media_to_return)
+    file_exists = os.path.exists(str(os.path.join(path_dirname, "html/", name_media)))
+    if not file_exists:
+        return JSONResponse(content={"message": "File is not found"}, status_code=404)
+    else:
+        media_to_return = os.path.join(path_dirname, "html/", name_media)
+        return FileResponse(media_to_return)
 
 
 @app.post('/registration/')
