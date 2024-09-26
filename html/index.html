@@ -47,14 +47,43 @@
             line-height: 1.5;
             margin-bottom: 20px;
         }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #eee;
+            color: #333;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn span {
+            display: block;
+            margin-left: 0 px;
+        }
+
+        .btn:focus {
+            outline: none; /* Убираем стандартный контур фокуса */
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Добавляем тень при фокусе */
+        }
+
+        .btn:hover {
+            background-color: #ddd; /* Изменяем цвет фона при наведении */
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo"></div>
-        <h1 class="title">Это API Атом-лаб.рф</h1>
-        <p class="subtitle">Сервис API недоступен публично, поэтому тут делать нечего :( </p>
-        <p class="description"><a href="https://атом-лаб.рф">Перейти на сайт Атомных лабораторий</a></p>
-    </div>
+<div class="container">
+    <div class="logo"></div>
+    <h1 class="title">Это API Атом-лаб.рф</h1>
+    <p class="subtitle">Сервис API недоступен публично, поэтому тут делать нечего :( </p>
+    <p class="description">
+        <a href="https://атом-лаб.рф" class="btn">
+            <span>Перейти на Атом-лаб.рф</span>
+        </a>
+    </p>
+</div>
 </body>
 </html>

@@ -33,6 +33,7 @@ async def favicon():
     favicon_path = os.path.join(os.path.dirname(dirname), "favicon.ico")
     return FileResponse(favicon_path)
 
+
 @app.get('/html/{name_media}', include_in_schema=False)
 async def html_path(name_media: str):
     media_to_return = os.path.join(path_dirname, "html/", name_media)
