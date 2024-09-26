@@ -19,7 +19,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 dirname = os.path.dirname(__file__)
 path_dirname = os.path.normpath(os.path.dirname(dirname))
-path_json = os.path.join(path_dirname, "file3.json")
+path_json = os.path.join(path_dirname, "tmp_files/file3.json")
 
 
 @app.get("/")
@@ -36,15 +36,15 @@ async def favicon():
 
 @app.get('/html/{name_media}', include_in_schema=False)
 async def html_path(name_media: str):
-    file_exists = os.path.exists(str(os.path.join(path_dirname, "html/", name_media)))
+    media_path = os.path.join(path_dirname, "html/", name_media)
+    file_exists = os.path.exists(str(media_path))
     if not file_exists:
         return JSONResponse(content={"message": "File is not found"}, status_code=404)
     else:
-        media_to_return = os.path.join(path_dirname, "html/", name_media)
-        return FileResponse(media_to_return)
+        return FileResponse(media_path)
 
 
-@app.post('/registration/')
+@app.post('/registration/', include_in_schema=False)
 async def create_user(data=Body()):
     message_to_badreq = {"message": "Bad Request: You don't have "
                                     "the necessary parameters in the request body"}
@@ -64,12 +64,54 @@ async def create_user(data=Body()):
         date_bid = params['Date']
         id_bid = params['ID']
 
+    with open(os.path.join(path_dirname, "/file3.json"), 'w') as f:
+        f.write(data)
+
     # print(f"{params = }, type = {type(params)}")
     # print(f"{answers = }, type = {type(answers)}")
     # print(f"{date_bid = }, type = {type(date_bid)}")
     # print(f"{id_bid = }, type = {type(id_bid)}")
 
     return {"Awnser": "Кажется, что все ок"}
+
+
+@app.post('/test/', include_in_schema=False)
+async def tmp_test(data=Body()):
+    message_to_badreq = {"message": "Bad Request: You don't have "
+                                    "the necessary parameters in the request body"}
+    bad_request = JSONResponse(content=message_to_badreq, status_code=400)
+    if data.get("params") is None:
+        return bad_request
+    else:
+        params = data.get("params")
+        answers = params.get("answers")
+        date_bid = params.get("Date")
+        id_bid = params.get("ID")
+
+    if answers is None or date_bid is None or id_bid is None:
+        return bad_request
+    else:
+        answers = json.loads(params['answers'])
+        date_bid = params['Date']
+        id_bid = params['ID']
+        test_ = json.loads(params['Test'])
+
+    dict_ = {}
+    for i in list(test_['answer']['data'].keys()):
+        dict_[i] = test_['answer']['data'][i]['value']
+    json_response = {
+        "answers": dict_
+    }
+
+    for i in list(dict_.keys()):
+        split_list = i.split("_")
+        name, type_name = split_list
+
+    print()
+
+
+    return JSONResponse(content=json_response, status_code=200)
+
 
 
 def tmp_json_work():
@@ -80,12 +122,16 @@ def tmp_json_work():
         date_bid = params['Date']
         id_bid = params['ID']
         keys_data = list(answers.keys())
+        test_ = json.loads(params['Test'])
         # print(data)
         # print(answers)
         pprint.pprint(answers)
-        print(type(answers))
+        print(type(test_))
 
-        pprint.pprint(params['Test'])
+        pprint.pprint(test_['answer']['data'])
+        dict_ = {}
+
+        print(f'{dict_ = }')
 
         return keys_data
 
@@ -107,5 +153,5 @@ async def tmp_main():
 
 
 if __name__ == '__main__':
-    # asyncio.run(tmp_main())
+    asyncio.run(tmp_main())
     print(None)
