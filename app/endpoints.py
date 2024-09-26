@@ -21,12 +21,12 @@ dirname = os.path.dirname(__file__)
 path_json = os.path.join(os.path.dirname(dirname), "file3.json")
 
 
-
-
 @app.get("/")
 async def start():
-    index_html = os.path.join(os.path.dirname(dirname), "/html/index.html")
+    path_dirname = os.path.normpath(os.path.dirname(dirname))
+    index_html = os.path.join(path_dirname, "html/index.html")
     return FileResponse(index_html)
+
 
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
