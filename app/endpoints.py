@@ -7,7 +7,7 @@ import pprint
 from typing import Annotated
 from fastapi import FastAPI, Body, UploadFile, Depends
 from fastapi.security import OAuth2PasswordBearer
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel
 import app.database.requests as rq
 from app.config.config import logger
@@ -20,10 +20,16 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 dirname = os.path.dirname(__file__)
 path_json = os.path.join(os.path.dirname(dirname), "file3.json")
 
+favicon_path = os.path.join(os.path.dirname(dirname), "favicon.ico")
+
 
 @app.get("/")
 async def start():
     return {"Hello": "World", "text": "Это сервер для API. В целом тебе тут делать нечего"}
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return FileResponse(favicon_path)
 
 
 @app.post('/registration/')
