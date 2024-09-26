@@ -65,7 +65,7 @@ async def create_user(data=Body()):
         id_bid = params['ID']
 
     with open(os.path.join(path_dirname, "/file3.json"), 'w') as f:
-        f.write(data)
+        f.write(str(data))
 
     # print(f"{params = }, type = {type(params)}")
     # print(f"{answers = }, type = {type(answers)}")
