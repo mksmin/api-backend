@@ -67,6 +67,14 @@ async def create_user(data=Body()):
         # id_bid = answers['answer']['id']
         pass
 
+    body_ = json.dumps(data)
+    path = os.path.normpath(os.path.dirname(__file__))
+    path_dirname = os.path.normpath(os.path.dirname(path))
+    path_to_write = os.path.normpath(os.path.join(path_dirname, "file123.json"))
+    with open(path_to_write, "w") as f:
+        f.write(body_)
+
+
     # dict_ = {}
     # for i in list(answers['answer']['data'].keys()):
     #     dict_[i] = answers['answer']['data'][i]['value']
