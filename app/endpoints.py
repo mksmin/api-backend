@@ -18,12 +18,12 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 # token: Annotated[str, Depends(oauth2_scheme)]
 
 dirname = os.path.dirname(__file__)
-path_json = os.path.join(os.path.dirname(dirname), "file3.json")
+path_dirname = os.path.normpath(os.path.dirname(dirname))
+path_json = os.path.join(path_dirname, "file3.json")
 
 
 @app.get("/")
 async def start():
-    path_dirname = os.path.normpath(os.path.dirname(dirname))
     index_html = os.path.join(path_dirname, "html/index.html")
     return FileResponse(index_html)
 
@@ -32,6 +32,11 @@ async def start():
 async def favicon():
     favicon_path = os.path.join(os.path.dirname(dirname), "favicon.ico")
     return FileResponse(favicon_path)
+
+@app.get('/html/{name_media}', include_in_schema=False)
+async def html_path(name_media: str):
+    media_to_return = os.path.join(path_dirname, "html/", name_media)
+    return FileResponse(media_to_return)
 
 
 @app.post('/registration/')
