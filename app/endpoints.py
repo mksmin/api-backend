@@ -88,15 +88,14 @@ async def tmp_test(data=Body()):
     print(f'body: {body} \n type: {type(body)}')
     print(f'data: {data} \n type: {type(data)}')
 
-    # path = os.path.normpath(os.path.dirname(__file__))
-    # print(path)
-    # path_dirname = os.path.normpath(os.path.dirname(path))
-    # print(path_dirname)
-    # path_to_write = os.path.normpath(os.path.join(path_dirname, "file123.json"))
-    # print(path_to_write)
-    # exiting_data = []
-    # exiting_data.append(request.body())
-    # print(exiting_data)
+
+    path = os.path.normpath(os.path.dirname(__file__))
+    print(path)
+    path_dirname = os.path.normpath(os.path.dirname(path))
+    print(path_dirname)
+    path_to_write = os.path.normpath(os.path.join(path_dirname, "file123.json"))
+    print(path_to_write)
+
     # with open(path_to_write, "w") as f:
     #     json.dump(body_, f, indent=4)
 
