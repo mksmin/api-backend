@@ -26,7 +26,7 @@ path_json = os.path.join(os.path.dirname(dirname), "file3.json")
 @app.get("/")
 async def start():
     index_html = os.path.join(os.path.dirname(dirname), "/html/index.html")
-    return {"Hello": "World", "text": "Это сервер для API. В целом тебе тут делать нечего"}
+    return FileResponse(index_html)
 
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
