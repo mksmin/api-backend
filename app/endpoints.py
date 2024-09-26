@@ -20,15 +20,17 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 dirname = os.path.dirname(__file__)
 path_json = os.path.join(os.path.dirname(dirname), "file3.json")
 
-favicon_path = os.path.join(os.path.dirname(dirname), "favicon.ico")
+
 
 
 @app.get("/")
 async def start():
+    index_html = os.path.join(os.path.dirname(dirname), "/html/index.html")
     return {"Hello": "World", "text": "Это сервер для API. В целом тебе тут делать нечего"}
 
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
+    favicon_path = os.path.join(os.path.dirname(dirname), "favicon.ico")
     return FileResponse(favicon_path)
 
 
