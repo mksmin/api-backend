@@ -125,7 +125,7 @@ async def tmp_test2(data=Body()):
 
     # print(f'Type: {type(prms_answers)}, value: {prms_answers}')
     print(f'Type: {type(params)}, value: {list(params.keys())}')
-    print(f'id bid: {params['ID']}, date: {params["Date"]}')
+    print(f"id bid: {params['ID']}, date: {params['Date']}")
 
     # print(f'ID = {answers_dict['ID']}, Date = {answers_dict["Date"]}')
     # for i in list(dict_.keys()):
