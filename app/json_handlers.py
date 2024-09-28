@@ -1,5 +1,6 @@
 import json
 import pprint
+import datetime
 
 
 async def get_data_from_json(parameters: dict) -> dict:
@@ -32,8 +33,10 @@ async def get_data_from_json(parameters: dict) -> dict:
         'value': int(id_bid),
         'type': 'int'
     }
+
+    date_bid_new = datetime.datetime.strptime(date_bid, '%d.%m.%Y').strftime('%Y-%m-%d')
     result_dict_to_db['datebid'] = {
-        'value': date_bid,
+        'value': date_bid_new,
         'type': 'date'
     }
     # pprint.pprint(result_dict_to_db)
