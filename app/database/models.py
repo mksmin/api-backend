@@ -2,7 +2,7 @@
 import asyncio
 
 # import from libraries
-from sqlalchemy import Column, BigInteger, String, ForeignKey, DateTime, MetaData
+from sqlalchemy import Column, BigInteger, String, ForeignKey, DateTime, MetaData, Date
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_engine
 
@@ -23,10 +23,10 @@ class User(Base):
     __tablename__ = 'atomlabreguser'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    created_at = mapped_column(DateTime)
-    date_bid: Mapped[str] = mapped_column(String(15), nullable=True)
-    id_bid = mapped_column(BigInteger, nullable=True, unique=True)
-    Fullname: Mapped[str] = mapped_column(String(250), nullable=True)
+    created_at = mapped_column(Date, nullable=True)
+    datebid: Mapped[str] = mapped_column(Date, nullable=True)
+    idbid = mapped_column(BigInteger, nullable=True, unique=True)
+
 
 
 async def async_main() -> None:

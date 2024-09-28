@@ -1,21 +1,20 @@
-# import from libraries
+# import libraries
 import asyncio
 import json
 import os
-import pprint
 
-from typing import Annotated
+# import from libraries
 from fastapi import FastAPI, Body, UploadFile, Depends, Request
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel
+
+# import from modules
 import app.database.requests as rq
 from app.config.config import logger
+from app.json_handlers import get_data_from_json
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
-# app = FastAPI()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-# token: Annotated[str, Depends(oauth2_scheme)]
 
 dirname = os.path.dirname(__file__)
 path_dirname = os.path.normpath(os.path.dirname(dirname))
@@ -23,7 +22,7 @@ path_json = os.path.join(path_dirname, "tmp_files/file3.json")
 
 
 @app.get("/")
-async def start():
+async def index_page():
     index_html = os.path.join(path_dirname, "html/index.html")
     return FileResponse(index_html)
 
@@ -37,7 +36,7 @@ async def favicon():
 @app.get('/html/{name_media}', include_in_schema=False)
 async def html_path(name_media: str):
     media_path = os.path.join(path_dirname, "html/", name_media)
-    not_found_404 = os.path.join(path_dirname,'html/404.html')
+    not_found_404 = os.path.join(path_dirname, 'html/404.html')
     file_exists = os.path.exists(str(media_path))
     if not file_exists:
         return FileResponse(not_found_404)
@@ -58,27 +57,27 @@ async def create_user(data=Body()):
         prms_date_bid = params.get("Date")  # str
         prms_id_bid = params.get("ID")  # str
 
-    if prms_answers is None or prms_date_bid is None or prms_id_bid is None:
+    if not prms_answers or not prms_date_bid or not prms_id_bid:
+        # Проверяем, что требуемые параметры существуют в запросе
         return bad_request
-    else:
-        answers_dict = json.loads(prms_answers)
 
-    dict_ = {}
-    for i in list(answers_dict['answer']['data'].keys()):
-        value = answers_dict['answer']['data'][i]['value']
+    params_from_json = await get_data_from_json(params)  # получаем словарь из обработанного json
 
-        if isinstance(value, list):
-            dict_[i] = value[0].get('text')
-        else:
-            dict_[i] = value
+    colums_names_db = await rq.get_colums_name('atomlabreguser')  # Получаем список всех столбцов в БД
+    difference_column = set([x.lower() for x in params_from_json]).difference(colums_names_db)
 
-    for k, v in dict_.items():
-        print(f'Name column: {k}, Value: {v}, type: {type(v[0])}')
+    if len(difference_column) > 0:
+        # Если есть новые столбцы в запросе - создаем столбец в БД
+        await rq.add_column_for_db(difference_column, 'atomlabreguser', params_from_json)
 
-    # print(f"id bid: {params['ID']}")
-    # print(f'date bid: {params["Date"]}')
+    try:
+        # Сохраняем пользователя в БД
+        await rq.set_user_registration(params_from_json, 'atomlabreguser')
+    except Exception as e:
+        text_message = {"message": str(e)}
+        return JSONResponse(content=text_message, status_code=400)
 
-    return {"Awnser": "Кажется, что все ок"}
+    return {"Answer": "Кажется, что все ок"}
 
 
 @app.post('/test/', include_in_schema=False)

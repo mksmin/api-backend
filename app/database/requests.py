@@ -26,19 +26,38 @@ def connection(func) -> None:
 
 
 @connection
-async def set_user_registration(session):
-    pass
+async def set_user_registration(session, values: dict, name_db: str) -> None:
+    str_namecolum = ''
+    str_valuecolum = ''
+    for key in values.keys():
+        str_namecolum += f"{key.lower()}, "
+        str_valuecolum += f"'{str(values[key]['value'])}', "
 
-
-async def add_column_for_db(session, column_name):
-    table_name = User.__tablename__
-    text_table = text(f'ALTER TABLE {table_name} ADD {column_name} CHAR(50)')
+    text_table = text(f'INSERT INTO {name_db} ({str_namecolum[:-2]}) VALUES ({str_valuecolum[:-2]})')
     await session.execute(text_table)
     await session.commit()
 
 
-async def get_colums_name(session):
-    text_request = text(f"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='atomlabreguser'")
+@connection
+async def add_column_for_db(session,
+                            colums_names: set, name_db: str,
+                            type_colums: dict):
+    sql_types = {
+        'str': 'VARCHAR(250)',
+        'int': 'int',
+        'date': 'date'
+    }
+
+    for col in colums_names:
+        type_col = type_colums[col]['type']
+        text_table = text(f'ALTER TABLE {name_db} ADD {col} {sql_types[type_col]}')
+        await session.execute(text_table)
+    await session.commit()
+
+
+@connection
+async def get_colums_name(session, name_of_db: str):
+    text_request = text(f"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='{name_of_db}'")
     result = await session.execute(text_request)
     data = [row._asdict() for row in result]
 
