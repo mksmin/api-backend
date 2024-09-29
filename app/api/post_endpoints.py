@@ -1,15 +1,16 @@
 # import from libraries
-from fastapi import Body
+from fastapi import Body, APIRouter
 from fastapi.responses import JSONResponse
 
 # import from modules
-from app.config.config import app
+# from app.config.config import app
 import app.database.requests as rq
 from app.config.config import logger
 from app.json_handlers import get_data_from_json
 
+postapp = APIRouter()
 
-@app.post('/registration/', include_in_schema=False)
+@postapp.post('/registration/', include_in_schema=False)
 async def create_user(data=Body()):
     message_to_badreq = {"message": "Bad Request: You don't have "
                                     "the necessary parameters in the request body"}
@@ -45,6 +46,6 @@ async def create_user(data=Body()):
     return {"Answer": "Кажется, что все ок"}
 
 
-@app.post('/test/', include_in_schema=False)
+@postapp.post('/test/', include_in_schema=False)
 async def tmp_test(data=Body()):
     pass
