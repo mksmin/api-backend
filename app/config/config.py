@@ -6,7 +6,10 @@ import os
 import logging
 import asyncio
 from dotenv import load_dotenv
+from fastapi import FastAPI
 
+
+app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 logger = logging.getLogger(__name__)
 
 
