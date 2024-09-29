@@ -29,7 +29,7 @@ async def get_data_from_json(parameters: dict) -> dict:
             'value': str(value),
             'type': column_type
         }
-    result_dict_to_db['idbid']={
+    result_dict_to_db['idbid'] = {
         'value': int(id_bid),
         'type': 'int'
     }

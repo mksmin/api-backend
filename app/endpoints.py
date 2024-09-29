@@ -33,6 +33,12 @@ async def favicon():
     return FileResponse(favicon_path)
 
 
+@app.get("/robots.txt", include_in_schema=False)
+async def robots():
+    robots_path = os.path.join(os.path.dirname(dirname), "robots.txt")
+    return FileResponse(robots_path)
+
+
 @app.get('/html/{name_media}', include_in_schema=False)
 async def html_path(name_media: str):
     media_path = os.path.join(path_dirname, "html/", name_media)
