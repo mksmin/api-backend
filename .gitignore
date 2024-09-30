@@ -1,4 +1,4 @@
-.venv
+# my project files
 app/config/__pycache__/
 app/database/__pycache__/
 app/__pycache__/
