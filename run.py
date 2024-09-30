@@ -2,7 +2,7 @@ import asyncio
 import logging
 import uvicorn
 
-from app.config.config import get_tokens, logger
+from app.config.config import logger
 from app.database.models import async_main
 
 from fastapi import FastAPI
@@ -13,9 +13,8 @@ app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 app.include_router(getapp)
 app.include_router(postapp)
 
+
 async def main() -> None:
-
-
     try:
         await async_main()
 
@@ -31,6 +30,7 @@ if __name__ == '__main__':
                         datefmt='%m/%d/%Y %I:%M:%S %p',
                         level=logging.INFO)
     try:
+
         asyncio.run(main())
         uvicorn.run("run:app", host='127.0.0.1', port=8000, log_level="info", reload=False)
 
