@@ -1,15 +1,27 @@
+# import libraries
 import os
 
-# from app.config.config import app
-from fastapi import APIRouter
+# import from libraries
+from fastapi import APIRouter, Path
 from fastapi.responses import JSONResponse, FileResponse
 
 cwd = os.getcwd()
 dirname = os.path.dirname(__file__)
 path_dirname = os.path.dirname(dirname)
 cwd_project_path = os.path.normpath(os.path.dirname(path_dirname))
+not_found_404 = os.path.join(cwd_project_path, 'html/404.html')
 
 getapp = APIRouter()
+
+
+async def check_path(path_file: str):
+    file_exists = os.path.exists(str(path_file))
+    is_file = os.path.isfile(str(path_file))
+
+    if file_exists and is_file:
+        return path_file, 200
+    else:
+        return not_found_404, 404
 
 
 @getapp.get("/")
@@ -30,15 +42,26 @@ async def robots():
     return FileResponse(robots_path)
 
 
-@getapp.get('/html/{name_media}', include_in_schema=False)
+@getapp.get('/html/{name_html}', include_in_schema=False)
+async def html_path(name_html: str):
+    media_path = os.path.join(cwd_project_path, "html/", name_html)
+    result, status = await check_path(media_path)
+    return FileResponse(result, status_code=status)
+
+
+
+@getapp.get('/html/media/{name_media}', include_in_schema=False)
 async def html_path(name_media: str):
-    media_path = os.path.join(cwd_project_path, "html/", name_media)
-    not_found_404 = os.path.join(cwd_project_path, 'html/404.html')
-    file_exists = os.path.exists(str(media_path))
-    if not file_exists:
-        return FileResponse(not_found_404)
-    else:
-        return FileResponse(media_path)
+    media_path = os.path.join(cwd_project_path, "html/media/", name_media)
+    result, status = await check_path(media_path)
+    return FileResponse(result, status_code=status)
+
+
+@getapp.get('/html/style/{name_style}', include_in_schema=False)
+async def html_path(name_style: str):
+    media_path = os.path.join(cwd_project_path, "html/style", name_style)
+    result, status = await check_path(media_path)
+    return FileResponse(result, status_code=status)
 
 
 @getapp.get('/test/', include_in_schema=False)

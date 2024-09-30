@@ -3,12 +3,12 @@ from fastapi import Body, APIRouter
 from fastapi.responses import JSONResponse
 
 # import from modules
-# from app.config.config import app
 import app.database.requests as rq
 from app.config.config import logger
 from app.json_handlers import get_data_from_json
 
 postapp = APIRouter()
+
 
 @postapp.post('/registration/', include_in_schema=False)
 async def create_user(data=Body()):
