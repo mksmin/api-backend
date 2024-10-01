@@ -47,18 +47,17 @@ async def create_user(data=Body()):
         return JSONResponse(content={"Message": "Request was successful!"}, status_code=201)
 
 
-@postapp.post('/test/', include_in_schema=False)
-async def tmp_test(data=Body()):
-    # TODO ...
-    # WIP - work in progress
-    pass
-
-
 @postapp.post('/get_token/{user_id}', include_in_schema=False)
 async def get_token(user_id: int):
     if isinstance(user_id, int):
         result = await ah.sign_jwt(str(user_id))
         return JSONResponse(content=result, status_code=201)
-
     else:
         return JSONResponse(content={"message": f"{user_id} is not an integer"}, status_code=400)
+
+
+@postapp.post('/test/', include_in_schema=False)
+async def tmp_test(data=Body()):
+    # TODO ...
+    # WIP - work in progress
+    pass
