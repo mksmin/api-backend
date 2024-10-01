@@ -4,9 +4,12 @@ This module load environment and read .env file
 
 import os
 import logging
-import asyncio
 from dotenv import load_dotenv
 
+FORMAT = '[%(asctime)s] %(levelname)s: %(message)s'
+logging.basicConfig(format=FORMAT,
+                    datefmt='%m/%d/%Y %I:%M:%S %p',
+                    level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 

@@ -2,8 +2,11 @@
 import os
 
 # import from libraries
-from fastapi import APIRouter, Path
+from fastapi import APIRouter
 from fastapi.responses import JSONResponse, FileResponse
+
+# import from modules
+from app.config.config import logger
 
 cwd = os.getcwd()
 dirname = os.path.dirname(__file__)
