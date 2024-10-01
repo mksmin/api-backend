@@ -42,10 +42,12 @@ async def create_user(data=Body()):
     except Exception as e:
         text_message = {"message": str(e)}
         return JSONResponse(content=text_message, status_code=400)
-
-    return {"Answer": "Кажется, что все ок"}
+    else:
+        return JSONResponse(content={"Message": "Request was successful!"}, status_code=201)
 
 
 @postapp.post('/test/', include_in_schema=False)
 async def tmp_test(data=Body()):
+    # TODO ...
+    # WIP - work in progress
     pass

@@ -30,6 +30,11 @@ async def main() -> None:
         logger.info('Start database')
 
 
+@app.on_event('startup')
+async def start_api():
+    logger.info('Start FastAPI')
+
+
 if __name__ == '__main__':
     FORMAT = '[%(asctime)s] %(levelname)s: %(message)s'
     logging.basicConfig(format=FORMAT,
