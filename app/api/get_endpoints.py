@@ -84,5 +84,7 @@ async def get_statistics(token=Header()):
     for dict_items in result[1]:
         competention, count = dict_items.keys()
         result_dict['details'][dict_items[competention]] = dict_items[count]
+    message = {"message": result_dict}
+    mess_to_json = json.dumps(message)
 
-    return JSONResponse(content={"message": f"{result_dict}"})
+    return JSONResponse(content=mess_to_json, status_code=200)
