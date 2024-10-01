@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse, FileResponse
 
 # import from modules
 from app.config.config import logger
+import app.database.requests as rq
 
 cwd = os.getcwd()
 dirname = os.path.dirname(__file__)
@@ -69,4 +70,5 @@ async def html_path(name_style: str):
 
 @getapp.get('/test/', include_in_schema=False)
 async def test():
-    pass
+    result = rq.get_registration_stat('atomlabreguser')
+    return JSONResponse(content=result)

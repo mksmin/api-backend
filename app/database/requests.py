@@ -66,3 +66,10 @@ async def get_colums_name(session, name_of_db: str):
         value = list(row.values())
         new_data.append(*value)
     return new_data
+
+
+@connection
+async def get_registration_stat(session, name_db: str):
+    text_request = text(f'SELECT copmpetention, count(*) FROM {name_db} GROUP BY competention ORDER BY competention')
+    result = await session.execute(text_request)
+    return result
