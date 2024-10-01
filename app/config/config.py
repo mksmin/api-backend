@@ -7,10 +7,7 @@ import logging
 import asyncio
 from dotenv import load_dotenv
 
-
-
 logger = logging.getLogger(__name__)
-
 
 
 def get_tokens(name_of_token: str) -> str:
@@ -26,4 +23,3 @@ def get_tokens(name_of_token: str) -> str:
         return os.getenv(name_of_token)
     else:
         print('No .env file found')
-

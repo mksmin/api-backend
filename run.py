@@ -13,7 +13,6 @@ from fastapi import FastAPI
 # import from modules
 from app.config.config import logger
 from app.database.models import async_main
-from fastapi import FastAPI
 from app.api.get_endpoints import getapp
 from app.api.post_endpoints import postapp
 
@@ -38,6 +37,6 @@ if __name__ == '__main__':
                         level=logging.INFO)
     try:
         asyncio.run(main())
-        uvicorn.run("run:app", host='127.0.0.1', port=8000, log_level="info", reload=False)
+        uvicorn.run("run:app", host='127.0.0.1', port=8000, log_level="info", reload=True)
     except KeyboardInterrupt:
         logger.warning('Произошел выход из программы KeyboardInterrupt')
