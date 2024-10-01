@@ -73,8 +73,9 @@ async def html_path(name_style: str):
 async def get_statistics(token=Header()):
     decode_result = await ah.decode_jwt(token)
     if not decode_result['success']:
-        message = json.dumps(decode_result['message'])
-        return JSONResponse(content={"message": f"{message}"}, status_code=400)
+        message = {"message": decode_result['message']}
+        mess_to_json = json.dumps(message)
+        return JSONResponse(content=mess_to_json, status_code=400)
 
     result = await rq.get_registration_stat('atomlabreguser')
     total_users = list(result[0][0])[0]
