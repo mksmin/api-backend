@@ -70,6 +70,9 @@ async def get_colums_name(session, name_of_db: str):
 
 @connection
 async def get_registration_stat(session, name_db: str):
-    text_request = text(f'SELECT copmpetention, count(*) FROM {name_db} GROUP BY competention ORDER BY competention')
-    result = await session.execute(text_request)
-    return result
+    text_request_detail = text(f'SELECT competention, count(*) FROM {name_db} GROUP BY competention ORDER BY competention')
+    text_request_general = text(f'SELECT count(*) FROM {name_db}')
+    result_detail = await session.execute(text_request_detail)
+    result_general = await session.execute(text_request_general)
+    data = [competention._asdict() for competention in result_detail]
+    return result_general.fetchall(), data

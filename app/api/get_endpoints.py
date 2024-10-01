@@ -1,13 +1,15 @@
 # import libraries
 import os
+import json
 
 # import from libraries
-from fastapi import APIRouter
+from fastapi import APIRouter, Body, Header
 from fastapi.responses import JSONResponse, FileResponse
 
 # import from modules
 from app.config.config import logger
 import app.database.requests as rq
+import app.api.auth.auth_handler as ah
 
 cwd = os.getcwd()
 dirname = os.path.dirname(__file__)
@@ -53,7 +55,6 @@ async def html_path(name_html: str):
     return FileResponse(result, status_code=status)
 
 
-
 @getapp.get('/html/media/{name_media}', include_in_schema=False)
 async def html_path(name_media: str):
     media_path = os.path.join(cwd_project_path, "html/media/", name_media)
@@ -68,7 +69,24 @@ async def html_path(name_style: str):
     return FileResponse(result, status_code=status)
 
 
-@getapp.get('/test/', include_in_schema=False)
-async def test():
-    result = rq.get_registration_stat('atomlabreguser')
-    return JSONResponse(content=result)
+@getapp.get('/statistics/', include_in_schema=False)
+async def get_statistics(token=Header()):
+    # if not token:
+    #     message = json.dumps({"message": "There is no token"})
+    #     return JSONResponse(content=message, status_code=400)
+
+    decode_result = await ah.decode_jwt(token)
+    if not decode_result['success']:
+        message = json.dumps(decode_result['message'])
+        return JSONResponse(content={"message": f"{message}"}, status_code=400)
+
+    result = await rq.get_registration_stat('atomlabreguser')
+    total_users = list(result[0][0])[0]
+
+    result_dict = {"total_users": total_users, "details": {}}
+
+    for dict_items in result[1]:
+        competention, count = dict_items.keys()
+        result_dict['details'][dict_items[competention]] = dict_items[count]
+
+    return JSONResponse(content={"message": f"{result_dict}"})

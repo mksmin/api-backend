@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 import app.database.requests as rq
 from app.config.config import logger
 from app.json_handlers import get_data_from_json
+import app.api.auth.auth_handler as ah
 
 postapp = APIRouter()
 
@@ -51,3 +52,13 @@ async def tmp_test(data=Body()):
     # TODO ...
     # WIP - work in progress
     pass
+
+
+@postapp.post('/get_token/{user_id}', include_in_schema=False)
+async def get_token(user_id: int):
+    if isinstance(user_id, int):
+        result = await ah.sign_jwt(str(user_id))
+        return JSONResponse(content=result, status_code=201)
+
+    else:
+        return JSONResponse(content={"message": f"{user_id} is not an integer"}, status_code=400)

@@ -41,6 +41,9 @@ console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 logger.setLevel(logging.INFO)
 
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+load_dotenv(dotenv_path)
+
 
 def get_tokens(name_of_token: str) -> str:
     """
@@ -49,9 +52,9 @@ def get_tokens(name_of_token: str) -> str:
     :param name_of_token: (str) name of token
     :return: (str) token
     """
-    dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+
     if os.path.exists(dotenv_path):
-        load_dotenv(dotenv_path)
+
         return os.getenv(name_of_token)
     else:
         print('No .env file found')
