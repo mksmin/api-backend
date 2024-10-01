@@ -5,7 +5,6 @@ This module load environment and read .env file
 import os
 import logging
 from dotenv import load_dotenv
-from datetime import datetime
 
 
 class CustomFormatter(logging.Formatter):
