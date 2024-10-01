@@ -71,10 +71,6 @@ async def html_path(name_style: str):
 
 @getapp.get('/statistics/', include_in_schema=False)
 async def get_statistics(token=Header()):
-    # if not token:
-    #     message = json.dumps({"message": "There is no token"})
-    #     return JSONResponse(content=message, status_code=400)
-
     decode_result = await ah.decode_jwt(token)
     if not decode_result['success']:
         message = json.dumps(decode_result['message'])
