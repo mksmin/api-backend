@@ -6,6 +6,7 @@ This is the main entry point of the application. It is responsible for starting 
 import asyncio
 import uvicorn
 import os
+import colorama
 
 # import from libraries
 from fastapi import FastAPI
@@ -19,7 +20,7 @@ from app.api.post_endpoints import postapp
 
 
 dirname = os.path.dirname(__file__)
-
+colorama.init()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> None:
@@ -59,7 +60,7 @@ if __name__ == '__main__':
     try:
         asyncio.run(main())
         uvicorn.run("run:app", host='127.0.0.1', port=8000, log_level="info",
-                    reload=True, log_config=os.path.join(os.path.normpath(dirname), 'app/config/log_conf.yaml'),
+                    reload=True, log_config=os.path.join(os.path.normpath(dirname), 'app/config/log_conf.json'),
                     use_colors=True)
 
     except KeyboardInterrupt:
