@@ -59,7 +59,8 @@ if __name__ == '__main__':
     try:
         asyncio.run(main())
         uvicorn.run("run:app", host='127.0.0.1', port=8000, log_level="info",
-                    reload=True, log_config=os.path.join(os.path.normpath(dirname), 'app/config/log_conf.yaml'))
+                    reload=True, log_config=os.path.join(os.path.normpath(dirname), 'app/config/log_conf.yaml'),
+                    use_colors=True)
 
     except KeyboardInterrupt:
         logger.warning('Exit from app has occurred with KeyboardInterrupt')
