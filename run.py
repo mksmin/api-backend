@@ -42,7 +42,7 @@ if __name__ == '__main__':
                         datefmt='%m/%d/%Y %I:%M:%S %p',
                         level=logging.INFO)
     try:
-        # asyncio.run(main())
+        asyncio.run(main())
         uvicorn.run("run:app", host='127.0.0.1', port=8000, log_level="info", reload=False)
     except KeyboardInterrupt:
         logger.warning('Произошел выход из программы KeyboardInterrupt')
