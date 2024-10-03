@@ -1,9 +1,13 @@
 """
-This module load environment and read .env file
+This module for:
+- load environment and read .env file
+- create a logger fo project
 """
-
-import os
+# import libraries
 import logging
+import os
+
+# import from libraries
 from dotenv import load_dotenv
 
 
@@ -30,7 +34,6 @@ class CustomFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-# FORMAT = '[%(asctime)s] %(levelname)s: %(message)s'
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 

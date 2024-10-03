@@ -4,18 +4,18 @@ This is the main entry point of the application. It is responsible for starting 
 
 # import libraries
 import asyncio
-import uvicorn
 import os
+import uvicorn
 
 # import from libraries
-from fastapi import FastAPI
 from contextlib import asynccontextmanager
+from fastapi import FastAPI
 
 # import from modules
-from app.config.config import logger
-from app.database.models import async_main
 from app.api.get_endpoints import getapp
 from app.api.post_endpoints import postapp
+from app.config.config import logger
+from app.database.models import async_main
 
 dirname = os.path.dirname(__file__)
 
@@ -30,9 +30,7 @@ async def lifespan(app: FastAPI) -> None:
     :param app:
     :return: None
     """
-    # WIP
     logger.info('Start FastAPI')
-
     yield
     logger.info('Stop FastAPI')
 
@@ -57,7 +55,7 @@ async def main() -> None:
 
 if __name__ == '__main__':
     try:
-        asyncio.run(main())
+        # asyncio.run(main())
         uvicorn.run("run:app", host='127.0.0.1', port=8000, log_level="info",
                     reload=True,
                     log_config=os.path.join(os.path.normpath(dirname), 'app/config/log_conf.json'),

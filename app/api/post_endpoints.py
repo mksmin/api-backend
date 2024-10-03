@@ -16,13 +16,13 @@ async def create_user(data=Body()):
     message_to_badreq = {"message": "Bad Request: You don't have "
                                     "the necessary parameters in the request body"}
     bad_request = JSONResponse(content=message_to_badreq, status_code=400)
-    if data.get("params") is None:
+    if not data.get("params"):
         return bad_request
-    else:
-        params = data.get("params")  # dict
-        prms_answers = params.get("answers")  # str
-        prms_date_bid = params.get("Date")  # str
-        prms_id_bid = params.get("ID")  # str
+
+    params = data.get("params")  # dict
+    prms_answers = params.get("answers")  # str
+    prms_date_bid = params.get("Date")  # str
+    prms_id_bid = params.get("ID")  # str
 
     if not prms_answers or not prms_date_bid or not prms_id_bid:
         # Проверяем, что требуемые параметры существуют в запросе
@@ -49,15 +49,10 @@ async def create_user(data=Body()):
 
 @postapp.post('/get_token/{user_id}', include_in_schema=False)
 async def get_token(user_id: int):
-    if isinstance(user_id, int):
-        result = await ah.sign_jwt(str(user_id))
-        return JSONResponse(content=result, status_code=201)
-    else:
+    if not isinstance(user_id, int):
         return JSONResponse(content={"message": f"{user_id} is not an integer"}, status_code=400)
 
+    result = await ah.sign_jwt(user_id)
+    return JSONResponse(content=result, status_code=201)
 
-@postapp.post('/test/', include_in_schema=False)
-async def tmp_test(data=Body()):
-    # TODO ...
-    # WIP - work in progress
-    pass
+

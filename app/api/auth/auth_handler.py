@@ -1,19 +1,11 @@
 # import libraries
 import os
-# import binascii
 import time
 import jwt
 
 # import from libraries
 from decouple import config
 
-# local load env
-# from dotenv import load_dotenv
-# dirname_file = os.path.dirname(__file__)
-# dirname_step = os.path.dirname(dirname_file)
-# dirname_next_step = os.path.dirname(dirname_step)
-# dotenv_path = os.path.abspath(os.path.join(dirname_next_step, 'config/.env'))
-# load_dotenv(dotenv_path)
 
 JWT_SECRET = config("secret")
 JWT_ALGORITHM = config("algorithm")
@@ -25,9 +17,9 @@ async def token_response(token: str) -> dict:
     }
 
 
-async def sign_jwt(user_id: str) -> dict:
+async def sign_jwt(user_id: int) -> dict:
     payload = {
-        "user_id": user_id,
+        "user_id": str(user_id),
         "expires": time.time() + 3600000
     }
     token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
@@ -39,5 +31,5 @@ async def decode_jwt(token: str) -> dict:
     try:
         decoded_token = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         return {"success": True} if decoded_token['expires'] > time.time() else error_message
-    except:
+    except Exception as e:
         return error_message
