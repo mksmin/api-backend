@@ -54,10 +54,3 @@ async def get_token(user_id: int):
         return JSONResponse(content=result, status_code=201)
     else:
         return JSONResponse(content={"message": f"{user_id} is not an integer"}, status_code=400)
-
-
-@postapp.post('/test/', include_in_schema=False)
-async def tmp_test(data=Body()):
-    # TODO ...
-    # WIP - work in progress
-    pass
