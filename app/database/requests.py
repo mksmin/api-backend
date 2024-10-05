@@ -95,9 +95,9 @@ async def get_colums_name(session, name_of_db: str) -> list:
 @connection
 async def get_registration_stat(session, name_db: str) -> dict:
     text_request_detail = text(f'SELECT competention, count(*) '
-                               f'FROM {name_db}'
-                               f'GROUP BY competention'
-                               f'ORDER BY competention')
+                               f'FROM {name_db} '
+                               f'GROUP BY competention '
+                               f'ORDER BY competention ')
     text_request_general = text(f'SELECT count(*) FROM {name_db}')
 
     result_detail = await session.execute(text_request_detail)
