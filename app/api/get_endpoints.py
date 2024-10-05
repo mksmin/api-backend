@@ -77,8 +77,8 @@ async def get_statistics(token=Header()) -> JSONResponse:
     :return: JSONResponse
     """
     decode_result = await ah.decode_jwt(token)
-    if not decode_result['success']:
-        message = {"message": decode_result['message']}
+    if not decode_result['message']['success']:
+        message = {"message": {'error': decode_result['message']['error']}}
         mess_to_json = json.dumps(message)
         return JSONResponse(content=mess_to_json, status_code=400)
 

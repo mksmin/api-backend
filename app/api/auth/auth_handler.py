@@ -13,7 +13,7 @@ JWT_ALGORITHM = config("algorithm")
 
 async def token_response(token: str) -> dict:
     return {
-        "access_token": token
+        "message": token
     }
 
 
@@ -27,9 +27,9 @@ async def sign_jwt(user_id: int) -> dict:
 
 
 async def decode_jwt(token: str) -> dict:
-    error_message = {"success": False, "message": {"error": "invalid token"}}
+    error_message = {"message": {"success": False, "error": "invalid token"}}
     try:
         decoded_token = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        return {"success": True} if decoded_token['expires'] > time.time() else error_message
+        return {"message": {"success": True}} if decoded_token['expires'] > time.time() else error_message
     except Exception as e:
         return error_message

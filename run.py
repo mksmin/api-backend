@@ -27,7 +27,6 @@ async def lifespan(app: FastAPI) -> None:
 
     This function executes the code before 'yield' before running FastAPI
     and code after 'yield' after the FastAPI stops
-    :param app:
     :return: None
     """
     logger.info('Start FastAPI')
@@ -55,7 +54,7 @@ async def main() -> None:
 
 if __name__ == '__main__':
     try:
-        # asyncio.run(main())
+        asyncio.run(main())
         uvicorn.run("run:app", host='127.0.0.1', port=8000, log_level="info",
                     reload=True,
                     log_config=os.path.join(os.path.normpath(dirname), 'app/config/log_conf.json'),
