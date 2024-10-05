@@ -37,7 +37,7 @@ async def set_user_registration(session, values: dict, name_db: str) -> None:
     for key in values.keys():
         value = values[key]['value']
         list_namecolums.append(key.lower())
-        list_valuecolums.append(value)
+        list_valuecolums.append(f"'{str(value)}'")
     str_namecolum = ', '.join(list_namecolums)
     str_valuecolum = ', '.join(list_valuecolums)
 
