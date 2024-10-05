@@ -70,16 +70,25 @@ async def html_path(name_style: str):
 
 
 @getapp.get('/statistics/', include_in_schema=False)
-async def get_statistics(token=Header()):
+async def get_statistics(token=Header()) -> JSONResponse:
+    """
+    Функция подключается к БД и возвращает ответы в JSON
+    :param token:
+    :return: JSONResponse
+    """
     decode_result = await ah.decode_jwt(token)
     if not decode_result['success']:
         message = {"message": decode_result['message']}
         mess_to_json = json.dumps(message)
         return JSONResponse(content=mess_to_json, status_code=400)
 
-    result = await rq.get_registration_stat('atomlabreguser')
-    total_users = list(result[0][0])[0]
+    try:
+        result = await rq.get_registration_stat('atomlabreguser')
+    except Exception as e:
+        message_error = {"message": {"error": "Возникла проблема с базой данных"}}
+        return JSONResponse(content=message_error, status_code=500)
 
+    total_users = list(result[0][0])[0]
     result_dict = {"total_users": total_users, "details": {}}
 
     for dict_items in result[1]:
