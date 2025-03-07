@@ -11,7 +11,8 @@ from app.config.config import get_tokens
 
 # create engine and connetion to DB
 post_host_token = get_tokens('POSTGRESQL_HOST')
-engine = create_async_engine(url=post_host_token, echo=True)
+db_debug_mode = get_tokens('DB_DEBUG_MODE')
+engine = create_async_engine(url=post_host_token, echo=db_debug_mode)
 async_session = async_sessionmaker(engine)
 
 
