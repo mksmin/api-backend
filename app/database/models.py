@@ -11,7 +11,7 @@ from app.config.config import get_tokens, logger
 
 # create engine and connetion to DB
 post_host_token = get_tokens('POSTGRESQL_HOST')
-db_debug_mode = get_tokens('DB_DEBUG_MODE')
+db_debug_mode = bool(get_tokens('DB_DEBUG_MODE'))
 
 logger.info(f"get token: {db_debug_mode = }, type: {type(db_debug_mode)}")
 
