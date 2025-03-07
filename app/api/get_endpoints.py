@@ -86,7 +86,8 @@ async def get_statistics(token=Header()) -> JSONResponse:
         result = await rq.get_registration_stat('atomlabreguser')
     except Exception as e:
         message_error = {"message": {"error": "Возникла проблема с базой данных"}}
-        return JSONResponse(content=message_error, status_code=500)
+        message_to_json = json.dumps(message_error)
+        return JSONResponse(content=message_to_json, status_code=500)
 
     total_users = list(result[0][0])[0]
     result_dict = {"total_users": total_users, "details": {}}
