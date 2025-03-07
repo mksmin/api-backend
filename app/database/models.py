@@ -7,11 +7,14 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_engine
 
 # import from modules
-from app.config.config import get_tokens
+from app.config.config import get_tokens, logger
 
 # create engine and connetion to DB
 post_host_token = get_tokens('POSTGRESQL_HOST')
 db_debug_mode = get_tokens('DB_DEBUG_MODE')
+
+logger.info(f"get token: {db_debug_mode = }")
+
 engine = create_async_engine(url=post_host_token, echo=db_debug_mode)
 async_session = async_sessionmaker(engine)
 
