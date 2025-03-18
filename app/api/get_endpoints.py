@@ -100,3 +100,10 @@ async def get_statistics(token=Header()) -> JSONResponse:
     mess_to_json = json.dumps(message)
 
     return JSONResponse(content=mess_to_json, status_code=200)
+
+
+@getapp.get('/test', include_in_schema=False)
+async def get_test() -> JSONResponse:
+    message = {"message": 'hello_world'}
+    mess_to_json = json.dumps(message)
+    return JSONResponse(content=mess_to_json, status_code=400)
