@@ -106,4 +106,4 @@ async def get_statistics(token=Header()) -> JSONResponse:
 async def get_test() -> JSONResponse:
     message = {"message": 'hello_world'}
     mess_to_json = json.dumps(message)
-    return JSONResponse(content=mess_to_json, status_code=400)
+    return JSONResponse(content=mess_to_json, status_code=200)
