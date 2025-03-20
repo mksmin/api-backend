@@ -1,4 +1,9 @@
 [tool.poetry]
+name = "API Atomlab"
+version = "0.1.0"
+description = ""
+license = ""
+readme = "README.md"
 package-mode = false
 
 [tool.poetry.dependencies]
@@ -9,6 +14,7 @@ asyncpg = "^0.30.0"
 pydantic = {extras = ["email"], version = "^2.10.6"}
 alembic = "^1.15.1"
 pydantic-settings = "^2.8.1"
+uvicorn = {extras = ["standard"], version = "^0.34.0"}
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"
