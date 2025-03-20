@@ -1,9 +1,5 @@
 # my project files
-app/api_v1_archived/config/__pycache__/
-app/api_v1_archived/database/__pycache__/
-app/__pycache__/
 tmp_files
-.env
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
