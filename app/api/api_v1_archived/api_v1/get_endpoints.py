@@ -64,6 +64,7 @@ async def html_path(name_media: str):
 
 @getapp.get('/html/style/{name_style}', include_in_schema=False)
 async def html_path(name_style: str):
+    logger.info(f'style')
     media_path = os.path.join(cwd_project_path, "html/style", name_style)
     result, status = await check_path(media_path)
     return FileResponse(result, status_code=status)
