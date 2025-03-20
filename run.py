@@ -12,8 +12,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 # import from modules
-from app.api.get_endpoints import getapp
-from app.api.post_endpoints import postapp
+from app.api_v1.get_endpoints import getapp
+from app.api_v1.post_endpoints import postapp
 from app.config.config import logger
 from app.database.models import async_main
 

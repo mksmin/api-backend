@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 import app.database.requests as rq
 from app.config.config import logger
 from app.json_handlers import get_data_from_json
-import app.api.auth.auth_handler as ah
+import app.api_v1.auth.auth_handler as ah
 
 postapp = APIRouter()
 

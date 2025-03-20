@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse, FileResponse
 # import from modules
 from app.config.config import logger
 import app.database.requests as rq
-import app.api.auth.auth_handler as ah
+import app.api_v1.auth.auth_handler as ah
 
 cwd = os.getcwd()
 dirname = os.path.dirname(__file__)
