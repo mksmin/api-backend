@@ -29,28 +29,12 @@ async def lifespan(app: FastAPI) -> None:
     await db_helper.dispose()
 
 
-app = FastAPI(
+main_app = FastAPI(
     lifespan=lifespan,
     docs_url=None,
     redoc_url=None,
     openapi_url=None
 )
-app.include_router(
-)
-app.include_router(
-)
-
-# async def main() -> None:
-#     """
-#     Function starts the database
-#     :return: None
-#     """
-#     try:
-#         await async_main()
-#     except Exception as e:
-#         logger.exception('Проблема с базой данных:', e)
-#     else:
-#         logger.info('Start database')
 
 
 if __name__ == '__main__':

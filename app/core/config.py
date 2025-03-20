@@ -41,7 +41,7 @@ logger.setLevel(logging.INFO)
 class RunConfig(BaseModel):
     host: str = "127.0.0.1"
     port: int = 8000
-    log_level: str = "INFO"
+    log_level: str = "info"
 
 
 class ApiV2Prefix(BaseModel):
