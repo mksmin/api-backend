@@ -123,7 +123,6 @@ async def get_registration_stat(session: async_session, name_db: str) -> dict:
                 )
             )
 
-        print('registration_table: ', registration_table)
         # Детали по каждой компетенции
         detail_query = (
             select(

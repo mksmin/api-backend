@@ -90,7 +90,6 @@ async def get_statistics(token=Header()) -> JSONResponse:
         message_to_json = json.dumps(message_error)
         return JSONResponse(content=message_to_json, status_code=500)
 
-    print(f'Список пользователей {result = }')
     #
     # total_users = list(result[0][0])[0]
     # result_dict = {"total_users": total_users, "details": {}}
@@ -99,9 +98,9 @@ async def get_statistics(token=Header()) -> JSONResponse:
     #     competention, count = dict_items.keys()
     #     result_dict['details'][dict_items[competention]] = dict_items[count]
     # message = {"message": result_dict}
-    # mess_to_json = json.dumps(message)
+    mess_to_json = json.dumps(result)
 
-    return JSONResponse(content=result, status_code=200)
+    return JSONResponse(content=mess_to_json, status_code=200)
 
 
 @getapp.get('/test', include_in_schema=False)
