@@ -1,13 +1,12 @@
 # import libraries
-import asyncio
 
 # import from libraries
-from sqlalchemy import Column, BigInteger, String, ForeignKey, DateTime, MetaData, Date
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import BigInteger, Date
 from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_engine
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 # import from modules
-from app.config.config import get_tokens, logger
+from app.config.config import get_tokens
 
 # create engine and connetion to DB
 post_host_token = get_tokens('POSTGRESQL_HOST')
@@ -30,7 +29,6 @@ class User(Base):
     idbid = mapped_column(BigInteger, nullable=True, unique=True)
 
 
-
 async def async_main() -> None:
     """
     func create all tables in database
@@ -38,5 +36,3 @@ async def async_main() -> None:
     """
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-
-

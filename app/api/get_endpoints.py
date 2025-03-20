@@ -3,7 +3,7 @@ import os
 import json
 
 # import from libraries
-from fastapi import APIRouter, Body, Header
+from fastapi import APIRouter, Header
 from fastapi.responses import JSONResponse, FileResponse
 
 # import from modules
@@ -90,16 +90,18 @@ async def get_statistics(token=Header()) -> JSONResponse:
         message_to_json = json.dumps(message_error)
         return JSONResponse(content=message_to_json, status_code=500)
 
-    total_users = list(result[0][0])[0]
-    result_dict = {"total_users": total_users, "details": {}}
+    print(f'Список пользователей {result = }')
+    #
+    # total_users = list(result[0][0])[0]
+    # result_dict = {"total_users": total_users, "details": {}}
+    #
+    # for dict_items in result[1]:
+    #     competention, count = dict_items.keys()
+    #     result_dict['details'][dict_items[competention]] = dict_items[count]
+    # message = {"message": result_dict}
+    # mess_to_json = json.dumps(message)
 
-    for dict_items in result[1]:
-        competention, count = dict_items.keys()
-        result_dict['details'][dict_items[competention]] = dict_items[count]
-    message = {"message": result_dict}
-    mess_to_json = json.dumps(message)
-
-    return JSONResponse(content=mess_to_json, status_code=200)
+    return JSONResponse(content=result, status_code=200)
 
 
 @getapp.get('/test', include_in_schema=False)

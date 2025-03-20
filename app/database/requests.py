@@ -1,11 +1,15 @@
 """
 Module with functions for database operations
 """
+import traceback
+
 
 # import from libraries
 from functools import wraps
+from sqlalchemy import MetaData, Table, select, func
 from sqlalchemy.sql import text
 
+from app.config.config import logger
 # import from modules
 from app.database.models import async_session
 
@@ -25,7 +29,6 @@ def connection(func) -> None:
 
 @connection
 async def set_user_registration(session, values: dict, name_db: str) -> None:
-
     # str_namecolum = ''
     # str_valuecolum = ''
     # for key in values.keys():
@@ -93,20 +96,82 @@ async def get_colums_name(session, name_of_db: str) -> list:
 
 
 @connection
-async def get_registration_stat(session, name_db: str) -> dict:
-    text_request_detail = text(f'SELECT competention, count(*) '
-                               f'FROM {name_db} '
-                               f'GROUP BY competention '
-                               f'ORDER BY competention ')
-    text_request_general = text(f'SELECT count(*) FROM {name_db}')
+async def get_registration_stat(session: async_session, name_db: str) -> dict:
+    """
+    Вернет статистику регистрации пользователей в виде словаря:
+    {
+        "total_users": int,
+        "details": {
+            "competention1": int,
+        }
+    }
+    :param session:
+    :param name_db:
+    :return: Dict
+    """
 
-    result_detail = await session.execute(text_request_detail)
-    result_general = await session.execute(text_request_general)
+    metadata = MetaData()
 
-    # TODO: преобразовать полученный результат с db в Dict
-    # TODO: убрав тем самым переработку ответа с функции get_statistics() в get_endpoints.py
-    # total_bids = result_general.fetchall() # WIP
-    # result_dict = {"total_users": total_bids, "details": {}} # WIP
+    try:
+        async with session.bind.connect() as conn:
+            registration_table = await conn.run_sync(
+                lambda sync_conn: Table(
+                    name_db,
+                    metadata,
+                    autoload_with=sync_conn
 
-    data = [competention._asdict() for competention in result_detail]
-    return result_general.fetchall(), data
+                )
+            )
+
+        print('registration_table: ', registration_table)
+        # Детали по каждой компетенции
+        detail_query = (
+            select(
+                registration_table.c.competention,
+                func.count().label('count')
+            )
+            .group_by(registration_table.c.competention)
+            .order_by(registration_table.c.competention)
+        )
+
+        # Суммарная статистика
+        general_query = select(func.count()).select_from(registration_table)
+
+        # Запрос к базе данных
+        result_detail = await session.execute(detail_query)
+        result_general = await session.execute(general_query)
+
+        # отправка результата
+        return {
+            "total_users": result_general.scalar(),
+            "details": {
+                row[0]: row[1] for row in result_detail.all()
+            }
+        }
+
+    except Exception as e:
+        error_traceback = traceback.format_exc()
+        logger.warning(f'Ошибка при получении данных из таблицы {name_db}: {error_traceback}')
+        return {
+            "total_users": 0,
+            "details": {
+                "error": "Ошибка при получении данных из таблицы"
+            }
+        }
+
+    # text_request_detail = text(f'SELECT competention, count(*) '
+    #                            f'FROM {name_db} '
+    #                            f'GROUP BY competention '
+    #                            f'ORDER BY competention ')
+    # text_request_general = text(f'SELECT count(*) FROM {name_db}')
+    #
+    # result_detail = await session.execute(text_request_detail)
+    # result_general = await session.execute(text_request_general)
+    #
+    # # TODO: преобразовать полученный результат с db в Dict
+    # # TODO: убрав тем самым переработку ответа с функции get_statistics() в get_endpoints.py
+    # # total_bids = result_general.fetchall() # WIP
+    # # result_dict = {"total_users": total_bids, "details": {}} # WIP
+    #
+    # data = [competention._asdict() for competention in result_detail]
+    # return result_general.fetchall(), data
