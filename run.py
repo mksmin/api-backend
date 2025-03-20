@@ -3,21 +3,15 @@ This is the main entry point of the application. It is responsible for starting 
 """
 
 # import libraries
-import asyncio
-import os
 import uvicorn
 
 # import from libraries
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from pathlib import Path
 
 # import from modules
-from app.api_v1.get_endpoints import getapp
-from app.api_v1.post_endpoints import postapp
-from app.config.config import logger
-from app.database.models import async_main
-
-dirname = os.path.dirname(__file__)
+from app.core import logger, settings, db_helper
 
 
 @asynccontextmanager
@@ -32,33 +26,44 @@ async def lifespan(app: FastAPI) -> None:
     logger.info('Start FastAPI')
     yield
     logger.info('Stop FastAPI')
+    await db_helper.dispose()
 
 
-app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
-app.include_router(getapp)
-app.include_router(postapp)
+app = FastAPI(
+    lifespan=lifespan,
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None
+)
+app.include_router(
+)
+app.include_router(
+)
 
-
-async def main() -> None:
-    """
-    Function starts the database
-    :return: None
-    """
-    try:
-        await async_main()
-    except Exception as e:
-        logger.exception('Проблема с базой данных:', e)
-    else:
-        logger.info('Start database')
+# async def main() -> None:
+#     """
+#     Function starts the database
+#     :return: None
+#     """
+#     try:
+#         await async_main()
+#     except Exception as e:
+#         logger.exception('Проблема с базой данных:', e)
+#     else:
+#         logger.info('Start database')
 
 
 if __name__ == '__main__':
     try:
-        asyncio.run(main())
-        uvicorn.run("run:app", host='127.0.0.1', port=8000, log_level="info",
-                    reload=True,
-                    log_config=os.path.join(os.path.normpath(dirname), 'app/config/log_conf.json'),
-                    use_colors=True)
+        uvicorn.run(
+            "run:main_app",
+            host=settings.run.host,
+            port=settings.run.port,
+            log_level=settings.run.log_level,
+            reload=True,
+            log_config=str(Path(__file__).parent / 'app/core/log_conf.json'),
+            use_colors=True
+        )
 
     except KeyboardInterrupt:
         logger.warning('Exit from app has occurred with KeyboardInterrupt')
