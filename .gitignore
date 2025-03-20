@@ -1,9 +1,9 @@
 # my project files
-app/config/__pycache__/
-app/database/__pycache__/
+app/api_v1_archived/config/__pycache__/
+app/api_v1_archived/database/__pycache__/
 app/__pycache__/
 tmp_files
-app/config/.env
+.env
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -129,7 +129,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-app/config/.env
+.env
 .venv
 env/
 venv/

@@ -3,10 +3,9 @@ from fastapi import Body, APIRouter
 from fastapi.responses import JSONResponse
 
 # import from modules
-import app.database.requests as rq
-from app.config.config import logger
-from app.json_handlers import get_data_from_json
-import app.api_v1.auth.auth_handler as ah
+import app.api_v1_archived.database.requests as rq
+from app.api_v1_archived.json_handlers import get_data_from_json
+import app.api_v1_archived.api_v1.auth.auth_handler as ah
 
 postapp = APIRouter()
 

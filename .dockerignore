@@ -1,8 +1,0 @@
-.idea
-.venv
-app/config/__pycache__
-app/database/__pycache__
-app/__pycache__
-tmp_files
-__pycache__
-app/config/.env
