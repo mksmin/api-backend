@@ -53,6 +53,10 @@ class ApiPrefix(BaseModel):
     prefix: str = "/api"
     v2: ApiV2Prefix = ApiV2Prefix()
 
+    secret: str = 'default_secret'
+    algorithm: str = 'HS256'
+
+
 
 class DatabaseConfig(BaseModel):
     url: PostgresDsn
