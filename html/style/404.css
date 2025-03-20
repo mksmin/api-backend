@@ -9,7 +9,7 @@ html, body {
 }
 
 body {
-    background: url('/html/media/404.jpg') center no-repeat #dcecf9
+    background: url('../media/404.jpg') center no-repeat #dcecf9
 }
 
 .content {
