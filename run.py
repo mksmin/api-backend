@@ -13,6 +13,7 @@ from pathlib import Path
 # import from modules
 from app.core import logger, settings, db_helper
 from app.api import router as api_router
+from app.api import base_router
 
 
 @asynccontextmanager
@@ -39,6 +40,9 @@ main_app = FastAPI(
 
 main_app.include_router(
     router=api_router
+)
+main_app.include_router(
+    router=base_router
 )
 
 if __name__ == '__main__':
