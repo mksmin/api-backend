@@ -51,7 +51,7 @@ class ApiV2Prefix(BaseModel):
 
 class ApiPrefix(BaseModel):
     prefix: str = "/api"
-    v1: ApiV2Prefix = ApiV2Prefix()
+    v2: ApiV2Prefix = ApiV2Prefix()
 
 
 class DatabaseConfig(BaseModel):
