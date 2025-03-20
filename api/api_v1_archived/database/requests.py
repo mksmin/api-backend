@@ -9,9 +9,9 @@ from functools import wraps
 from sqlalchemy import MetaData, Table, select, func
 from sqlalchemy.sql import text
 
-from app.api_v1_archived.config.config import logger
+from api.api_v1_archived.config.config import logger
 # import from modules
-from app.api_v1_archived.database.models import async_session
+from api.api_v1_archived.database.models import async_session
 
 
 def connection(func) -> None:

@@ -7,9 +7,9 @@ from fastapi import APIRouter, Header
 from fastapi.responses import JSONResponse, FileResponse
 
 # import from modules
-from app.api_v1_archived.config.config import logger
-import app.api_v1_archived.database.requests as rq
-import app.api_v1_archived.api_v1.auth.auth_handler as ah
+from api.api_v1_archived.config.config import logger
+import api.api_v1_archived.database.requests as rq
+import api.api_v1_archived.api_v1.auth.auth_handler as ah
 
 cwd = os.getcwd()
 dirname = os.path.dirname(__file__)

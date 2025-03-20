@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 # import from modules
-from app.api_v1_archived.config.config import get_tokens
+from api.api_v1_archived.config.config import get_tokens
 
 # create engine and connetion to DB
 post_host_token = get_tokens('POSTGRESQL_HOST')
