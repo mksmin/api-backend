@@ -1,14 +1,18 @@
 # import lib
 import json
+import pprint
 
 # import from lib
-from fastapi import APIRouter, Depends, Header
+from fastapi import APIRouter, Depends, Header, Body
 from fastapi.responses import JSONResponse, FileResponse
 from pathlib import Path
 
 # import from modules
-from .auth import auth_handler as ah
 from app.core import logger
+from app.core import crud as rq
+
+from .auth import auth_handler as ah
+from .json_helper import get_data_from_json
 
 router = APIRouter()
 
@@ -47,6 +51,22 @@ async def get_statistics(token=Header()) -> JSONResponse:
     # mess_to_json = json.dumps(message)
     mess_to_json = 'Успешно'
     return JSONResponse(content=mess_to_json, status_code=200)
+
+
+@router.post('/registration', include_in_schema=False)
+async def registration(data=Body()):
+    params = data.get('params')
+    dict_user = await get_data_from_json(
+        parameters=params
+    )
+
+    result = await rq.create.create_user_from_dict(dict_values=dict_user)
+
+    if result[0]:
+        return JSONResponse(content={"message": result[1]}, status_code=201)
+
+    return JSONResponse(content={"message": result[1]}, status_code=500)
+
 
 @router.post('/get_token/{user_id}', include_in_schema=False)
 async def get_token(user_id: int):
