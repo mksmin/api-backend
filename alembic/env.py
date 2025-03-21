@@ -1,5 +1,6 @@
 import asyncio
 from logging.config import fileConfig
+from urllib.parse import unquote
 
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
@@ -29,7 +30,7 @@ target_metadata = Base.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-config.set_main_option("sqlalchemy.url", str(settings.db.url))
+config.set_main_option("sqlalchemy.url", unquote(str(settings.db.url)))
 
 
 def run_migrations_offline() -> None:
