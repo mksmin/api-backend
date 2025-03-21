@@ -44,7 +44,8 @@ async def get_statistics(token=Header()) -> JSONResponse:
 
     try:
         result = await rq.read.get_registration_stat('users')
-        logger.info('Функция запроса статистики пользователя успешно прошла')
+        logger.debug('Функция запроса статистики пользователя успешно прошла')
+
     except Exception as e:
         logger.warning(f'Ошибка при работе с БД: {e}')
         message_error = {"message": {"error": "Возникла проблема с базой данных"}}
