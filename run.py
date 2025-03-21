@@ -13,6 +13,7 @@ from pathlib import Path
 # import from modules
 from app.core import logger, settings, db_helper
 from app.api import router as api_router
+from app.api.redirect import router as redirect_router
 from app.api import base_router
 
 
@@ -36,6 +37,10 @@ main_app = FastAPI(
     docs_url=None,
     redoc_url=None,
     openapi_url=None
+)
+
+main_app.include_router(
+    router=redirect_router
 )
 
 main_app.include_router(
