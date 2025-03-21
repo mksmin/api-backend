@@ -11,7 +11,7 @@ from sqlalchemy import (
     Integer,
     DateTime,
     BigInteger,
-    ForeignKey,
+    ForeignKey, inspect,
 )
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -20,8 +20,8 @@ from .base import Base
 
 
 class User(IntIdMixin, TimestampsMixin, Base):
-    id_bid_ya: Mapped[int] = mapped_column(
-        Integer,
+    id_bid_ya = mapped_column(
+        BigInteger,
         nullable=False,
         unique=True,
         comment="ID заявки из внешнего сервиса регистраций (Yandex.Form)",
@@ -61,6 +61,33 @@ class User(IntIdMixin, TimestampsMixin, Base):
     track: Mapped[str] = mapped_column(String(250), nullable=True, comment="Название компетенции/трека")
 
     prj = relationship('Project', back_populates='user', uselist=False)
+
+    @classmethod
+    def get_model_fields(
+            cls,
+            exclude_primary_key: bool = True,
+            exclude_foreign_keys: bool = True,
+    ) -> list[str]:
+        inspector = inspect(cls)
+        columns = []
+
+        for column in inspector.columns:
+            if exclude_primary_key and column.primary_key:
+                continue
+            if exclude_foreign_keys and column.foreign_keys:
+                continue
+
+            columns.append(column.name)
+
+        return columns
+
+    def __repr__(self) -> str:
+        return (f"<User("
+                f"id={self.id}, "
+                f"email={self.email}, "
+                f"first_name={self.first_name}, "
+                f"last_name={self.last_name}, "
+                f")>")
 
 
 class Project(IntIdMixin, TimestampsMixin, Base):

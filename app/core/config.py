@@ -57,13 +57,14 @@ class ApiPrefix(BaseModel):
     algorithm: str = 'HS256'
 
 
-
 class DatabaseConfig(BaseModel):
     url: PostgresDsn
     echo: bool = False
     echo_pool: bool = False
     pool_size: int = 50
     max_overflow: int = 10
+    pool_timeout: int = 30
+    pool_recycle: int = 1800
 
     naming_convention: dict[str, str] = {
         "ix": "ix_%(column_0_label)s",
