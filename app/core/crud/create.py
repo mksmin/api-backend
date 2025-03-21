@@ -20,6 +20,8 @@ async def create_user_from_dict(
         key:  (
             parser.parse(value)
             if key in ("date_bid_ya", "birth_date")
+            else str(value)
+            if key == "timezone"
             else value
         )
         for key, value in dict_values.items()
