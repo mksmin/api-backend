@@ -53,6 +53,7 @@ file_handler.setFormatter(logging.Formatter(
 ))
 
 logger.addHandler(console_handler)
+logger.addHandler(file_handler)
 logger.setLevel(logging.INFO)
 
 
