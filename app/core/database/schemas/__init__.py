@@ -1,5 +1,7 @@
 __all__ = (
-    'UserSchema'
+    'UserSchema',
+    'ProjectSchema',
 )
 
 from .user import UserSchema
+from .project import ProjectSchema
