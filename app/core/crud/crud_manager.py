@@ -1,94 +1,17 @@
 # import lib
-import asyncio
 from contextlib import asynccontextmanager
 
-import asyncpg
-import traceback
-
-# import from lib
-from dateutil import parser
-from pydantic import BaseModel, ValidationError
-from pydantic_settings import BaseSettings
-from sqlalchemy.exc import SQLAlchemyError
+from pydantic import ValidationError
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from typing import TypeVar, Generic, Type
 
 # import from modules
 from app.core.config import logger
 from app.core.database import User, Project
-from app.core.database.schemas import UserSchema
-from .config import connector
-from fastapi import Depends
+from app.core.database.schemas import UserSchema, ProjectSchema
 
 from .. import db_helper
-
-
-@connector
-async def create_user_from_dict(
-        session: AsyncSession,
-        dict_values: dict
-) -> tuple[bool, str]:
-    valid_data = {
-        key: (
-            parser.parse(value)
-            if key in ("date_bid_ya", "birth_date")
-            else str(value)
-            if key == "timezone"
-            else value
-        )
-        for key, value in dict_values.items()
-        if hasattr(User, key)
-    }
-
-    try:
-        user = User(**valid_data)
-
-        session.add(user)
-        await session.commit()
-        return True, 'Пользователь успешно создан.'
-
-    except asyncpg.exceptions.ConnectionDoesNotExistError as e:
-        logger.exception("Проблема с подключением к БД")
-        error_msg = f"{type(e).__name__}: {str(e)}"
-        return False, error_msg
-
-    except SQLAlchemyError as e:
-        logger.exception("Ошибка SQLAlchemy")
-        error_msg = f"{type(e).__name__}: {str(e)}"
-        return False, error_msg
-
-    except Exception as e:
-        logger.exception('Ошибка при создании пользователя')
-        error_msg = f"{type(e).__name__}: {str(e)}"
-        return False, error_msg
-
-
-@connector
-async def create_project(
-        session: AsyncSession,
-        project_uuid: str,
-):
-    try:
-        project = Project(
-            uuid=project_uuid
-        )
-        print(f"project.uuid: {project.uuid}")
-        print(f'session: {session}')
-        session.add(project)
-        await session.commit()
-        return True, 'Проект успешно создан.'
-    except SQLAlchemyError as e:
-        logger.exception('Ошибка при создании проекта')
-
-        error_msg = f"{type(e).__name__}: {str(e)}"
-        return False, error_msg
-
-    except Exception as e:
-        logger.exception('Ошибка при создании проекта')
-
-        error_msg = f"{type(e).__name__}: {str(e)}"
-        return False, error_msg
-
 
 ModelType = TypeVar("ModelType")
 
@@ -122,6 +45,14 @@ class BaseCRUDManager(Generic[ModelType]):
                 logger.exception("Ошибка при работе с базой данных")
                 raise
 
+    async def exists_by_field(self, field: str, value: str) -> bool:
+        async with self._get_session() as session:
+            query = select(self.model).where(
+                getattr(self.model, field) == value
+            )
+            result = await session.execute(query)
+            return result.scalar_one_or_none() is not None
+
     async def create(self, **kwargs) -> ModelType:
         async with self._get_session() as session:
             instance = self.model(**kwargs)
@@ -141,6 +72,10 @@ class UserManager(BaseCRUDManager[User]):
 
     async def create(self, data: dict) -> User:
         result = await self._validate_user_data(data)
+
+        if await self.exists_by_field('id_bid_ya', result['id_bid_ya']):
+            raise ValueError('Пользователь с таким id_bid_ya уже существует')
+
         return await super().create(**result)
 
     @staticmethod
@@ -148,10 +83,39 @@ class UserManager(BaseCRUDManager[User]):
         try:
             user_schema = UserSchema(**data)
             return user_schema.model_dump()
+
         except ValidationError as e:
             error_message = format_validation_error(e)
             logger.error(f"Validation errors: {error_message}")
             raise ValueError(f"Ошибки валидации: {error_message}")
+
+
+class ProjectManager(BaseCRUDManager[Project]):
+    def __init__(
+            self,
+            session_factory: async_sessionmaker[AsyncSession]
+    ):
+        super().__init__(session_factory, model=Project)
+
+    async def create(self, data: dict) -> Project:
+        result = await self._validate_project_data(data)
+
+        if await self.exists_by_field('uuid', result['uuid']):
+            raise ValueError('Проект с таким uuid уже существует')
+
+        return await super().create(**result)
+
+    @staticmethod
+    async def _validate_project_data(data: dict):
+        try:
+            print(f"ProjectManager._validate_project_data: {data}")
+            project_schema = ProjectSchema(**data)
+            return project_schema.model_dump()
+
+        except ValidationError as e:
+            error_message = format_validation_error(e)
+            logger.error(f"Validation errors: {error_message}")
+            raise e
 
 
 class CRUDManager:
@@ -159,8 +123,8 @@ class CRUDManager:
             self,
             session_factory: async_sessionmaker
     ):
-        self.session_factory = session_factory
         self.user: UserManager = UserManager(session_factory)
+        self.project: ProjectManager = ProjectManager(session_factory)
 
 
 crud_manager = CRUDManager(db_helper.session_factory)
