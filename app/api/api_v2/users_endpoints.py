@@ -1,6 +1,7 @@
 # import lib
 import json
 import pandas as pd
+import uuid
 
 # import from lib
 from io import StringIO
@@ -64,7 +65,9 @@ async def registration(data=Body()):
         parameters=params
     )
 
-    result = await rq.create.create_user_from_dict(dict_values=dict_user)
+    result = await rq.create.crud_manager.user.create(
+        data=dict_user
+    )
 
     if result[0]:
         return JSONResponse(content={"message": result[1]}, status_code=201)
@@ -87,6 +90,30 @@ async def validate_csv(file: UploadFile):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Only CSV files are allowed"
         )
+
+
+@router.post("/create_project")
+async def create_project(
+        data: dict = Body(...),
+):
+    value = data.get('project_id')
+
+    if not value:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only project_id is allowed"
+        )
+    try:
+        value = uuid.UUID(value)
+
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid UUID"
+        )
+
+    result = await rq.create.create_project(value)
+    return JSONResponse(content=result, status_code=201)
 
 
 @router.post('/csv_to_db')
@@ -117,7 +144,10 @@ async def temp_upload_csv(
             created_at = user.pop('created_at')
             copmetention = user.pop('copmetention')
 
-            result = await rq.create.create_user_from_dict(dict_values=user)
+            result = await rq.create.crud_manager.user.create(
+                data=user
+            )
+            print(f"result: {result}")
 
         # if result[0]:
         #     return JSONResponse(content={"message": result[1]}, status_code=201)
