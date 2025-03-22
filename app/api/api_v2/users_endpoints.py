@@ -70,9 +70,9 @@ async def registration(data=Body()):
     )
 
     if result:
-        return JSONResponse(content={"message": result[1]}, status_code=201)
+        return JSONResponse(content={"message": 'Success'}, status_code=201)
 
-    return JSONResponse(content={"message": result[1]}, status_code=500)
+    return JSONResponse(content={"message": 'Error'}, status_code=500)
 
 
 @router.post('/get_token/{user_id}', include_in_schema=False)
