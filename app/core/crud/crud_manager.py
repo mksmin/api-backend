@@ -108,7 +108,6 @@ class ProjectManager(BaseCRUDManager[Project]):
     @staticmethod
     async def _validate_project_data(data: dict):
         try:
-            print(f"ProjectManager._validate_project_data: {data}")
             project_schema = ProjectSchema(**data)
             return project_schema.model_dump()
 
