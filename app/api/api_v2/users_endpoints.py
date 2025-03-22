@@ -147,7 +147,6 @@ async def temp_upload_csv(
             result = await rq.create.crud_manager.user.create(
                 data=user
             )
-            print(f"result: {result}")
 
         # if result[0]:
         #     return JSONResponse(content={"message": result[1]}, status_code=201)

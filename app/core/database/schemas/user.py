@@ -38,7 +38,6 @@ class UserSchema(BaseModel):
         process_result = {}
 
         for key, value in values.items():
-            logger.warning(f'key: {key}, value: {value}, type: {type(value)}')
 
             if key not in cls.model_fields:
                 logger.warning(f'Skipping key: {key}')
