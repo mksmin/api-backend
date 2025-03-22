@@ -1,14 +1,12 @@
 # import lib
 import json
 import pandas as pd
-import uuid
 
 # import from lib
 from io import StringIO
 from typing import Annotated
 from fastapi import (
     APIRouter,
-    Depends,
     Header,
     Body,
     File,
@@ -16,13 +14,13 @@ from fastapi import (
     HTTPException,
     status
 )
-from fastapi.responses import JSONResponse, FileResponse
-from pathlib import Path
+from fastapi.responses import JSONResponse
+
+from pydantic import ValidationError
 
 # import from modules
 from app.core import logger
-from app.core import crud as rq
-
+from app.core.crud import crud_manager, get_registration_stat
 from .auth import auth_handler as ah
 from .json_helper import get_data_from_json
 
@@ -44,7 +42,7 @@ async def get_statistics(token=Header()) -> JSONResponse:
         return JSONResponse(content=mess_to_json, status_code=400)
 
     try:
-        result = await rq.read.get_registration_stat('users')
+        result = await get_registration_stat('users')
         logger.debug('Функция запроса статистики пользователя успешно прошла')
 
     except Exception as e:
@@ -65,7 +63,7 @@ async def registration(data=Body()):
         parameters=params
     )
 
-    result = await rq.create.crud_manager.user.create(
+    result = await crud_manager.user.create(
         data=dict_user
     )
 
@@ -96,24 +94,31 @@ async def validate_csv(file: UploadFile):
 async def create_project(
         data: dict = Body(...),
 ):
-    value = data.get('project_id')
+    value = data.get('project_uuid')
 
     if not value:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Only project_id is allowed"
+            detail="Only project_uuid is allowed"
         )
     try:
-        value = uuid.UUID(value)
+        await crud_manager.project.create(data)
 
-    except ValueError:
+    except ValidationError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e.errors())
+        )
+    except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid UUID"
+            detail=str(e)
         )
 
-    result = await rq.create.create_project(value)
-    return JSONResponse(content=result, status_code=201)
+    return JSONResponse(
+        content={"message": {"success": True}},
+        status_code=201
+    )
 
 
 @router.post('/csv_to_db')
@@ -140,18 +145,13 @@ async def temp_upload_csv(
         data = df.to_dict(orient="records")
 
         for user in data:
-            id_user = user.pop('id')
-            created_at = user.pop('created_at')
-            copmetention = user.pop('copmetention')
+            user.pop('id')
+            user.pop('created_at')
+            user.pop('copmetention')
 
-            result = await rq.create.crud_manager.user.create(
+            await crud_manager.user.create(
                 data=user
             )
 
-        # if result[0]:
-        #     return JSONResponse(content={"message": result[1]}, status_code=201)
-        #
-        # return JSONResponse(content={"message": result[1]}, status_code=500)
-
     except Exception as e:
-        print(e)
+        logger.error(f"Ошибка при загрузке CSV: {e}")
