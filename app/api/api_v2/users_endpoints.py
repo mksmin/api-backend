@@ -69,7 +69,7 @@ async def registration(data=Body()):
         data=dict_user
     )
 
-    if result[0]:
+    if result:
         return JSONResponse(content={"message": result[1]}, status_code=201)
 
     return JSONResponse(content={"message": result[1]}, status_code=500)
