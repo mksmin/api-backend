@@ -1,4 +1,6 @@
 import logging
+from logging.handlers import RotatingFileHandler
+from pathlib import Path
 
 from pydantic import BaseModel, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -27,13 +29,29 @@ class CustomFormatter(logging.Formatter):
         return formatter.format(record)
 
 
+log_dir = Path("logs")
+log_dir.mkdir(parents=True, exist_ok=True)
+log_file = log_dir / "app.log"
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-# Настраиваем логгер, используя созданный форматтер.
+# Консольноый логгер
 console_handler = logging.StreamHandler()
-formatter = CustomFormatter()
-console_handler.setFormatter(formatter)
+console_handler.setFormatter(CustomFormatter())
+
+# Файловый логгер
+file_handler = RotatingFileHandler(
+    filename=str(log_file),  # Явное преобразование в строку
+    maxBytes=5 * 1024 * 1024,  # 5 MB
+    backupCount=3,
+    encoding='utf-8'
+)
+file_handler.setFormatter(logging.Formatter(
+    '[%(asctime)s] %(levelname)s: %(message)s (%(filename)s:%(lineno)d)',
+    '%Y/%m/%d %H:%M:%S'
+))
+
 logger.addHandler(console_handler)
 logger.setLevel(logging.INFO)
 
