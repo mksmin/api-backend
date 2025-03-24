@@ -13,9 +13,7 @@ from .config import connector
 
 
 @connector
-async def get_registration_stat(
-        session: AsyncSession,
-        name_db: str) -> dict:
+async def get_registration_stat(session: AsyncSession, name_db: str) -> dict:
     """
     Вернет статистику регистрации пользователей в виде словаря:
     {
@@ -34,20 +32,12 @@ async def get_registration_stat(
     try:
         async with session.bind.connect() as conn:
             registration_table = await conn.run_sync(
-                lambda sync_conn: Table(
-                    name_db,
-                    metadata,
-                    autoload_with=sync_conn
-
-                )
+                lambda sync_conn: Table(name_db, metadata, autoload_with=sync_conn)
             )
 
         # Детали по каждой компетенции
         detail_query = (
-            select(
-                registration_table.c.track,
-                func.count().label('count')
-            )
+            select(registration_table.c.track, func.count().label("count"))
             .group_by(registration_table.c.track)
             .order_by(registration_table.c.track)
         )
@@ -62,17 +52,15 @@ async def get_registration_stat(
         # отправка результата
         return {
             "total_users": result_general.scalar(),
-            "details": {
-                row[0]: row[1] for row in result_detail.all()
-            }
+            "details": {row[0]: row[1] for row in result_detail.all()},
         }
 
     except Exception as e:
         error_traceback = traceback.format_exc()
-        logger.warning(f'Ошибка при получении данных из таблицы {name_db}: {error_traceback}')
+        logger.warning(
+            f"Ошибка при получении данных из таблицы {name_db}: {error_traceback}"
+        )
         return {
             "total_users": 0,
-            "details": {
-                "error": "Ошибка при получении данных из таблицы"
-            }
+            "details": {"error": "Ошибка при получении данных из таблицы"},
         }

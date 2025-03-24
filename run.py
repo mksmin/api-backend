@@ -18,7 +18,7 @@ from app.api import base_router
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> None:
+async def lifespan(app: FastAPI):
     """
     WIP
 
@@ -26,31 +26,19 @@ async def lifespan(app: FastAPI) -> None:
     and code after 'yield' after the FastAPI stops
     :return: None
     """
-    logger.info('Start FastAPI')
+    logger.info("Start FastAPI")
     yield
-    logger.info('Stop FastAPI')
+    logger.info("Stop FastAPI")
     await db_helper.dispose()
 
 
-main_app = FastAPI(
-    lifespan=lifespan,
-    docs_url=None,
-    redoc_url=None,
-    openapi_url=None
-)
+main_app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
 
-main_app.include_router(
-    router=redirect_router
-)
+main_app.include_router(router=redirect_router)
+main_app.include_router(router=api_router)
+main_app.include_router(router=base_router)
 
-main_app.include_router(
-    router=api_router
-)
-main_app.include_router(
-    router=base_router
-)
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         uvicorn.run(
             "run:main_app",
@@ -58,13 +46,13 @@ if __name__ == '__main__':
             port=settings.run.port,
             log_level=settings.run.log_level,
             reload=True,
-            log_config=str(Path(__file__).parent / 'app/core/log_conf.json'),
-            use_colors=True
+            log_config=str(Path(__file__).parent / "app/core/log_conf.json"),
+            use_colors=True,
         )
 
     except KeyboardInterrupt:
-        logger.warning('Exit from app has occurred with KeyboardInterrupt')
+        logger.warning("Exit from app has occurred with KeyboardInterrupt")
     except Exception as e:
-        logger.exception('Exception has occurred:', e)
+        logger.exception("Exception has occurred:", e)
     else:
-        logger.info('Application stopped')
+        logger.info("Application stopped")

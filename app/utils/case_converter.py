@@ -1,5 +1,3 @@
-
-
 def camel_case_converter(input_str: str) -> str:
 
     chars = []
@@ -11,10 +9,10 @@ def camel_case_converter(input_str: str) -> str:
             # as new words, show them in lower case
 
             flag = nxt_idx >= len(input_str) or input_str[nxt_idx].isupper()
-            prev_char = input_str[c_idx-1]
+            prev_char = input_str[c_idx - 1]
             if prev_char.isupper() and not flag:
                 pass
             else:
-                chars.append('_')
+                chars.append("_")
         chars.append(char.lower())
-    return ''.join(chars)
+    return "".join(chars)

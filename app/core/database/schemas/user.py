@@ -32,7 +32,7 @@ class UserSchema(BaseModel):
     project_id: Optional[int] = None
     track: Optional[str] = None
 
-    @model_validator(mode='before')
+    @model_validator(mode="before")
     @classmethod
     def prevalidate(cls, values: dict[str, any]) -> dict[str, any]:
         process_result = {}
@@ -40,19 +40,19 @@ class UserSchema(BaseModel):
         for key, value in values.items():
 
             if key not in cls.model_fields:
-                logger.warning(f'Skipping key: {key}')
+                logger.warning(f"Skipping key: {key}")
                 continue
             try:
-                if key in ('date_bid_ya', 'birth_date'):
+                if key in ("date_bid_ya", "birth_date"):
                     process_result[key] = cls.parse_datetime(value)
-                elif key == 'timezone':
+                elif key == "timezone":
                     process_result[key] = str(value)
-                elif key in ('tg_id', 'id_bid_ya', 'project_id'):
+                elif key in ("tg_id", "id_bid_ya", "project_id"):
                     process_result[key] = int(value)
                 else:
                     process_result[key] = str(value)
             except Exception as e:
-                logger.error(f'Error processing key: {key}, value: {value}: {str(e)}')
+                logger.error(f"Error processing key: {key}, value: {value}: {str(e)}")
                 raise
 
         return process_result
@@ -62,7 +62,7 @@ class UserSchema(BaseModel):
         try:
             return parser.parse(value) if isinstance(value, str) else value
         except Exception as e:
-            raise ValueError(f'Invalid datetime format for value: {value}: {str(e)}')
+            raise ValueError(f"Invalid datetime format for value: {value}: {str(e)}")
 
     model_config = ConfigDict(
         from_attributes=True,

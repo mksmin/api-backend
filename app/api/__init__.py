@@ -11,4 +11,3 @@ router = APIRouter(
 router.include_router(
     router_api_v2,
 )
-

@@ -9,8 +9,10 @@ from pathlib import Path
 # import from modules
 
 router = APIRouter()
-cwd_project_path = Path(__file__).absolute().parent.parent.parent  # project working directory api_atomlab/app
-not_found_404 = cwd_project_path.parent / 'html/404.html'
+cwd_project_path = (
+    Path(__file__).absolute().parent.parent.parent
+)  # project working directory api_atomlab/app
+not_found_404 = cwd_project_path.parent / "html/404.html"
 
 
 async def check_path(path_file: Path):
@@ -40,7 +42,7 @@ async def robots():
     return FileResponse(robots_path)
 
 
-@router.get('/html/{name_html}', include_in_schema=False)
+@router.get("/html/{name_html}", include_in_schema=False)
 async def html_path(name_html: str):
     media_path = cwd_project_path.parent / "html" / name_html
     result, status = await check_path(media_path)
@@ -48,14 +50,14 @@ async def html_path(name_html: str):
 
 
 #
-@router.get('/media/{name_media}', include_in_schema=False)
+@router.get("/media/{name_media}", include_in_schema=False)
 async def html_path(name_media: str):
     media_path = cwd_project_path.parent / "html/media" / name_media
     result, status = await check_path(media_path)
     return FileResponse(result, status_code=status)
 
 
-@router.get('/style/{name_style}', include_in_schema=False)
+@router.get("/style/{name_style}", include_in_schema=False)
 async def html_path(name_style: str):
     media_path = cwd_project_path.parent / "html/style" / name_style
     result, status = await check_path(media_path)

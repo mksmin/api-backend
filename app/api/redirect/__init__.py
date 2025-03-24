@@ -1,5 +1,3 @@
-__all__ = (
-    'router'
-)
+__all__ = ("router",)
 
 from .redir_handlers import router

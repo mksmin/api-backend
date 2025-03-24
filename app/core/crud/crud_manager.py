@@ -27,9 +27,7 @@ def format_validation_error(exc: ValidationError) -> str:
 
 class BaseCRUDManager(Generic[ModelType]):
     def __init__(
-            self,
-            session_factory: async_sessionmaker[AsyncSession],
-            model: Type[ModelType]
+        self, session_factory: async_sessionmaker[AsyncSession], model: Type[ModelType]
     ):
         self.session_factory = session_factory
         self.model = model
@@ -47,9 +45,7 @@ class BaseCRUDManager(Generic[ModelType]):
 
     async def exists_by_field(self, field: str, value: str) -> bool:
         async with self._get_session() as session:
-            query = select(self.model).where(
-                getattr(self.model, field) == value
-            )
+            query = select(self.model).where(getattr(self.model, field) == value)
             result = await session.execute(query)
             return result.scalar_one_or_none() is not None
 
@@ -59,22 +55,19 @@ class BaseCRUDManager(Generic[ModelType]):
             session.add(instance)
             await session.flush()
             await session.refresh(instance)
-            logger.info(f'Created {self.model.__name__} with id: {instance.id}')
+            logger.info(f"Created {self.model.__name__} with id: {instance.id}")
             return instance
 
 
 class UserManager(BaseCRUDManager[User]):
-    def __init__(
-            self,
-            session_factory: async_sessionmaker[AsyncSession]
-    ):
+    def __init__(self, session_factory: async_sessionmaker[AsyncSession]):
         super().__init__(session_factory, model=User)
 
     async def create(self, data: dict) -> User:
         result = await self._validate_user_data(data)
 
-        if await self.exists_by_field('id_bid_ya', result['id_bid_ya']):
-            raise ValueError('Пользователь с таким id_bid_ya уже существует')
+        if await self.exists_by_field("id_bid_ya", result["id_bid_ya"]):
+            raise ValueError("Пользователь с таким id_bid_ya уже существует")
 
         return await super().create(**result)
 
@@ -91,17 +84,14 @@ class UserManager(BaseCRUDManager[User]):
 
 
 class ProjectManager(BaseCRUDManager[Project]):
-    def __init__(
-            self,
-            session_factory: async_sessionmaker[AsyncSession]
-    ):
+    def __init__(self, session_factory: async_sessionmaker[AsyncSession]):
         super().__init__(session_factory, model=Project)
 
     async def create(self, data: dict) -> Project:
         result = await self._validate_project_data(data)
 
-        if await self.exists_by_field('uuid', result['uuid']):
-            raise ValueError('Проект с таким uuid уже существует')
+        if await self.exists_by_field("uuid", result["uuid"]):
+            raise ValueError("Проект с таким uuid уже существует")
 
         return await super().create(**result)
 
@@ -118,10 +108,7 @@ class ProjectManager(BaseCRUDManager[Project]):
 
 
 class CRUDManager:
-    def __init__(
-            self,
-            session_factory: async_sessionmaker
-    ):
+    def __init__(self, session_factory: async_sessionmaker):
         self.user: UserManager = UserManager(session_factory)
         self.project: ProjectManager = ProjectManager(session_factory)
 

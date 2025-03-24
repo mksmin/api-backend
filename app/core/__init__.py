@@ -1,7 +1,7 @@
 __all__ = (
-    'db_helper',
-    'logger',
-    'settings',
+    "db_helper",
+    "logger",
+    "settings",
 )
 
 from .config import settings, logger

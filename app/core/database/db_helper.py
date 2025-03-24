@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
     async_sessionmaker,
     AsyncSession,
-    AsyncEngine
+    AsyncEngine,
 )
 
 from app.core import settings
@@ -12,16 +12,16 @@ from app.core import settings
 
 class DatabaseHelper:
     def __init__(
-            self,
-            url: str,
-            echo: bool = False,
-            echo_pool: bool = False,
-            pool_size: int = 5,
-            max_overflow: int = 10,
-            pool_timeout: int = 30,
-            pool_recycle: int = 1800,  # Пересоздавать соединения каждые 30 минут
+        self,
+        url: str,
+        echo: bool = False,
+        echo_pool: bool = False,
+        pool_size: int = 5,
+        max_overflow: int = 10,
+        pool_timeout: int = 30,
+        pool_recycle: int = 1800,  # Пересоздавать соединения каждые 30 минут
     ) -> None:
-        self.engine = create_async_engine(
+        self.engine: AsyncEngine = create_async_engine(
             url=url,
             echo=echo,
             echo_pool=echo_pool,
@@ -52,6 +52,5 @@ db_helper = DatabaseHelper(
     pool_size=settings.db.pool_size,
     max_overflow=settings.db.max_overflow,
     pool_timeout=settings.db.pool_timeout,
-    pool_recycle=settings.db.pool_recycle
+    pool_recycle=settings.db.pool_recycle,
 )
-

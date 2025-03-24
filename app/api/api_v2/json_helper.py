@@ -22,17 +22,16 @@ FIELD_MAPPING: dict[str, str] = {
     "project_id": "project_id",
     "date_bid": "date_bid_ya",
     "id_bid": "id_bid_ya",
-
 }
 MODEL_FIELDS = User.get_model_fields()
 
 
 def json_key_to_model_field(json_key: str) -> str:
     # Удаляем суффикс типа (_str, _date и т.д.)
-    key_without_suffix = json_key.rsplit('_', 1)[0]
+    key_without_suffix = json_key.rsplit("_", 1)[0]
 
     # Конвертируем CamelCase в snake_case
-    snake_case = re.sub(r'(?<!^)(?=[A-Z])', '_', key_without_suffix).lower()
+    snake_case = re.sub(r"(?<!^)(?=[A-Z])", "_", key_without_suffix).lower()
     # Возвращаем соответствующее значение из маппинга
     return FIELD_MAPPING.get(snake_case, snake_case)
 
@@ -46,21 +45,21 @@ def map_json_to_model(json_data: dict) -> dict:
 
 
 async def get_data_from_json(parameters: dict) -> dict[str, str]:
-    answers = parameters.get('answers')
+    answers = parameters.get("answers")
     answers_dict = json.loads(answers)
-    data_answers = answers_dict['answer']['data']
+    data_answers = answers_dict["answer"]["data"]
 
     result = {}
     for key, value in data_answers.items():
-        if isinstance(value['value'], list):
-            value = value['value'][0]['text']
+        if isinstance(value["value"], list):
+            value = value["value"][0]["text"]
         else:
-            value = value['value']
+            value = value["value"]
 
         result[key] = value
 
-    result['DateBid'] = answers_dict.get('created')  # Дата заявки в форме Яндекса
-    result['IdBid'] = answers_dict.get('id')  # ID заявки на из формы Яндекса
+    result["DateBid"] = answers_dict.get("created")  # Дата заявки в форме Яндекса
+    result["IdBid"] = answers_dict.get("id")  # ID заявки на из формы Яндекса
 
     # Переименование ключей в соответствии с маппингом User
     mapping_keys: dict[str, str] = map_json_to_model(result)

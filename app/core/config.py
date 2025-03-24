@@ -20,12 +20,12 @@ class CustomFormatter(logging.Formatter):
         logging.INFO: green + format + reset,
         logging.WARNING: yellow + format + reset,
         logging.ERROR: red + format + reset,
-        logging.CRITICAL: bold_red + format + reset
+        logging.CRITICAL: bold_red + format + reset,
     }
 
     def format(self, record):
         log_fmt = self.FORMATS.get(record.levelno)
-        formatter = logging.Formatter(log_fmt, '%Y/%m/%d %H:%M:%S')
+        formatter = logging.Formatter(log_fmt, "%Y/%m/%d %H:%M:%S")
         return formatter.format(record)
 
 
@@ -45,12 +45,14 @@ file_handler = RotatingFileHandler(
     filename=str(log_file),  # Явное преобразование в строку
     maxBytes=5 * 1024 * 1024,  # 5 MB
     backupCount=3,
-    encoding='utf-8'
+    encoding="utf-8",
 )
-file_handler.setFormatter(logging.Formatter(
-    '[%(asctime)s] %(levelname)s: %(message)s (%(filename)s:%(lineno)d)',
-    '%Y/%m/%d %H:%M:%S'
-))
+file_handler.setFormatter(
+    logging.Formatter(
+        "[%(asctime)s] %(levelname)s: %(message)s (%(filename)s:%(lineno)d)",
+        "%Y/%m/%d %H:%M:%S",
+    )
+)
 
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
@@ -72,8 +74,8 @@ class ApiPrefix(BaseModel):
     prefix: str = "/api"
     v2: ApiV2Prefix = ApiV2Prefix()
 
-    secret: str = 'default_secret'
-    algorithm: str = 'HS256'
+    secret: str = "default_secret"
+    algorithm: str = "HS256"
 
 
 class DatabaseConfig(BaseModel):
@@ -90,7 +92,7 @@ class DatabaseConfig(BaseModel):
         "uq": "uq_%(table_name)s_%(column_0_name)s",
         "ck": "ck_%(table_name)s_%(constraint_name)s",
         "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-        "pk": "pk_%(table_name)s"
+        "pk": "pk_%(table_name)s",
     }
 
 
@@ -99,7 +101,7 @@ class Settings(BaseSettings):
         env_file=(".env.template", ".env"),
         case_sensitive=False,
         env_nested_delimiter="__",
-        env_prefix="API_CONFIG__"
+        env_prefix="API_CONFIG__",
     )
     run: RunConfig = RunConfig()
     api: ApiPrefix = ApiPrefix()

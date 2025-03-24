@@ -11,7 +11,8 @@ from sqlalchemy import (
     Integer,
     DateTime,
     BigInteger,
-    ForeignKey, inspect,
+    ForeignKey,
+    inspect,
 )
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -25,13 +26,13 @@ class User(IntIdMixin, TimestampsMixin, Base):
         nullable=False,
         unique=True,
         comment="ID заявки из внешнего сервиса регистраций (Yandex.Form)",
-        index=True
+        index=True,
     )
     date_bid_ya: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
         default=datetime.utcnow,
-        comment="Дата регистрации пользователя во внешнем сервисе (Yandex.Form)"
+        comment="Дата регистрации пользователя во внешнем сервисе (Yandex.Form)",
     )
 
     # ФИО
@@ -49,24 +50,32 @@ class User(IntIdMixin, TimestampsMixin, Base):
     country: Mapped[str] = mapped_column(String(250), nullable=True)
     city: Mapped[str] = mapped_column(String(250), nullable=True)
     timezone: Mapped[str] = mapped_column(String(100), nullable=True)
-    study_place: Mapped[str] = mapped_column(String(500), nullable=True, comment="Учебное заведение")
-    grade_level: Mapped[str] = mapped_column(String(100), nullable=True, comment="Номер класса/курса")
+    study_place: Mapped[str] = mapped_column(
+        String(500), nullable=True, comment="Учебное заведение"
+    )
+    grade_level: Mapped[str] = mapped_column(
+        String(100), nullable=True, comment="Номер класса/курса"
+    )
 
     # Прочее
     birth_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
     sex: Mapped[str] = mapped_column(String(20), nullable=True, comment="Пол")
 
     # Проект
-    project_id: Mapped[int] = mapped_column(Integer, ForeignKey('projects.id'), nullable=True, unique=False)
-    track: Mapped[str] = mapped_column(String(250), nullable=True, comment="Название компетенции/трека")
+    project_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("projects.id"), nullable=True, unique=False
+    )
+    track: Mapped[str] = mapped_column(
+        String(250), nullable=True, comment="Название компетенции/трека"
+    )
 
-    prj = relationship('Project', back_populates='user', uselist=False)
+    prj = relationship("Project", back_populates="user", uselist=False)
 
     @classmethod
     def get_model_fields(
-            cls,
-            exclude_primary_key: bool = True,
-            exclude_foreign_keys: bool = True,
+        cls,
+        exclude_primary_key: bool = True,
+        exclude_foreign_keys: bool = True,
     ) -> list[str]:
         inspector = inspect(cls)
         columns = []
@@ -82,15 +91,22 @@ class User(IntIdMixin, TimestampsMixin, Base):
         return columns
 
     def __repr__(self) -> str:
-        return (f"<User("
-                f"id={self.id}, "
-                f"email={self.email}, "
-                f"first_name={self.first_name}, "
-                f"last_name={self.last_name}, "
-                f")>")
+        return (
+            f"<User("
+            f"id={self.id}, "
+            f"email={self.email}, "
+            f"first_name={self.first_name}, "
+            f"last_name={self.last_name}, "
+            f")>"
+        )
 
 
 class Project(IntIdMixin, TimestampsMixin, Base):
-    uuid = mapped_column(UUID(as_uuid=True), nullable=False, default=uuid.uuid4, unique=True)
+    uuid = mapped_column(
+        UUID(as_uuid=True),
+        nullable=False,
+        default=uuid.uuid4,
+        unique=True
+    )
 
-    user = relationship('User', back_populates='prj')
+    user = relationship("User", back_populates="prj")
