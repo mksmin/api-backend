@@ -34,9 +34,14 @@ async def lifespan(app: FastAPI):
 
 main_app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
 
-main_app.include_router(router=redirect_router)
-main_app.include_router(router=api_router)
-main_app.include_router(router=base_router)
+routers_for_include = (
+    redirect_router,
+    api_router,
+    base_router,
+)
+
+for router in routers_for_include:
+    main_app.include_router(router)
 
 if __name__ == "__main__":
     try:
