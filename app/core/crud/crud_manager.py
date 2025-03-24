@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from pydantic import ValidationError
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-from typing import TypeVar, Generic, Type
+from typing import TypeVar, Generic, Type, AsyncIterator, cast
 
 # import from modules
 from app.core.config import logger
@@ -33,7 +33,7 @@ class BaseCRUDManager(Generic[ModelType]):
         self.model = model
 
     @asynccontextmanager
-    async def _get_session(self):
+    async def _get_session(self) -> AsyncIterator[AsyncSession]:
         async with self.session_factory() as session:
             try:
                 yield session
@@ -45,12 +45,16 @@ class BaseCRUDManager(Generic[ModelType]):
 
     async def exists_by_field(self, field: str, value: str) -> bool:
         async with self._get_session() as session:
+            session = cast(
+                AsyncSession, session
+            )  # asynccontextmanager не передает аннотацию AsyncSession, поэтому явно указываем
             query = select(self.model).where(getattr(self.model, field) == value)
             result = await session.execute(query)
             return result.scalar_one_or_none() is not None
 
     async def create(self, **kwargs) -> ModelType:
         async with self._get_session() as session:
+            session = cast(AsyncSession, session)
             instance = self.model(**kwargs)
             session.add(instance)
             await session.flush()
