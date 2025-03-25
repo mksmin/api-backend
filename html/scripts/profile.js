@@ -1,89 +1,145 @@
-// app.js
 document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const API_URL = urlParams.get('api_url') || 'http://localhost:8000/verify';
+    const isDevMode = urlParams.has('dev');
+
+    // Мок-данные для разработки
+    if (isDevMode) {
+        console.log('[DEV] Режим разработки активирован');
+        window.Telegram = {
+            WebApp: {
+                initData: 'query_id=AAHsjjUFAAAAAOyONQVSt2os&user=%7B%22id%22%3A87396076%2C%22first_name%22%3A%22%D0%9C%D0%B0%D0%BA%D1%81%D0%B8%D0%BC%22%2C%22last_name%22%3A%22%D0%9C%D0%B8%D0%BD%D0%B8%D0%BD%22%2C%22username%22%3A%22mks_min%22%2C%22language_code%22%3A%22ru%22%2C%22is_premium%22%3Atrue%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FKAW0oZ7WjH_Mp1p43zuUi2lzp_IW2rxF954-zq5f3us.svg%22%7D&auth_date=1742927059&hash=5ef28ede724f7a0fce1c7158e1e3a535a2de42003f8dee5cfa2bc9677e029455',
+                initDataUnsafe: {
+                    user: {
+                        id: 87396076,
+                        first_name: "Максим",
+                        last_name: "Минин",
+                        username: "mks_min",
+                        language_code: "ru",
+                        is_premium: true,
+                        allows_write_to_pm: true,
+                        photo_url: "https://t.me/i/userpic/320/KAW0oZ7WjH_Mp1p43zuUi2lzp_IW2rxF954-zq5f3us.svg"
+                    },
+                    auth_date: 1742927059,
+                    hash: "5ef28ede724f7a0fce1c7158e1e3a535a2de42003f8dee5cfa2bc9677e029455"
+                },
+                ready: () => console.log('[DEV] Telegram.WebApp.ready()'),
+                expand: () => console.log('[DEV] Telegram.WebApp.expand()')
+            }
+        };
+    }
+
     try {
-        // Инициализация Telegram Web App
+        // Инициализация Telegram
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
 
-        // Элементы интерфейса
-        const statusBlock = document.getElementById('statusBlock');
-        const initDataRaw = document.getElementById('initDataRaw');
-        const serverResponse = document.getElementById('serverResponse');
-        const profileSection = document.getElementById('profileSection');
-
-        // Получаем данные от Telegram
-        const initData = Telegram.WebApp.initData;
-        const unsafeData = Telegram.WebApp.initDataUnsafe;
-
-        // Показываем сырые данные
-        initDataRaw.textContent = JSON.stringify(unsafeData, null, 2);
-        statusBlock.textContent = 'Начинаем проверку...';
-
-        // Функция обновления профиля
-        const updateProfile = (userData) => {
-            document.getElementById('userName').textContent =
-            [userData.first_name, userData.last_name].filter(Boolean).join(' ');
-
-            document.getElementById('userUsername').textContent =
-            userData.username ? `@${userData.username}` : '';
-
-            const avatar = document.getElementById('userAvatar');
-            if(userData.photo_url) {
-                avatar.src = userData.photo_url;
-                avatar.onerror = () => avatar.style.display = 'none';
-            }
-
-            document.getElementById('premiumBadge').style.display =
-            userData.is_premium ? 'inline-block' : 'none';
-
-            document.getElementById('userId').textContent = userData.id;
-            document.getElementById('userLang').textContent = userData.language_code;
-            document.getElementById('userCanWrite').textContent =
-            userData.allows_write_to_pm ? 'Да' : 'Нет';
-            document.getElementById('accountType').textContent =
-            userData.is_premium ? 'Премиум' : 'Обычный';
+        // Получение элементов DOM
+        const elements = {
+            statusBlock: document.getElementById('statusBlock'),
+            initDataRaw: document.getElementById('initDataRaw'),
+            serverResponse: document.getElementById('serverResponse'),
+            profileSection: document.getElementById('profileSection'),
+            userName: document.getElementById('userName'),
+            userUsername: document.getElementById('userUsername'),
+            userAvatar: document.getElementById('userAvatar'),
+            premiumBadge: document.getElementById('premiumBadge'),
+            userId: document.getElementById('userId'),
+            userLang: document.getElementById('userLang'),
+            userCanWrite: document.getElementById('userCanWrite'),
+            accountType: document.getElementById('accountType')
         };
 
-        // Отправка данных на сервер
+        // Показать сырые данные
+        elements.initDataRaw.textContent = JSON.stringify(
+            Telegram.WebApp.initDataUnsafe,
+            null,
+            2
+        );
+
+        // Обновление профиля
+        const updateProfile = (userData) => {
+            try {
+                elements.userName.textContent =
+                [userData.first_name, userData.last_name]
+                    .filter(Boolean)
+                    .join(' ') || 'Неизвестный пользователь';
+
+                elements.userUsername.textContent =
+                userData.username ? `@${userData.username}` : '';
+
+                if (userData.photo_url) {
+                    elements.userAvatar.src = userData.photo_url;
+                    elements.userAvatar.onerror = () => {
+                        elements.userAvatar.style.display = 'none';
+                    };
+                    elements.userAvatar.style.display = 'block';
+                }
+
+                elements.premiumBadge.style.display =
+                userData.is_premium ? 'inline-block' : 'none';
+
+                elements.userId.textContent = userData.id;
+                elements.userLang.textContent = userData.language_code;
+                elements.userCanWrite.textContent =
+                userData.allows_write_to_pm ? 'Да' : 'Нет';
+                elements.accountType.textContent =
+                userData.is_premium ? 'Премиум' : 'Обычный';
+
+            } catch (error) {
+                console.error('Ошибка обновления профиля:', error);
+            }
+        };
+
+        // Режим разработки
+        if (isDevMode) {
+            console.log('[DEV] Показ профиля без проверки');
+            elements.profileSection.classList.remove('hidden');
+            updateProfile(Telegram.WebApp.initDataUnsafe.user);
+            elements.statusBlock.textContent = 'Режим разработки: проверка отключена';
+            return;
+        }
+
+        // Проверка на сервере
         const verifyWithServer = async () => {
             try {
-                const response = await fetch('https://api.атом-лаб.рф/verify', {
+                console.log('[HTTP] Отправка запроса на:', API_URL);
+                const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ initData })
+                    body: JSON.stringify({
+                        initData: Telegram.WebApp.initData
+                    })
                 });
 
-                const responseText = await response.text();
-                serverResponse.textContent = responseText;
+                const data = await response.json();
+                elements.serverResponse.textContent = JSON.stringify(data, null, 2);
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                if (response.ok) {
+                    elements.statusBlock.className = 'status-indicator status-success';
+                    elements.statusBlock.textContent = '✅ Проверка пройдена!';
+                    elements.profileSection.classList.remove('hidden');
+                    updateProfile(Telegram.WebApp.initDataUnsafe.user);
+                } else {
+                    throw new Error(data.detail || 'Ошибка сервера');
                 }
-
-                const result = JSON.parse(responseText);
-                statusBlock.className = 'status-indicator status-success';
-                statusBlock.innerHTML = '✅ Данные проверены!';
-
-                profileSection.classList.remove('hidden');
-                updateProfile(unsafeData.user);
-
             } catch (error) {
-                console.error('Ошибка:', error);
-                statusBlock.className = 'status-indicator status-error';
-                statusBlock.innerHTML = `❌ Ошибка: ${error.message}`;
-                profileSection.classList.add('hidden');
-                serverResponse.textContent = error.stack || error.message;
+                console.error('[HTTP] Ошибка:', error);
+                elements.statusBlock.className = 'status-indicator status-error';
+                elements.statusBlock.textContent = `❌ Ошибка: ${error.message}`;
+                elements.profileSection.classList.add('hidden');
             }
         };
 
-        // Запуск проверки
         verifyWithServer();
 
     } catch (error) {
         console.error('Фатальная ошибка:', error);
-        document.getElementById('statusBlock').textContent =
-        `Критическая ошибка: ${error.message}`;
+        if (elements.statusBlock) {
+            elements.statusBlock.className = 'status-indicator status-error';
+            elements.statusBlock.textContent = `⛔ Ошибка: ${error.message}`;
+        }
     }
 });

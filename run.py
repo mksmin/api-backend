@@ -15,6 +15,7 @@ from app.core import logger, settings, db_helper
 from app.api import router as api_router
 from app.api.redirect import router as redirect_router
 from app.api import base_router
+from fastapi.middleware.cors import CORSMiddleware
 
 
 @asynccontextmanager
@@ -33,6 +34,14 @@ async def lifespan(app: FastAPI):
 
 
 main_app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
+
+main_app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Для разработки разрешите все источники
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 routers_for_include = (
     redirect_router,
