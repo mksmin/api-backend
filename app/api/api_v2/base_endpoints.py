@@ -88,6 +88,9 @@ def verify_telegram_data(init_data: str) -> bool:
         # Парсим данные
         parsed_data = dict(parse_qsl(init_data))
 
+        for key in ["signature"]:  # Добавьте другие нестандартные параметры
+            parsed_data.pop(key, None)
+
         # Извлекаем hash и сортируем параметры
         received_hash = parsed_data.pop("hash")
         data_check = []
