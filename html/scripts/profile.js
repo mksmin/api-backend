@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
-    const API_URL = urlParams.get('api_url') || 'http://localhost:8000/verify';
+    const API_URL = urlParams.get('api_url') || 'http://api.атом-лаб.рф/verify' || 'http://localhost:8000/verify';
     const isDevMode = urlParams.has('dev');
 
     // Мок-данные для разработки
