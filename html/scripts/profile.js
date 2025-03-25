@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const isDevMode = urlParams.has('dev');
 
     // Настройка API endpoints
-    const DEFAULT_PROD_API = 'https://api.xn--80aadumbmbfkg6aqxd.xn--p1ai/verify';
+    const DEFAULT_PROD_API = 'https://api.атом-лаб.рф/verify';
     const DEFAULT_DEV_API = 'http://localhost:8000/verify';
     const API_URL = (isDevMode ? DEFAULT_DEV_API : DEFAULT_PROD_API);
 
