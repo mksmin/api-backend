@@ -3,7 +3,7 @@ import hashlib
 import hmac
 import json
 import pprint
-from urllib.parse import parse_qsl
+from urllib.parse import parse_qsl, unquote
 
 # import from lib
 from fastapi import APIRouter, Depends, Request, HTTPException
@@ -85,34 +85,12 @@ def verify_telegram_data(init_data: str) -> bool:
     Проверяет валидность данных от Telegram Web Apps
     """
     try:
-        # Парсим данные
-        parsed_data = dict(parse_qsl(init_data))
+        vals = {k: unquote(v) for k, v in [s.split('=', 1) for s in init_data.split('&')]}
+        data_check_string = '\n'.join(f"{k}={v}" for k, v in sorted(vals.items()) if k != 'hash')
 
-        for key in ["signature"]:  # Добавьте другие нестандартные параметры
-            parsed_data.pop(key, None)
-
-        # Извлекаем hash и сортируем параметры
-        received_hash = parsed_data.pop("hash")
-        data_check = []
-
-        # Сортируем ключи в алфавитном порядке
-        for key in sorted(parsed_data.keys()):
-            data_check.append(f"{key}={parsed_data[key]}")
-
-        data_check_string = "\n".join(data_check)
-
-        # Создаем секретный ключ
-        secret_key = hashlib.sha256(settings.api.bot_token.encode()).digest()
-
-        # Вычисляем HMAC
-        computed_hash = hmac.new(
-            secret_key, data_check_string.encode(), digestmod=hashlib.sha256
-        ).hexdigest()
-        print(f"computed_hash: {computed_hash}")
-        print(f"received_hash: {received_hash}")
-        print(f"Data verification complete: {computed_hash == received_hash}")
-
-        return computed_hash == received_hash
+        secret_key = hmac.new("WebAppData".encode(), settings.api.bot_token.encode(), hashlib.sha256).digest()
+        h = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256)
+        return h.hexdigest() == vals['hash']
     except Exception as e:
         print(f"Verification error: {e}")
         return False
