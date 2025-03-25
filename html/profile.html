@@ -3,12 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram WebApp Demo</title>
-
-    <!-- Добавляем скрипт Telegram Web Apps API -->
+    <title>Telegram Auth Demo</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
     <style>
+        :root {
+            --color-success: #4CAF50;
+            --color-error: #f44336;
+            --color-warning: #ff9800;
+        }
+
         body {
             margin: 0;
             padding: 20px;
@@ -16,39 +19,51 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: linear-gradient(45deg, #8EC5FC, #E0C3FC);
+            background: linear-gradient(45deg, #a8edea, #fed6e3);
             font-family: 'Arial', sans-serif;
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             padding: 2rem;
             border-radius: 15px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            width: 100%;
+            max-width: 800px;
+            width: 90%;
             margin: 20px 0;
         }
 
-        h1 {
-            color: #2A2A2A;
+        .status-indicator {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
             text-align: center;
-            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .status-success {
+            background: var(--color-success);
+            color: white;
+        }
+
+        .status-error {
+            background: var(--color-error);
+            color: white;
         }
 
         .data-block {
             background: #f8f9fa;
-            padding: 1rem;
+            padding: 1.5rem;
             border-radius: 10px;
             margin: 1rem 0;
         }
 
-        .data-item {
-            margin: 0.5rem 0;
-            padding: 0.5rem;
+        pre {
             background: white;
-            border-radius: 5px;
-            word-break: break-all;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            white-space: pre-wrap;
         }
 
         .emoji {
@@ -60,71 +75,78 @@
 </head>
 <body>
 <div class="container">
-    <div class="emoji">👋</div>
-    <h1 id="greeting">Привет, <span id="username">Гость</span>!</h1>
+    <div class="emoji">🔐</div>
+    <h1 id="greeting">Добро пожаловать!</h1>
+
+    <div id="statusBlock" class="status-indicator">
+        Проверка данных...
+    </div>
 
     <div class="data-block">
-        <h3>Полученные данные:</h3>
-        <div id="initData"></div>
+        <h3>Данные от Telegram:</h3>
+        <pre id="initDataRaw"></pre>
+    </div>
+
+    <div class="data-block">
+        <h3>Результат проверки:</h3>
+        <pre id="serverResponse"></pre>
     </div>
 </div>
 
 <script>
-    // Функция для отображения данных
-    function displayData(data) {
-        const initDataDiv = document.getElementById('initData');
-        let html = '';
+    async function verifyWithServer(initData) {
+        const statusBlock = document.getElementById('statusBlock');
+        const serverResponse = document.getElementById('serverResponse');
 
-        for (const [key, value] of Object.entries(data)) {
-            html += `
-                    <div class="data-item">
-                        <strong>${key}:</strong> ${JSON.stringify(value, null, 2)}
-                    </div>
-                `;
-        }
-
-        initDataDiv.innerHTML = html;
-    }
-
-    document.addEventListener('DOMContentLoaded', async () => {
         try {
-            // Инициализация WebApp
-            Telegram.WebApp.ready();
-
-            // Получаем данные пользователя
-            const initData = Telegram.WebApp.initDataUnsafe;
-            const user = initData.user || {};
-
-            // Устанавливаем имя
-            const username = user.username || user.first_name || 'Гость';
-            document.getElementById('username').textContent = username;
-
-            // Отображаем все полученные данные
-            displayData(initData);
-
-            // Отправляем данные на сервер для проверки (пример)
-            /*
-            const response = await fetch('/verify-data', {
+            const response = await fetch('https://api.атом-лаб.рф/verify', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    initData: Telegram.WebApp.initData
-                })
+                body: JSON.stringify({ initData })
             });
 
-            if (!response.ok) {
-                throw new Error('Ошибка проверки данных');
-            }
-            */
+            const result = await response.json();
 
-            // Раскрываем приложение на весь экран
-            Telegram.WebApp.expand();
+            if (!response.ok) {
+                throw new Error(result.detail || 'Ошибка сервера');
+            }
+
+            // Успешная проверка
+            statusBlock.className = 'status-indicator status-success';
+            statusBlock.innerHTML = '✅ Проверка пройдена успешно!';
+            serverResponse.textContent = JSON.stringify(result, null, 2);
+
+            // Показываем приветствие
+            const user = Telegram.WebApp.initDataUnsafe.user;
+            document.getElementById('greeting').textContent = `Привет, ${user.first_name || 'Друг'}!`;
 
         } catch (error) {
-            console.error('Ошибка:', error);
-            document.getElementById('greeting').textContent = 'Произошла ошибка :(';
+            // Обработка ошибок
+            statusBlock.className = 'status-indicator status-error';
+            statusBlock.innerHTML = `❌ Ошибка: ${error.message}`;
+            serverResponse.textContent = error.stack || error.message;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            Telegram.WebApp.ready();
+            Telegram.WebApp.expand();
+
+            // Отображаем сырые данные
+            const initData = Telegram.WebApp.initData;
+            document.getElementById('initDataRaw').textContent =
+            JSON.stringify(Telegram.WebApp.initDataUnsafe, null, 2);
+
+            // Отправляем на проверку
+            await verifyWithServer(initData);
+
+        } catch (error) {
+            console.error('Fatal error:', error);
+            document.getElementById('statusBlock').textContent =
+            'Критическая ошибка: ' + error.message;
         }
     });
 </script>
