@@ -105,6 +105,9 @@ def verify_telegram_data(init_data: str) -> bool:
         computed_hash = hmac.new(
             secret_key, data_check_string.encode(), digestmod=hashlib.sha256
         ).hexdigest()
+        print(f"computed_hash: {computed_hash}")
+        print(f"received_hash: {received_hash}")
+        print(f"Data verification complete: {computed_hash == received_hash}")
 
         return computed_hash == received_hash
     except Exception as e:
