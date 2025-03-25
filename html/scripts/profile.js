@@ -1,11 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Конфигурация
     const urlParams = new URLSearchParams(window.location.search);
     const isDevMode = urlParams.has('dev');
 
-    // Используем Punycode для кириллических доменов
-    const API_URL = urlParams.get('api_url') || (isDevMode
-    ? 'http://localhost:8000/verify'
-    : 'https://api.xn--80aadumbmbfkg6aqxd.xn--p1ai/verify');
+    // Настройка API endpoints
+    const DEFAULT_PROD_API = 'https://api.xn--80aadumbmbfkg6aqxd.xn--p1ai/verify';
+    const DEFAULT_DEV_API = 'http://localhost:8000/verify';
+    const API_URL = urlParams.get('api_url') || (isDevMode ? DEFAULT_DEV_API : DEFAULT_PROD_API);
 
     // Мок-данные для разработки
     if (isDevMode) {
@@ -34,11 +35,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-        // Инициализация Telegram
+        // Инициализация Telegram WebApp
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
 
-        // Получение элементов DOM
+        // Получение DOM-элементов
         const elements = {
             statusBlock: document.getElementById('statusBlock'),
             initDataRaw: document.getElementById('initDataRaw'),
@@ -54,6 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
             accountType: document.getElementById('accountType')
         };
 
+        // Валидация элементов
+        for (const [key, element] of Object.entries(elements)) {
+            if (!element) throw new Error(`Элемент ${key} не найден`);
+        }
+
         // Показать сырые данные
         elements.initDataRaw.textContent = JSON.stringify(
             Telegram.WebApp.initDataUnsafe,
@@ -61,9 +67,10 @@ document.addEventListener('DOMContentLoaded', () => {
             2
         );
 
-        // Обновление профиля
+        // Функция обновления профиля
         const updateProfile = (userData) => {
             try {
+                // Основная информация
                 elements.userName.textContent =
                 [userData.first_name, userData.last_name]
                     .filter(Boolean)
@@ -72,17 +79,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 elements.userUsername.textContent =
                 userData.username ? `@${userData.username}` : '';
 
+                // Аватар
                 if (userData.photo_url) {
                     elements.userAvatar.src = userData.photo_url;
                     elements.userAvatar.onerror = () => {
+                        console.error('Ошибка загрузки аватара');
                         elements.userAvatar.style.display = 'none';
                     };
                     elements.userAvatar.style.display = 'block';
                 }
 
+                // Премиум статус
                 elements.premiumBadge.style.display =
                 userData.is_premium ? 'inline-block' : 'none';
 
+                // Детальная информация
                 elements.userId.textContent = userData.id;
                 elements.userLang.textContent = userData.language_code;
                 elements.userCanWrite.textContent =
@@ -92,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             } catch (error) {
                 console.error('Ошибка обновления профиля:', error);
+                throw error;
             }
         };
 
@@ -108,6 +120,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const verifyWithServer = async () => {
             try {
                 console.log('[HTTP] Отправка запроса на:', API_URL);
+                elements.statusBlock.textContent = 'Проверка данных...';
+
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
@@ -118,22 +132,27 @@ document.addEventListener('DOMContentLoaded', () => {
                     })
                 });
 
+                console.log('[HTTP] Статус ответа:', response.status);
                 const data = await response.json();
                 elements.serverResponse.textContent = JSON.stringify(data, null, 2);
 
-                if (response.ok) {
-                    elements.statusBlock.className = 'status-indicator status-success';
-                    elements.statusBlock.textContent = '✅ Проверка пройдена!';
-                    elements.profileSection.classList.remove('hidden');
-                    updateProfile(Telegram.WebApp.initDataUnsafe.user);
-                } else {
-                    throw new Error(data.detail || 'Ошибка сервера');
+                if (!response.ok) {
+                    throw new Error(data.detail || `Ошибка сервера: ${response.status}`);
                 }
+
+                elements.statusBlock.className = 'status-indicator status-success';
+                elements.statusBlock.textContent = '✅ Проверка пройдена!';
+                elements.profileSection.classList.remove('hidden');
+                updateProfile(Telegram.WebApp.initDataUnsafe.user);
+
             } catch (error) {
                 console.error('[HTTP] Ошибка:', error);
                 elements.statusBlock.className = 'status-indicator status-error';
                 elements.statusBlock.textContent = `❌ Ошибка: ${error.message}`;
                 elements.profileSection.classList.add('hidden');
+
+                // Показать технические детали
+                elements.serverResponse.textContent = error.stack || error.message;
             }
         };
 
@@ -141,9 +160,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     } catch (error) {
         console.error('Фатальная ошибка:', error);
-        if (elements.statusBlock) {
-            elements.statusBlock.className = 'status-indicator status-error';
-            elements.statusBlock.textContent = `⛔ Ошибка: ${error.message}`;
+        if (document.getElementById('statusBlock')) {
+            document.getElementById('statusBlock').className = 'status-indicator status-error';
+            document.getElementById('statusBlock').textContent = `⛔ Ошибка: ${error.message}`;
         }
     }
 });
