@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Отправка данных на сервер
         const verifyWithServer = async () => {
             try {
-                const response = await fetch('https://your-api.com/verify', {
+                const response = await fetch('https://api.атом-лаб.рф/verify', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
