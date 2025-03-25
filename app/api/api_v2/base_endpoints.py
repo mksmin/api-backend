@@ -69,6 +69,13 @@ async def html_path(name_style: str):
     return FileResponse(result, status_code=status)
 
 
+@router.get("/scripts/{name_script}", include_in_schema=False)
+async def html_path(name_script: str):
+    script_path = cwd_project_path.parent / "html/scripts" / name_script
+    result, status = await check_path(script_path)
+    return FileResponse(result, status_code=status)
+
+
 @router.get("/profile", include_in_schema=False)
 async def user_profile_tg(request: Request):
     params = {
