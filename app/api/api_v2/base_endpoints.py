@@ -11,7 +11,7 @@ from fastapi.responses import JSONResponse, FileResponse
 from pathlib import Path
 
 # import from modules
-from app.core import settings
+from app.core import settings, logger
 
 router = APIRouter()
 cwd_project_path = (
@@ -116,7 +116,10 @@ def verify_telegram_data(init_data: str) -> bool:
 async def verify_telegram(request: Request):
     try:
         data = await request.json()
+        print(f"data: {data}")
+
         init_data = data.get("initData")
+        print(f"init_data: {init_data}")
 
         if not init_data:
             raise HTTPException(status_code=400, detail="Missing initData")
@@ -127,4 +130,5 @@ async def verify_telegram(request: Request):
             raise HTTPException(status_code=401, detail="Invalid data")
 
     except Exception as e:
+        logger.error(f"Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
