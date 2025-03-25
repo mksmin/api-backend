@@ -37,13 +37,10 @@ main_app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url
 
 main_app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://ваш-фронтенд.рф",
-        "https://api.xn----7sbbe2cen5a.xn--p1ai"
-    ],
+    allow_origins=["https://ваш-фронтенд.рф", "https://api.xn----7sbbe2cen5a.xn--p1ai"],
     allow_methods=["POST"],
     allow_headers=["Content-Type"],
-    expose_headers=["X-Request-ID"]
+    expose_headers=["X-Request-ID"],
 )
 
 routers_for_include = (
