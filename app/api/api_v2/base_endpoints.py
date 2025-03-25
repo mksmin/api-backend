@@ -1,8 +1,9 @@
 # import lib
 import json
+import pprint
 
 # import from lib
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse, FileResponse
 from pathlib import Path
 
@@ -62,3 +63,14 @@ async def html_path(name_style: str):
     media_path = cwd_project_path.parent / "html/style" / name_style
     result, status = await check_path(media_path)
     return FileResponse(result, status_code=status)
+
+
+@router.get("/profile", include_in_schema=False)
+async def user_profile_tg(request: Request):
+    params = {
+        "query_params": dict(request.query_params),
+        "headers": dict(request.headers),
+    }
+    pprint.pprint(f"params: {params}")
+    profile_html = cwd_project_path.parent / "html/profile.html"
+    return FileResponse(profile_html)
