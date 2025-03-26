@@ -72,7 +72,7 @@ body {
 }
 @media (max-height: 768px){
     .profile-section {
-        font-size: 14px;
+        font-size: 55px;
         color: red;
     }
 }
