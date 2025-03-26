@@ -67,6 +67,15 @@ body {
     display: none !important;
 }
 
+.profile-section {
+    font-size: 16px;
+}
+@media (max-height: 768px){
+    .profile-section {
+        font-size: 14px;
+    }
+}
+
 .profile-header {
     display: flex;
     align-items: center;
