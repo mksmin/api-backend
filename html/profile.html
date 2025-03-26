@@ -18,24 +18,39 @@
         <div class="profile-header">
             <img id="userAvatar" class="avatar" alt="Аватар">
             <div class="profile-info">
-                <h1 id="userName"></h1>
-                <div class="username" id="userUsername"></div>
+                <div id="userName" class="name"></div>
                 <div id="premiumBadge" class="badge">Premium</div>
+                <div class="username" id="userUsername"></div>
             </div>
         </div>
 
+
         <div class="details-grid">
-            <div class="detail-card">
+            <div class="title-name">
                 <h4>Основная информация</h4>
-                <p>ID: <span id="userId"></span></p>
-                <p>Язык: <span id="userLang"></span></p>
+            </div>
+            <div class="detail-card">
+
+                <div class="detail-title">Telegram ID</div>
+                <div class="detail-info"><span id="userId"></span></div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-title">Язык</div>
+                <div class="detail-info"><span id="userLang"></span></div>
+            </div>
+            <div class="title-name">
+                <h4>Настройки</h4>
+            </div>
+            <div class="detail-card">
+
+                <div class="detail-title">Можно писать</div>
+                <div class="detail-info"><span id="userCanWrite"></span></div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-title">Аккаунт</div>
+                <div class="detail-info"><span id="accountType"></span></div>
             </div>
 
-            <div class="detail-card">
-                <h4>Настройки</h4>
-                <p>Можно писать: <span id="userCanWrite"></span></p>
-                <p>Аккаунт: <span id="accountType"></span></p>
-            </div>
         </div>
     </div>
     <div class="data-block">
