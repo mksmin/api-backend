@@ -81,6 +81,7 @@ async def html_path(name_html: str):
     return FileResponse(result, status_code=status)
 
 
+#
 @router.get("/media/{name_media}", include_in_schema=False)
 async def html_path(name_media: str):
     """

@@ -87,7 +87,7 @@ async def validate_csv(file: UploadFile):
         )
 
 
-@router.post("/create_project")
+@router.post("/create_project", include_in_schema=False)
 async def create_project(
     data: dict = Body(...),
 ):
@@ -111,7 +111,7 @@ async def create_project(
     return JSONResponse(content={"message": {"success": True}}, status_code=201)
 
 
-@router.post("/csv_to_db")
+@router.post("/csv_to_db", include_in_schema=False)
 async def temp_upload_csv(file: Annotated[UploadFile, File()]):
     # Валидация файла
     await validate_csv(file)
