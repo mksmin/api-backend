@@ -14,10 +14,18 @@ from pathlib import Path
 from app.core import settings, logger
 
 router = APIRouter()
-cwd_project_path = (
-    Path(__file__).absolute().parent.parent.parent
-)  # project working directory api_atomlab/app
-not_found_404 = cwd_project_path.parent / "html/404.html"
+BASE_DIR = Path.cwd().parent  # project working directory api_atomlab/app
+FRONTEND_DIR = (
+    (BASE_DIR / "api-atom-front") if settings.run.dev_mode else (BASE_DIR / "frontend")
+)
+HTML_DIR = FRONTEND_DIR / "src"
+STATIC_DIR = FRONTEND_DIR / "public"
+
+# print(f"BASE_DIR: {BASE_DIR}")
+# print(f"FRONTEND_DIR: {FRONTEND_DIR}")
+# print(f"HTML_DIR: {HTML_DIR}")
+not_found_404 = FRONTEND_DIR / "src/404.html"
+# print(f"not_found_404: {not_found_404}")
 
 
 async def check_path(path_file: Path):
@@ -37,7 +45,7 @@ async def index_page():
     Returns:
         FileResponse: The index HTML file.
     """
-    index_html = cwd_project_path.parent / "html/index.html"
+    index_html = HTML_DIR / "index.html"
     return FileResponse(index_html)
 
 
@@ -49,7 +57,7 @@ async def favicon():
     Returns:
         FileResponse: The favicon ICO file.
     """
-    favicon_path = cwd_project_path.parent / "html/favicon.ico"
+    favicon_path = STATIC_DIR / "favicon.ico"
     return FileResponse(favicon_path)
 
 
@@ -61,7 +69,7 @@ async def robots():
     Returns:
         FileResponse: The robots TXT file.
     """
-    robots_path = cwd_project_path.parent / "robots.txt"
+    robots_path = STATIC_DIR / "robots.txt"
     return FileResponse(robots_path)
 
 
@@ -76,8 +84,8 @@ async def html_path(name_html: str):
     Returns:
         FileResponse: The specified HTML file.
     """
-    media_path = cwd_project_path.parent / "html" / name_html
-    result, status = await check_path(media_path)
+    html_file_path = HTML_DIR / name_html
+    result, status = await check_path(html_file_path)
     return FileResponse(result, status_code=status)
 
 
@@ -93,7 +101,7 @@ async def html_path(name_media: str):
     Returns:
         FileResponse: The specified media file.
     """
-    media_path = cwd_project_path.parent / "html/media" / name_media
+    media_path = STATIC_DIR / "media" / name_media
     result, status = await check_path(media_path)
     return FileResponse(result, status_code=status)
 
@@ -109,7 +117,7 @@ async def html_path(name_style: str):
     Returns:
         FileResponse: The specified style file.
     """
-    media_path = cwd_project_path.parent / "html/style" / name_style
+    media_path = HTML_DIR / "style" / name_style
     result, status = await check_path(media_path)
     return FileResponse(result, status_code=status)
 
@@ -125,7 +133,7 @@ async def html_path(name_script: str):
     Returns:
         FileResponse: The specified script file.
     """
-    script_path = cwd_project_path.parent / "html/scripts" / name_script
+    script_path = HTML_DIR / "scripts" / name_script
     result, status = await check_path(script_path)
     return FileResponse(result, status_code=status)
 
@@ -146,7 +154,7 @@ async def user_profile_tg(request: Request):
         "headers": dict(request.headers),
     }
     # pprint.pprint(f"params: {params}")
-    profile_html = cwd_project_path.parent / "html/profile.html"
+    profile_html = HTML_DIR / "profile.html"
     return FileResponse(profile_html)
 
 

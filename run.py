@@ -8,7 +8,9 @@ import uvicorn
 # import from libraries
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from pathlib import Path
+
 
 # import from modules
 from app.core import logger, settings, db_helper
@@ -16,6 +18,10 @@ from app.api import router as api_router
 from app.api.redirect import router as redirect_router
 from app.api import base_router
 from fastapi.middleware.cors import CORSMiddleware
+
+PATH_DEV = Path(__file__).parent.parent / "api-atom-front"
+PATH_PROD = Path(__file__).parent.parent / "frontend"
+PATH_STATIC = PATH_DEV if settings.run.dev_mode else PATH_PROD
 
 
 @asynccontextmanager
@@ -34,6 +40,12 @@ async def lifespan(app: FastAPI):
 
 
 main_app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
+
+main_app.mount(
+    "/static",
+    StaticFiles(directory=PATH_STATIC / "public", html=True),
+)
+
 
 main_app.add_middleware(
     CORSMiddleware,
