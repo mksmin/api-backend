@@ -52,7 +52,8 @@ document.addEventListener('DOMContentLoaded', () => {
             userId: document.getElementById('userId'),
             userLang: document.getElementById('userLang'),
             userCanWrite: document.getElementById('userCanWrite'),
-            accountType: document.getElementById('accountType')
+            accountType: document.getElementById('accountType'),
+            debugSection: document.getElementById('debugSection'),
         };
 
         // Валидация элементов
@@ -67,6 +68,20 @@ document.addEventListener('DOMContentLoaded', () => {
             2
         );
 
+        // Функция скрытия результата проверки
+        const hideResult = () => {
+            setTimeout(function() {
+                console.log('[DEV] Скрытие результата проверки')
+                elements.statusBlock.classList.add('fade-out');
+                elements.statusBlock.addEventListener('transitionend', function() {
+                    this.style.transition = 'transform 0.5s ease';
+                    this.style.transform = 'scale(0) ';
+                    this.addEventListener('transitionend', function() {
+                        this.remove();
+                    });
+                });
+            }, 10000);
+        }
         // Функция обновления профиля
         const updateProfile = (userData) => {
             try {
@@ -111,6 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isDevMode) {
             console.log('[DEV] Показ профиля без проверки');
             elements.profileSection.classList.remove('hidden');
+            elements.debugSection.classList.remove('hidden');
             updateProfile(Telegram.WebApp.initDataUnsafe.user);
             elements.statusBlock.textContent = 'Режим разработки: проверка отключена';
             return;
@@ -144,12 +160,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 elements.statusBlock.textContent = '✅ Проверка пройдена!';
                 elements.profileSection.classList.remove('hidden');
                 updateProfile(Telegram.WebApp.initDataUnsafe.user);
+                hideResult();
+
 
             } catch (error) {
                 console.error('[HTTP] Ошибка:', error);
                 elements.statusBlock.className = 'status-indicator status-error';
                 elements.statusBlock.textContent = `❌ Ошибка: ${error.message}`;
-                elements.profileSection.classList.add('hidden');
+                elements.profileSection.classList.remove('hidden');
+                hideResult();
 
                 // Показать технические детали
                 elements.serverResponse.textContent = error.stack || error.message;
@@ -163,6 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (document.getElementById('statusBlock')) {
             document.getElementById('statusBlock').className = 'status-indicator status-error';
             document.getElementById('statusBlock').textContent = `⛔ Ошибка: ${error.message}`;
+
         }
     }
 });
