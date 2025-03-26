@@ -13,20 +13,32 @@
 
 body {
     margin: 0;
-    padding: 5vw 1vw;
+    padding: 0;
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: stretch;
     background: linear-gradient(135deg, #331f88, #9482e3);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #f8f8f8;
 }
+.main-container {
+    display: flex;
+    flex-grow:1;
+    padding: 2rem;
+    justify-content: center;
+    align-items: center;
+}
+
 @media (max-width: 768px){
     body {
         padding: 0;
         overflow-x: hidden; /* Скрывает горизонтальную прокрутку */
         touch-action: pan-y;
+    }
+    .main-container {
+        padding: 0;
+        align-items: stretch;
     }
 }
 
@@ -47,6 +59,7 @@ body {
         padding: 10px;
         margin:0;
         border-radius: 0px;
+        flex-grow:1;
     }
 }
 

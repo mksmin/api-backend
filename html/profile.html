@@ -9,59 +9,61 @@
     <script src="scripts/profile.js" defer></script>
 </head>
 <body>
-<div class="container">
-    <div id="statusBlock" class="status-indicator">
-        Проверка данных...
-    </div>
-
-    <div id="profileSection" class="hidden">
-        <div class="profile-header">
-            <img id="userAvatar" class="avatar" alt="Аватар">
-            <div class="profile-info">
-                <div id="userName" class="name"></div>
-                <div id="premiumBadge" class="badge">Premium</div>
-                <div class="username" id="userUsername"></div>
-            </div>
+<div class="main-container">
+    <div class="container">
+        <div id="statusBlock" class="status-indicator">
+            Проверка данных...
         </div>
 
-
-        <div class="details-grid">
-            <div class="title-name">
-                <h4>Основная информация</h4>
-            </div>
-            <div class="detail-card">
-
-                <div class="detail-title">Telegram ID</div>
-                <div class="detail-info"><span id="userId"></span></div>
-            </div>
-            <div class="detail-card">
-                <div class="detail-title">Язык</div>
-                <div class="detail-info"><span id="userLang"></span></div>
-            </div>
-            <div class="title-name">
-                <h4>Настройки</h4>
-            </div>
-            <div class="detail-card">
-
-                <div class="detail-title">Бот может отправлять сообщения</div>
-                <div class="detail-info"><span id="userCanWrite"></span></div>
-            </div>
-            <div class="detail-card">
-                <div class="detail-title">Аккаунт</div>
-                <div class="detail-info"><span id="accountType"></span></div>
+        <div id="profileSection" class="hidden">
+            <div class="profile-header">
+                <img id="userAvatar" class="avatar" alt="Аватар">
+                <div class="profile-info">
+                    <div id="userName" class="name"></div>
+                    <div id="premiumBadge" class="badge">Premium</div>
+                    <div class="username" id="userUsername"></div>
+                </div>
             </div>
 
+
+            <div class="details-grid">
+                <div class="title-name">
+                    <h4>Основная информация</h4>
+                </div>
+                <div class="detail-card">
+
+                    <div class="detail-title">Telegram ID</div>
+                    <div class="detail-info"><span id="userId"></span></div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-title">Язык</div>
+                    <div class="detail-info"><span id="userLang"></span></div>
+                </div>
+                <div class="title-name">
+                    <h4>Настройки</h4>
+                </div>
+                <div class="detail-card">
+
+                    <div class="detail-title">Бот может отправлять сообщения</div>
+                    <div class="detail-info"><span id="userCanWrite"></span></div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-title">Аккаунт</div>
+                    <div class="detail-info"><span id="accountType"></span></div>
+                </div>
+
+            </div>
         </div>
-    </div>
-    <div class="hidden" id="debugSection">
-        <div class="data-block">
-            <h3>Данные от Telegram:</h3>
-            <pre id="initDataRaw"></pre>
-        </div>
+        <div class="hidden" id="debugSection">
+            <div class="data-block">
+                <h3>Данные от Telegram:</h3>
+                <pre id="initDataRaw"></pre>
+            </div>
 
-        <div class="data-block">
-            <h3>Ответ сервера:</h3>
-            <pre id="serverResponse"></pre>
+            <div class="data-block">
+                <h3>Ответ сервера:</h3>
+                <pre id="serverResponse"></pre>
+            </div>
         </div>
     </div>
 </div>
