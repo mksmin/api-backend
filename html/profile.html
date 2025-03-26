@@ -55,6 +55,10 @@
                     <div class="detail-title">Высота экрана</div>
                     <div class="detail-info"><span id="screenHeight"></span></div>
                 </div>
+                <div class="detail-card">
+                    <div class="detail-title">Ширина экрана</div>
+                    <div class="detail-info"><span id="screenWidth"></span></div>
+                </div>
 
             </div>
         </div>
@@ -76,7 +80,10 @@
     // Функция обновления высоты экрана
     function updateScreenHeight() {
         const screenHeight = window.innerHeight;
+        const screenWidth = window.innerWidth;
         document.getElementById('screenHeight').textContent = `${screenHeight}px`;
+        document.getElementById('screenWidth').textContent = `${screenWidth}px`;
+
     }
     // Обновляем высоту экрана при загрузке страницы
     updateScreenHeight();
