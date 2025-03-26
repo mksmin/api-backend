@@ -51,6 +51,10 @@
                     <div class="detail-title">Аккаунт</div>
                     <div class="detail-info"><span id="accountType"></span></div>
                 </div>
+                <div class="detail-card">
+                    <div class="detail-title">Высота экрана</div>
+                    <div class="detail-info"><span id="screenHeight"></span></div>
+                </div>
 
             </div>
         </div>
@@ -67,5 +71,18 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Функция обновления высоты экрана
+    function updateScreenHeight() {
+        const screenHeight = window.innerHeight;
+        document.getElementById('screenHeight').textContent = `${screenHeight}px`;
+    }
+    // Обновляем высоту экрана при загрузке страницы
+    updateScreenHeight();
+
+    // Обновляем высоту экрана при изменении размера окна
+    window.addEventListener('resize', updateScreenHeight);
+</script>
 </body>
 </html>
