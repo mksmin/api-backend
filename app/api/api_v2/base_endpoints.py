@@ -145,7 +145,7 @@ async def user_profile_tg(request: Request):
         "query_params": dict(request.query_params),
         "headers": dict(request.headers),
     }
-    pprint.pprint(f"params: {params}")
+    # pprint.pprint(f"params: {params}")
     profile_html = cwd_project_path.parent / "html/profile.html"
     return FileResponse(profile_html)
 
@@ -176,10 +176,10 @@ def verify_telegram_data(init_data: str) -> bool:
 async def verify_telegram(request: Request):
     try:
         data = await request.json()
-        print(f"data: {data}")
+        # print(f"data: {data}")
 
         init_data = data.get("initData")
-        print(f"init_data: {init_data}")
+        # print(f"init_data: {init_data}")
 
         if not init_data:
             raise HTTPException(status_code=400, detail="Missing initData")
