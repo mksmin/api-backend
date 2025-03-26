@@ -70,11 +70,7 @@ body {
 .profile-section {
     font-size: 16px;
 }
-@media (max-height: 768px){
-    .profile-section {
-        font-size: 12px;
-    }
-}
+
 
 .profile-header {
     display: flex;
@@ -246,4 +242,18 @@ p {
     margin-inline-start: 0px;
     margin-inline-end: 0px;
     unicode-bidi: isolate;
+}
+
+@media (max-height: 768px){
+    .profile-section {
+        font-size: 14px;
+    }
+    h3 {
+        font-size: 0.8rem;
+    }
+    .profile-header {
+        font-size: 14px;
+    }
+    .details-grid {}
+    }
 }
