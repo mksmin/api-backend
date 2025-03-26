@@ -35,11 +35,11 @@ body {
     padding: 2rem;
     border-radius: 15px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+    overflow: none;
     max-width: 800px;
-    overflow: auto;
     width: 100%;
     margin: 20px 0;
-    box-sizing: border-box;
 }
 
 @media (max-width: 768px){
