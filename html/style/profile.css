@@ -244,7 +244,7 @@ p {
     unicode-bidi: isolate;
 }
 
-@media (max-height: 768px){
+@media (max-height: 600px){
     .profile-section {
         font-size: 14px;
     }
