@@ -22,9 +22,11 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #f8f8f8;
 }
-@media (max-width: 480px){
+@media (max-width: 768px){
     body {
         padding: 0;
+        overflow-x: hidden; /* Скрывает горизонтальную прокрутку */
+        touch-action: pan-y;
     }
 }
 
@@ -39,13 +41,8 @@ body {
     margin: 20px 0;
     box-sizing: border-box;
 }
-@media (max-width: 768px){
-    .container {
-        padding: 1rem;
-    }
-}
 
-@media (max-width: 480px){
+@media (max-width: 768px){
     .container {
         padding: 10px;
         margin:0;
