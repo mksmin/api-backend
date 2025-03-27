@@ -5,22 +5,14 @@ import pandas as pd
 # import from lib
 from io import StringIO
 from typing import Annotated
-from fastapi import (
-    APIRouter,
-    Header,
-    Body,
-    File,
-    UploadFile,
-    HTTPException,
-    status
-)
+from fastapi import APIRouter, Header, Body, File, UploadFile, HTTPException, status
 from fastapi.responses import JSONResponse
-
 from pydantic import ValidationError
 
 # import from modules
 from app.core import logger
 from app.core.crud import crud_manager, get_registration_stat
+from app.core.database.schemas import ProjectResponseSchema, ProjectRequestSchema
 from .auth import auth_handler as ah
 from .json_helper import get_data_from_json
 
@@ -87,19 +79,19 @@ async def validate_csv(file: UploadFile):
         )
 
 
-@router.post("/create_project", include_in_schema=False)
+@router.post(
+    "/projects",
+    status_code=status.HTTP_201_CREATED,
+    tags=["Projects"],
+    response_model=ProjectResponseSchema,
+    include_in_schema=False,
+)
 async def create_project(
-    data: dict = Body(...),
+    data: ProjectRequestSchema,
 ):
-    value = data.get("project_uuid")
-
-    if not value:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Only project_uuid is allowed",
-        )
+    db_data = data.model_dump(by_alias=True)
     try:
-        await crud_manager.project.create(data)
+        result = await crud_manager.project.create(db_data)
 
     except ValidationError as e:
         raise HTTPException(
@@ -107,8 +99,7 @@ async def create_project(
         )
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-
-    return JSONResponse(content={"message": {"success": True}}, status_code=201)
+    return ProjectResponseSchema.model_validate(result)
 
 
 @router.post("/csv_to_db", include_in_schema=False)
