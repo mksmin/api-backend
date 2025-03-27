@@ -166,14 +166,18 @@ def verify_telegram_data(init_data: str) -> bool:
         vals = {
             k: unquote(v) for k, v in [s.split("=", 1) for s in init_data.split("&")]
         }
+        # print(f"vals: {vals}")
         data_check_string = "\n".join(
             f"{k}={v}" for k, v in sorted(vals.items()) if k != "hash"
         )
-
+        # print(f"data_check_string: {data_check_string}")
         secret_key = hmac.new(
             "WebAppData".encode(), settings.api.bot_token.encode(), hashlib.sha256
         ).digest()
         h = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256)
+        # print("hash: ", h.hexdigest())
+        # print("vals: ", vals["hash"])
+
         return h.hexdigest() == vals["hash"]
     except Exception as e:
         print(f"Verification error: {e}")
