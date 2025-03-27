@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Header, Body
+from fastapi import APIRouter, Header, Body, Request
 from fastapi.responses import JSONResponse, RedirectResponse
 
 router = APIRouter()
@@ -29,8 +29,10 @@ async def get_token(user_id: int):
 
 @router.get("/projects", include_in_schema=False)
 @router.post("/projects", include_in_schema=False)
-async def create_project():
-    return RedirectResponse(url=f"{path_mapping['users']}projects", status_code=308)
+async def project_redirect(request: Request):
+    query_params = request.query_params
+    redirect_url = f"{path_mapping['users']}projects?{query_params}"
+    return RedirectResponse(redirect_url, status_code=307)
 
 
 @router.delete("/projects/{project_id}", include_in_schema=False)
