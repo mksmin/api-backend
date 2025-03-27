@@ -102,6 +102,22 @@ async def create_project(
     return ProjectResponseSchema.model_validate(result)
 
 
+@router.delete(
+    "/projects/{project_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def delete_project(project_id: int):
+    try:
+        await crud_manager.project.delete(project_id)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+    except RuntimeError as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        )
+
+
 @router.post("/csv_to_db", include_in_schema=False)
 async def temp_upload_csv(file: Annotated[UploadFile, File()]):
     # Валидация файла
