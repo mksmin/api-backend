@@ -50,8 +50,8 @@ main_app.mount(
 main_app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost",
-        "http://localhost:8080",
+        "http://127.0.0.1",
+        "http://127.0.0.1:8000",
         "https://api.xn----7sbbe2cen5a.xn--p1ai",
     ],
     allow_methods=["POST"],
