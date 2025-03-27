@@ -118,11 +118,6 @@ class ProjectManager(BaseCRUDManager[Project]):
         super().__init__(session_factory, model=Project)
 
     async def create(self, data: dict) -> Project:
-        # result = await self._validate_project_data(data)
-        #
-        # if await self.exists_by_field("uuid", result["uuid"]):
-        #     raise ValueError("Проект с таким uuid уже существует")
-
         return await super().create(**data)
 
     async def delete(
@@ -131,6 +126,16 @@ class ProjectManager(BaseCRUDManager[Project]):
         field: str = "id",
     ) -> None:
         await super().delete(field, value)
+
+    async def get_all(self, owner_id: int) -> list[Project]:
+        async with self._get_session() as session:
+            query = (
+                select(self.model)
+                .where(self.model.deleted_at.is_(None))
+                .where(self.model.prj_owner == owner_id)
+            )
+            result = await session.execute(query)
+            return result.scalars().all()
 
     @staticmethod
     async def _validate_project_data(data: dict):
