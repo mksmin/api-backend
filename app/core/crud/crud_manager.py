@@ -2,7 +2,7 @@
 from contextlib import asynccontextmanager
 from datetime import datetime
 
-from pydantic import ValidationError
+from pydantic import ValidationError, UUID4
 from sqlalchemy import select, update, and_
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -135,7 +135,28 @@ class ProjectManager(BaseCRUDManager[Project]):
                 .where(self.model.prj_owner == owner_id)
             )
             result = await session.execute(query)
-            return result.scalars().all()
+            projects = result.scalars().all()
+            if not projects:
+                raise ValueError(f"У пользователя с id = {owner_id} нет проектов")
+            return projects
+
+    async def get_project_by_id(self, owner_id: int, project_id: int) -> list[Project]:
+        async with self._get_session() as session:
+
+            query = select(self.model).where(
+                and_(
+                    self.model.deleted_at.is_(None),
+                    self.model.id == project_id,
+                    self.model.prj_owner == owner_id,
+                )
+            )
+            result = await session.execute(query)
+            project = result.scalar_one_or_none()
+            if not project:
+                raise ValueError(
+                    f"Проект с id = {project_id} не найден у пользователя {owner_id}, либо удален."
+                )
+            return [project]
 
     @staticmethod
     async def _validate_project_data(data: dict):
