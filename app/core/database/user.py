@@ -13,6 +13,7 @@ from sqlalchemy import (
     BigInteger,
     ForeignKey,
     inspect,
+    text,
 )
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -106,7 +107,11 @@ class Project(IntIdMixin, TimestampsMixin, Base):
         UUID(as_uuid=True),
         nullable=False,
         default=uuid.uuid4,
-        unique=True
+        server_default=text("uuid_generate_v4()"),
+        unique=True,
     )
+    prj_name: Mapped[str] = mapped_column(String(50), nullable=True)
+    prj_description: Mapped[str] = mapped_column(String(200), nullable=True)
+    prj_owner = mapped_column(BigInteger, nullable=False, comment="tg_id пользователя")
 
     user = relationship("User", back_populates="prj")
