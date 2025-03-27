@@ -39,7 +39,13 @@ async def lifespan(app: FastAPI):
     await db_helper.dispose()
 
 
-main_app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
+main_app = FastAPI(
+    lifespan=lifespan,
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None,
+    convert_underscores=False,
+)
 
 main_app.mount(
     "/static",

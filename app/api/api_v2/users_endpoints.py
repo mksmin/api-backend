@@ -5,9 +5,20 @@ import pandas as pd
 # import from lib
 from io import StringIO
 from typing import Annotated
-from fastapi import APIRouter, Header, Body, File, UploadFile, HTTPException, status
+from fastapi import (
+    APIRouter,
+    Header,
+    Body,
+    File,
+    UploadFile,
+    HTTPException,
+    status,
+    Query,
+    Depends,
+    Request,
+)
 from fastapi.responses import JSONResponse
-from pydantic import ValidationError
+from pydantic import ValidationError, BaseModel, Field
 
 # import from modules
 from app.core import logger
@@ -118,24 +129,54 @@ async def delete_project(project_id: int):
         )
 
 
+# Схема для параметров запроса
+class ProjectFilter(BaseModel):
+    owner_id: int
+    project_id: int | None
+    limit: int | None
+    offset: int | None
+
+    @classmethod
+    def from_query(
+        cls,
+        owner_id: int = Query(..., description="tg_id пользователя", alias="prj_owner"),
+        project_id: int | None = Query(None, description="id проекта", alias="prj_id"),
+        limit: int | None = Query(None, description="Лимит"),
+        offset: int | None = Query(None, description="Смещение"),
+    ):
+
+        return cls(
+            owner_id=owner_id,
+            project_id=project_id,
+            limit=limit,
+            offset=offset,
+        )
+
+
 @router.get(
     "/projects",
     include_in_schema=False,
     response_model=dict[int, ProjectResponseSchema],
 )
 async def get_projects(
-    data: dict[str, int],
+    prj_filter: ProjectFilter = Depends(ProjectFilter.from_query),
 ):
-    db_data = ProjectRequestSchema(**data)
 
     try:
-        result = await crud_manager.project.get_all(db_data.owner_id)
-        result_list = {}
-        for i, item in enumerate(result):
-            result_list[i] = ProjectResponseSchema.model_validate(item)
+        if prj_filter.project_id:
+            projects = await crud_manager.project.get_project_by_id(
+                prj_filter.owner_id, prj_filter.project_id
+            )
+        else:
+            projects = await crud_manager.project.get_all(prj_filter.owner_id)
+        return {
+            i: ProjectResponseSchema.model_validate(item)
+            for i, item in enumerate(projects)
+        }
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    return result_list
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail={"error": str(e)}
+        )
 
 
 @router.post("/csv_to_db", include_in_schema=False)
