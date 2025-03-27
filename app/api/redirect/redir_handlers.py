@@ -27,6 +27,7 @@ async def get_token(user_id: int):
     )
 
 
+@router.get("/projects", include_in_schema=False)
 @router.post("/projects", include_in_schema=False)
 async def create_project():
     return RedirectResponse(url=f"{path_mapping['users']}projects", status_code=308)

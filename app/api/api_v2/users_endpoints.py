@@ -118,6 +118,26 @@ async def delete_project(project_id: int):
         )
 
 
+@router.get(
+    "/projects",
+    include_in_schema=False,
+    response_model=dict[int, ProjectResponseSchema],
+)
+async def get_projects(
+    data: dict[str, int],
+):
+    db_data = ProjectRequestSchema(**data)
+
+    try:
+        result = await crud_manager.project.get_all(db_data.owner_id)
+        result_list = {}
+        for i, item in enumerate(result):
+            result_list[i] = ProjectResponseSchema.model_validate(item)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    return result_list
+
+
 @router.post("/csv_to_db", include_in_schema=False)
 async def temp_upload_csv(file: Annotated[UploadFile, File()]):
     # Валидация файла
