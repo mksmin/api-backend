@@ -1,8 +1,10 @@
 # import lib
 from contextlib import asynccontextmanager
+from datetime import datetime
 
 from pydantic import ValidationError
-from sqlalchemy import select
+from sqlalchemy import select, update, and_
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from typing import TypeVar, Generic, Type, AsyncIterator, cast
 
@@ -62,6 +64,30 @@ class BaseCRUDManager(Generic[ModelType]):
             logger.info(f"Created {self.model.__name__} with id: {instance.id}")
             return instance
 
+    async def delete(self, field: str, value: str | int) -> None:
+        async with self._get_session() as session:
+            query = (
+                update(self.model)
+                .where(
+                    and_(
+                        getattr(self.model, field) == value,
+                        self.model.deleted_at.is_(None),
+                    )
+                )
+                .values(deleted_at=datetime.utcnow())
+            )
+            try:
+                result = await session.execute(query)
+                if result.rowcount == 0:
+                    if await self.exists_by_field(field, value):
+                        raise ValueError(f"Объект с {field} = {value} уже удален")
+                    else:
+                        raise ValueError(f"Объект с {field} = {value} не найден")
+
+            except SQLAlchemyError as e:
+                await session.rollback()
+                raise RuntimeError(f"Ошибка при удалении объекта: {str(e)}")
+
 
 class UserManager(BaseCRUDManager[User]):
     def __init__(self, session_factory: async_sessionmaker[AsyncSession]):
@@ -92,12 +118,19 @@ class ProjectManager(BaseCRUDManager[Project]):
         super().__init__(session_factory, model=Project)
 
     async def create(self, data: dict) -> Project:
-        result = await self._validate_project_data(data)
+        # result = await self._validate_project_data(data)
+        #
+        # if await self.exists_by_field("uuid", result["uuid"]):
+        #     raise ValueError("Проект с таким uuid уже существует")
 
-        if await self.exists_by_field("uuid", result["uuid"]):
-            raise ValueError("Проект с таким uuid уже существует")
+        return await super().create(**data)
 
-        return await super().create(**result)
+    async def delete(
+        self,
+        value: int,
+        field: str = "id",
+    ) -> None:
+        await super().delete(field, value)
 
     @staticmethod
     async def _validate_project_data(data: dict):
