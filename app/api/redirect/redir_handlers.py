@@ -27,10 +27,13 @@ async def get_token(user_id: int):
     )
 
 
-@router.post("/create_project", include_in_schema=False)
-async def create_project(
-    data: dict = Body(...),
-):
+@router.post("/projects", include_in_schema=False)
+async def create_project():
+    return RedirectResponse(url=f"{path_mapping['users']}projects", status_code=308)
+
+
+@router.delete("/projects/{project_id}", include_in_schema=False)
+async def create_project(project_id: int):
     return RedirectResponse(
-        url=f"{path_mapping['users']}create_project", status_code=308
+        url=f"{path_mapping['users']}projects/{project_id}", status_code=308
     )
