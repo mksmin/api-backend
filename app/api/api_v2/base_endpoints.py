@@ -217,7 +217,7 @@ def verify_telegram_data(init_data: str) -> dict | bool:
             "first_name": user_data["first_name"],
             "last_name": user_data["last_name"],
             "username": user_data["username"],
-            "is_premium": user_data["is_premium"],
+            "is_premium": user_data.get("is_premium", False),
             "photo_url": user_data["photo_url"],
             "language_code": user_data["language_code"],
             "allows_write_to_pm": user_data["allows_write_to_pm"],
