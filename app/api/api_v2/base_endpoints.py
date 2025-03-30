@@ -255,11 +255,11 @@ async def verify_telegram(request: Request):
         init_data = data.get("initData")
 
         if not init_data:
-            raise HTTPException(status_code=400, detail="Missing initData")
+            return HTTPException(status_code=400, detail="Missing initData")
 
         user_data = verify_telegram_data(init_data)
         if not user_data:
-            raise HTTPException(status_code=401, detail="Invalid data")
+            return HTTPException(status_code=401, detail="Invalid data")
 
         return templates.TemplateResponse(
             "profile.html", {"request": request, "user": user_data}
