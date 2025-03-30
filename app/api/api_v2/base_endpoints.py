@@ -246,23 +246,24 @@ def verify_telegram_data(init_data: str) -> dict | bool:
         # return False
 
 
-@router.post("/verify", response_class=HTMLResponse)
+@router.post("/verify")
 async def verify_telegram(request: Request):
     try:
         # Получение init данных из запроса
         data = await request.json()
         init_data = data.get("initData", None)
-
         if not init_data:
-            return HTTPException(status_code=400, detail="Missing initData")
+            raise HTTPException(status_code=400, detail="Missing initData")
 
         user_data = verify_telegram_data(init_data)
         if not user_data:
-            return HTTPException(status_code=401, detail="Invalid data")
+            raise HTTPException(status_code=401, detail="Invalid data")
 
         return templates.TemplateResponse(
             "profile.html", {"request": request, "user": user_data}
         )
+    except HTTPException as he:
+        raise he
 
     except Exception as e:
         logger.error(f"Error: {e}")
