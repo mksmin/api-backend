@@ -205,7 +205,6 @@ def verify_telegram_data(init_data: str) -> dict | bool:
             "last_name",
             "username",
             "language_code",
-            "is_premium",
             "photo_url",
         ]
         if not all(field in user_data for field in required_fields):
