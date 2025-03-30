@@ -208,7 +208,6 @@ def verify_telegram_data(init_data: str) -> dict | bool:
             "is_premium",
             "photo_url",
         ]
-        pprint.pprint(f"user_data: {user_data}")
         if not all(field in user_data for field in required_fields):
             print(
                 f"Required fields missing: {[field for field in required_fields if field not in user_data]}"
