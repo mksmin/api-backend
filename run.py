@@ -2,6 +2,9 @@
 This is the main entry point of the application. It is responsible for starting the application
 """
 
+import os
+import sys
+
 # import libraries
 import uvicorn
 
@@ -76,21 +79,24 @@ for router in routers_for_include:
 
 if __name__ == "__main__":
     try:
-        uvicorn.run(
-            "run:main_app",
-            uds="/tmp/uvicorn.sock",
-            host=settings.run.host,
-            port=settings.run.port,
-            log_level=settings.run.log_level,
-            reload=True,
-            log_config=str(Path(__file__).parent / "app/core/log_conf.json"),
-            use_colors=True,
-            workers=2,
-        )
+        run_args = {
+            "app": "run:main_app",
+            "host": settings.run.host,
+            "port": settings.run.port,
+            "log_level": settings.run.log_level,
+            "reload": True,
+            "log_config": str(Path(__file__).parent / "app/core/log_conf.json"),
+            "use_colors": True,
+            "workers": 2,
+        }
+        if not sys.platform.startswith("win") or os.getenv("FORCE_UNIX_SOCKET"):
+            run_args["uds"] = "/tmp/uvicorn.sock"
+
+        uvicorn.run(**run_args)
 
     except KeyboardInterrupt:
         logger.warning("Exit from app has occurred with KeyboardInterrupt")
     except Exception as e:
-        logger.exception("Exception has occurred:", e)
+        logger.exception("Exception has occurred: %s", e)
     else:
         logger.info("Application stopped")
