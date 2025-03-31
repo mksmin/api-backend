@@ -40,3 +40,8 @@ async def create_project(project_id: int):
     return RedirectResponse(
         url=f"{path_mapping['users']}projects/{project_id}", status_code=308
     )
+
+
+@router.post("/create_task", include_in_schema=False)
+async def rabbit_task_create(data=Body()):
+    return RedirectResponse(url=f"{path_mapping['users']}create_task", status_code=308)
