@@ -10,8 +10,9 @@ router = APIRouter()
 
 
 class TaskRequest(BaseModel):
-    bot_id: int
-    query: str
+    request: str
+    endpoint: str
+    data: dict[any, any]
 
 
 async def send_to_rabbit(message: str):
