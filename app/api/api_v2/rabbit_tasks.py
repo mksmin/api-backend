@@ -12,7 +12,7 @@ router = APIRouter()
 class TaskRequest(BaseModel):
     request: str
     endpoint: str
-    data: dict[any, any]
+    data: dict
 
 
 async def send_to_rabbit(message: str):
