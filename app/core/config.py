@@ -1,7 +1,7 @@
 import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
-from urllib.parse import unquote
+from urllib.parse import unquote, quote
 
 from pydantic import BaseModel, PostgresDsn, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -91,7 +91,11 @@ class RabbitMQConfig(BaseModel):
     @computed_field
     @property
     def url(self) -> str:
-        return f"amqp://{self.username}:{unquote(str(self.password))}@{self.host}:{self.port}/{self.vhostname}"
+        safe_username = quote(self.username, safe="")
+        safe_password = quote(self.password, safe="")
+        safe_vhost = quote(self.vhostname, safe="")
+
+        return f"amqp://{safe_username}:{safe_password}@{self.host}:{self.port}/{safe_vhost}"
 
 
 class DatabaseConfig(BaseModel):
