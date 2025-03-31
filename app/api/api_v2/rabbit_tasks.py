@@ -1,6 +1,6 @@
 import aio_pika
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
 from pydantic import BaseModel
 
 from app.core import settings
@@ -29,3 +29,8 @@ async def send_to_rabbit(message: str):
 async def create_task(task: TaskRequest):
     await send_to_rabbit(task.json())
     return {"status": "Task queued"}
+
+
+@router.post("/tasks")
+async def create_tasks(data: Body()):
+    print(f"{data = }")
