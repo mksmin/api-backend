@@ -2,7 +2,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-from pydantic import BaseModel, PostgresDsn
+from pydantic import BaseModel, PostgresDsn, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -80,6 +80,19 @@ class ApiPrefix(BaseModel):
     algorithm: str = "HS256"
 
 
+class RabbitMQConfig(BaseModel):
+    host: str = "localhost"
+    port: int = 5672
+    username: str = "user"
+    password: str = "wpwd"
+    vhostname: str = "vhost"
+
+    @computed_field
+    @property
+    def url(self) -> str:
+        return f"amqp://{self.username}:{self.password}@{self.host}:{self.port}/{self.vhostname}"
+
+
 class DatabaseConfig(BaseModel):
     url: PostgresDsn
     echo: bool = False
@@ -105,9 +118,10 @@ class Settings(BaseSettings):
         env_nested_delimiter="__",
         env_prefix="API_CONFIG__",
     )
-    run: RunConfig = RunConfig()
     api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig
+    run: RunConfig = RunConfig()
+    rabbit: RabbitMQConfig = RabbitMQConfig()
 
 
 settings = Settings()
