@@ -78,12 +78,14 @@ if __name__ == "__main__":
     try:
         uvicorn.run(
             "run:main_app",
+            uds="/tmp/uvicorn.sock",
             host=settings.run.host,
             port=settings.run.port,
             log_level=settings.run.log_level,
             reload=True,
             log_config=str(Path(__file__).parent / "app/core/log_conf.json"),
             use_colors=True,
+            workers=2,
         )
 
     except KeyboardInterrupt:
