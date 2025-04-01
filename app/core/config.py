@@ -76,7 +76,7 @@ class ApiPrefix(BaseModel):
     prefix: str = "/api"
     v2: ApiV2Prefix = ApiV2Prefix()
 
-    bot_token: str = "1234567890:DefaultBotToken"
+    bot_token: dict = {"bot_name": "1234567890:DefaultBotToken"}
     secret: str = "default_secret"
     algorithm: str = "HS256"
 
