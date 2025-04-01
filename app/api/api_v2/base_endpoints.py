@@ -16,7 +16,6 @@ from pathlib import Path
 
 # import from modules
 from app.core import settings, logger
-from app.api.api_v2.rabbit_tasks import send_to_rabbit
 
 router = APIRouter()
 BASE_DIR = Path.cwd().parent  # project working directory api_atomlab/app
@@ -25,14 +24,8 @@ FRONTEND_DIR = (
 )
 HTML_DIR = FRONTEND_DIR / "src"
 STATIC_DIR = FRONTEND_DIR / "public"
-
 templates = Jinja2Templates(directory=FRONTEND_DIR / "templates")
-
-# print(f"BASE_DIR: {BASE_DIR}")
-# print(f"FRONTEND_DIR: {FRONTEND_DIR}")
-# print(f"HTML_DIR: {HTML_DIR}")
 not_found_404 = FRONTEND_DIR / "src/404.html"
-# print(f"not_found_404: {not_found_404}")
 
 
 async def check_path(path_file: Path):
@@ -271,6 +264,10 @@ async def verify_telegram(request: Request):
             },
         }
 
+        print(
+            f"Request to /tasks: {rabbit_request}"
+        )
+
         correlation_id = str(uuid.uuid4())
         connection = await aio_pika.connect_robust(f"{settings.rabbit.url}")
         channel = await connection.channel()
@@ -292,9 +289,7 @@ async def verify_telegram(request: Request):
                     if message.correlation_id == correlation_id:
                         response = json.loads(message.body)
                         await connection.close()
-                        print(
-                            f'Response from /tasks: {response}'
-                        )
+                        print(f"Response from /tasks: {response}")
                         # Передаем данные в шаблон
                         return templates.TemplateResponse(
                             "affirm.html",
