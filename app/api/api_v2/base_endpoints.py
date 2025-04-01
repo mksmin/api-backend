@@ -170,7 +170,6 @@ def verify_telegram_data(init_data: str, bot_token: str) -> dict | bool:
             key, value = splitted.split("=", 1)
             values[key] = unquote(value)
 
-        print(f"values: {values}")
 
         # Проверка хэша
         # Преобразование данных в строку для хэширования
@@ -190,8 +189,7 @@ def verify_telegram_data(init_data: str, bot_token: str) -> dict | bool:
             data_check_string.encode(),
             hashlib.sha256,
         ).hexdigest()
-        print(f"generated_hash: {generated_hash}")
-        print(f"values['hash']: {values['hash']}")
+
         # Защита от атаки по времени
         if not hmac.compare_digest(generated_hash, values["hash"]):
             return False
@@ -222,27 +220,9 @@ def verify_telegram_data(init_data: str, bot_token: str) -> dict | bool:
             "allows_write_to_pm": user_data["allows_write_to_pm"],
         }
 
-        # vals = {
-        #     k: unquote(v) for k, v in [s.split("=", 1) for s in init_data.split("&")]
-        # }
-        #
-        # print(f"vals: {vals}")
-        # print(f"values: {values}")
-        # data_check_string2 = "\n".join(
-        #     f"{k}={v}" for k, v in sorted(vals.items()) if k != "hash"
-        # )
-        # secret_key2 = hmac.new(
-        #     "WebAppData".encode(), settings.api.bot_token.encode(), hashlib.sha256
-        # ).digest()
-        #
-        # h = hmac.new(secret_key2, data_check_string2.encode(), hashlib.sha256)
-
-        # print(f"h.hexdigest(): {h.hexdigest()}")
-        # return h.hexdigest() == vals["hash"]
-
     except Exception as e:
         raise ValueError(f"Verification error: {e}")
-        # return False
+
 
 
 @router.post("/verify")
