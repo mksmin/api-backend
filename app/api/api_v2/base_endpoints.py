@@ -279,23 +279,25 @@ async def verify_telegram(request: Request):
         )
         # Ожидание ответа из временной очереди
         response = None
-        async with reply_queue.iterator() as queue_iter:
-            async for message in queue_iter:
-                async with message.process():
-                    if message.correlation_id == correlation_id:
-                        response = json.loads(message.body)
-                        await connection.close()
-                        # Передаем данные в шаблон
-                        return templates.TemplateResponse(
-                            "affirm.html",
-                            {
-                                "request": request,
-                                "user": user_data,
-                                "affirm": response.get("tasks", {}),  # Пример данных
-                            },
-                        )
-        await connection.close()
-        print("Соединение закрыто")
+        try:
+            async with reply_queue.iterator() as queue_iter:
+                async for message in queue_iter:
+                    async with message.process():
+                        if message.correlation_id == correlation_id:
+                            response = json.loads(message.body)
+
+                            # Передаем данные в шаблон
+                            return templates.TemplateResponse(
+                                "affirm.html",
+                                {
+                                    "request": request,
+                                    "user": user_data,
+                                    "affirm": response.get("tasks", {}),  # Пример данных
+                                },
+                            )
+        finally:
+            await connection.close()
+            print("Соединение закрыто")
         # Проверка ответа и возврат шаблона
         if not response:
             raise HTTPException(500, "No response from /tasks")
