@@ -142,6 +142,7 @@ async def html_path(name_script: str):
     return FileResponse(result, status_code=status)
 
 
+@router.get("/affirm", include_in_schema=False)
 @router.get("/profile", include_in_schema=False)
 async def user_profile_tg(request: Request):
     """
@@ -153,12 +154,6 @@ async def user_profile_tg(request: Request):
     Returns:
         FileResponse: The user profile HTML file.
     """
-    params = {
-        "query_params": dict(request.query_params),
-        "headers": dict(request.headers),
-    }
-    # pprint.pprint(f"params: {params}")
-    profile_html = HTML_DIR / "profile.html"
     profile_html = FRONTEND_DIR / "templates/base.html"
 
     return FileResponse(profile_html)
@@ -271,7 +266,7 @@ async def verify_telegram(request: Request):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/affirm")
+@router.post("/vaffirm")
 async def verify_telegram(request: Request):
     try:
         # Получение init данных из запроса
