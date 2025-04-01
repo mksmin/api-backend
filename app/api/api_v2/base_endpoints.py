@@ -159,7 +159,7 @@ async def user_profile_tg(request: Request):
     return FileResponse(profile_html)
 
 
-def verify_telegram_data(init_data: str) -> dict | bool:
+def verify_telegram_data(init_data: str, bot_token: str) -> dict | bool:
     """
     Проверяет валидность данных от Telegram Web Apps
     """
@@ -180,7 +180,7 @@ def verify_telegram_data(init_data: str) -> dict | bool:
         # Генерация секретного ключа
         secret_key = hmac.new(
             "WebAppData".encode(),
-            settings.api.bot_token.encode(),
+            bot_token.encode(),
             hashlib.sha256,
         ).digest()
 
@@ -254,7 +254,10 @@ async def verify_telegram(request: Request):
         if not init_data:
             raise HTTPException(status_code=400, detail="Missing initData")
 
-        user_data = verify_telegram_data(init_data)
+        user_data = verify_telegram_data(
+            init_data,
+            settings.api.bot_token["atombot"]
+        )
         if not user_data:
             raise HTTPException(status_code=401, detail="Invalid data")
 
@@ -278,7 +281,10 @@ async def verify_telegram(request: Request):
         if not init_data:
             raise HTTPException(status_code=400, detail="Missing initData")
 
-        user_data = verify_telegram_data(init_data)
+        user_data = verify_telegram_data(
+            init_data,
+            settings.api.bot_token["mininbot"]
+        )
         if not user_data:
             raise HTTPException(status_code=401, detail="Invalid data")
 
