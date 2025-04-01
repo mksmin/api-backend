@@ -33,4 +33,4 @@ async def create_task(task: TaskRequest):
 
 @router.post("/tasks", response_model=None)
 async def tmp_create_tasks(data=Body()):
-    print(f"{data = }")
+    pass

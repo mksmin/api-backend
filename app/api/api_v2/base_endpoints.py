@@ -3,7 +3,10 @@ import hashlib
 import hmac
 import json
 import pprint
+import uuid
 from urllib.parse import parse_qsl, unquote
+
+import aio_pika
 
 # import from lib
 from fastapi import APIRouter, Depends, Request, HTTPException
@@ -170,7 +173,6 @@ def verify_telegram_data(init_data: str, bot_token: str) -> dict | bool:
             key, value = splitted.split("=", 1)
             values[key] = unquote(value)
 
-
         # Проверка хэша
         # Преобразование данных в строку для хэширования
         data_check_string = "\n".join(
@@ -224,7 +226,6 @@ def verify_telegram_data(init_data: str, bot_token: str) -> dict | bool:
         raise ValueError(f"Verification error: {e}")
 
 
-
 @router.post("/verify")
 async def verify_telegram(request: Request):
     try:
@@ -234,10 +235,7 @@ async def verify_telegram(request: Request):
         if not init_data:
             raise HTTPException(status_code=400, detail="Missing initData")
 
-        user_data = verify_telegram_data(
-            init_data,
-            settings.api.bot_token["atombot"]
-        )
+        user_data = verify_telegram_data(init_data, settings.api.bot_token["atombot"])
         if not user_data:
             raise HTTPException(status_code=401, detail="Invalid data")
 
@@ -261,10 +259,7 @@ async def verify_telegram(request: Request):
         if not init_data:
             raise HTTPException(status_code=400, detail="Missing initData")
 
-        user_data = verify_telegram_data(
-            init_data,
-            settings.api.bot_token["mininbot"]
-        )
+        user_data = verify_telegram_data(init_data, settings.api.bot_token["mininbot"])
         if not user_data:
             raise HTTPException(status_code=401, detail="Invalid data")
 
@@ -275,7 +270,45 @@ async def verify_telegram(request: Request):
                 "user_tg_id": user_data.get("id", None),
             },
         }
-        await send_to_rabbit(json.dumps(rabbit_request))
+
+        correlation_id = str(uuid.uuid4())
+        connection = await aio_pika.connect_robust(f"{settings.rabbit.url}")
+        channel = await connection.channel()
+        reply_queue = await channel.declare_queue(exclusive=True)
+
+        await channel.default_exchange.publish(
+            aio_pika.Message(
+                body=json.dumps(rabbit_request).encode(),
+                reply_to=reply_queue.name,
+                correlation_id=correlation_id,
+            ),
+            routing_key="tasks",
+        )
+        # Ожидание ответа из временной очереди
+        response = None
+        async with reply_queue.iterator() as queue_iter:
+            async for message in queue_iter:
+                async with message.process():
+                    if message.correlation_id == correlation_id:
+                        response = json.loads(message.body)
+                        await connection.close()
+                        print(
+                            f'Response from /tasks: {response}'
+                        )
+                        # Передаем данные в шаблон
+                        return templates.TemplateResponse(
+                            "affirm.html",
+                            {
+                                "request": request,
+                                "user": user_data,
+                                "affirm": response.get("tasks", {}),  # Пример данных
+                            },
+                        )
+        await connection.close()
+
+        # Проверка ответа и возврат шаблона
+        if not response:
+            raise HTTPException(500, "No response from /tasks")
 
         return templates.TemplateResponse(
             "affirm.html", {"request": request, "user": user_data, "affirm": "Да"}
