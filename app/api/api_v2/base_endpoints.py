@@ -13,6 +13,7 @@ from pathlib import Path
 
 # import from modules
 from app.core import settings, logger
+from app.api.api_v2.rabbit_tasks import send_to_rabbit
 
 router = APIRouter()
 BASE_DIR = Path.cwd().parent  # project working directory api_atomlab/app
@@ -261,6 +262,39 @@ async def verify_telegram(request: Request):
 
         return templates.TemplateResponse(
             "profile.html", {"request": request, "user": user_data}
+        )
+    except HTTPException as he:
+        raise he
+
+    except Exception as e:
+        logger.error(f"Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/affirm")
+async def verify_telegram(request: Request):
+    try:
+        # Получение init данных из запроса
+        data = await request.json()
+        init_data = data.get("initData", None)
+        if not init_data:
+            raise HTTPException(status_code=400, detail="Missing initData")
+
+        user_data = verify_telegram_data(init_data)
+        if not user_data:
+            raise HTTPException(status_code=401, detail="Invalid data")
+
+        rabbit_request = {
+            "request": "GET",
+            "endpoint": "/user/affirmations",
+            "data": {
+                "user_tg_id": user_data.get("id", None),
+            },
+        }
+        await send_to_rabbit(json.dumps(rabbit_request))
+
+        return templates.TemplateResponse(
+            "affirm.html", {"request": request, "user": user_data, "affirm": "Да"}
         )
     except HTTPException as he:
         raise he
