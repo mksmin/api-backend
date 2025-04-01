@@ -188,7 +188,8 @@ def verify_telegram_data(init_data: str) -> dict | bool:
             data_check_string.encode(),
             hashlib.sha256,
         ).hexdigest()
-
+        print(f"generated_hash: {generated_hash}")
+        print(f"values['hash']: {values['hash']}")
         # Защита от атаки по времени
         if not hmac.compare_digest(generated_hash, values["hash"]):
             return False
