@@ -264,41 +264,40 @@ async def verify_telegram(request: Request):
             },
         }
 
-        # Контекстный менеджер для автоматического закрытия соединения
-        async with aio_pika.connect_robust(settings.rabbit.url) as connection:
-            channel = await connection.channel()
-            reply_queue = await channel.declare_queue(exclusive=True)
+        correlation_id = str(uuid.uuid4())
+        connection = await aio_pika.connect_robust(f"{settings.rabbit.url}")
+        channel = await connection.channel()
+        reply_queue = await channel.declare_queue(exclusive=True)
 
-            correlation_id = str(uuid.uuid4())
-
-            # Отправляем запрос
-            await channel.default_exchange.publish(
-                aio_pika.Message(
-                    body=json.dumps(rabbit_request).encode(),
-                    reply_to=reply_queue.name,
-                    correlation_id=correlation_id,
-                ),
-                routing_key="tasks",
-            )
-
-            # Ожидаем ответа
-            async with reply_queue.iterator() as queue_iter:
-                async for message in queue_iter:
-                    async with message.process():
-                        if message.correlation_id == correlation_id:
-                            response = json.loads(message.body)
-
-                            # Возвращаем ответ внутри контекстного менеджера
-                            return templates.TemplateResponse(
-                                "affirm.html",
-                                {
-                                    "request": request,
-                                    "user": user_data,
-                                    "affirm": response.get("tasks", {}),
-                                },
-                            )
-
-            # Если не получили ответ
+        await channel.default_exchange.publish(
+            aio_pika.Message(
+                body=json.dumps(rabbit_request).encode(),
+                reply_to=reply_queue.name,
+                correlation_id=correlation_id,
+            ),
+            routing_key="tasks",
+        )
+        # Ожидание ответа из временной очереди
+        response = None
+        async with reply_queue.iterator() as queue_iter:
+            async for message in queue_iter:
+                async with message.process():
+                    if message.correlation_id == correlation_id:
+                        response = json.loads(message.body)
+                        await connection.close()
+                        # Передаем данные в шаблон
+                        return templates.TemplateResponse(
+                            "affirm.html",
+                            {
+                                "request": request,
+                                "user": user_data,
+                                "affirm": response.get("tasks", {}),  # Пример данных
+                            },
+                        )
+        await connection.close()
+        print("Соединение закрыто")
+        # Проверка ответа и возврат шаблона
+        if not response:
             raise HTTPException(500, "No response from /tasks")
 
     except HTTPException as he:
