@@ -170,6 +170,8 @@ def verify_telegram_data(init_data: str) -> dict | bool:
             key, value = splitted.split("=", 1)
             values[key] = unquote(value)
 
+        print(f"values: {values}")
+
         # Проверка хэша
         # Преобразование данных в строку для хэширования
         data_check_string = "\n".join(
