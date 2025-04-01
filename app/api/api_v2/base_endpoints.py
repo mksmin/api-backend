@@ -264,8 +264,6 @@ async def verify_telegram(request: Request):
             },
         }
 
-        print(f"Request to /tasks: {rabbit_request}")
-
         correlation_id = str(uuid.uuid4())
         connection = await aio_pika.connect_robust(f"{settings.rabbit.url}")
         channel = await connection.channel()
@@ -279,7 +277,6 @@ async def verify_telegram(request: Request):
             ),
             routing_key="tasks",
         )
-        print("Очередь отправлена")
         # Ожидание ответа из временной очереди
         response = None
         async with reply_queue.iterator() as queue_iter:
@@ -287,7 +284,7 @@ async def verify_telegram(request: Request):
                 async with message.process():
                     if message.correlation_id == correlation_id:
                         response = json.loads(message.body)
-                        print(f"Response from /tasks: {response}")
+
                         # Передаем данные в шаблон
                         return templates.TemplateResponse(
                             "affirm.html",
