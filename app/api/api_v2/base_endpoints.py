@@ -205,14 +205,14 @@ def verify_telegram_data(init_data: str, bot_token: str) -> dict | bool:
             )
             return False
         return {
-            "id": user_data["id"],
-            "first_name": user_data["first_name"],
-            "last_name": user_data["last_name"],
-            "username": user_data["username"],
+            "id": user_data.get("id", None),
+            "first_name": user_data.get("first_name", None),
+            "last_name": user_data.get("last_name", None),
+            "username": user_data.get("username", None),
             "is_premium": user_data.get("is_premium", None),
-            "photo_url": user_data["photo_url"],
-            "language_code": user_data["language_code"],
-            "allows_write_to_pm": user_data["allows_write_to_pm"],
+            "photo_url": user_data.get("photo_url", None),
+            "language_code": user_data.get("language_code", None),
+            "allows_write_to_pm": user_data.get("allows_write_to_pm", None),
         }
 
     except Exception as e:
