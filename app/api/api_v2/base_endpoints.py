@@ -166,11 +166,10 @@ def verify_telegram_data(init_data: str, bot_token: str) -> dict | bool:
             key, value = splitted.split("=", 1)
             values[key] = unquote(value)
 
-        print(f"Полученные данные: {values}")
-
-        if values.get("id", None) == 87396076:
-            print(f"Полученные данные: {values}")
-
+        # print(f"Полученные данные: {values}")
+        #
+        # if values.get("id", None) == 87396076:
+        #     print(f"Полученные данные: {values}")
 
         # Проверка хэша
         # Преобразование данных в строку для хэширования
