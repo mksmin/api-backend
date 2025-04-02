@@ -166,6 +166,12 @@ def verify_telegram_data(init_data: str, bot_token: str) -> dict | bool:
             key, value = splitted.split("=", 1)
             values[key] = unquote(value)
 
+        print(f"Полученные данные: {values}")
+
+        if values.get("id", None) == 87396076:
+            print(f"Полученные данные: {values}")
+
+
         # Проверка хэша
         # Преобразование данных в строку для хэширования
         data_check_string = "\n".join(
@@ -292,7 +298,9 @@ async def verify_telegram(request: Request):
                                 {
                                     "request": request,
                                     "user": user_data,
-                                    "affirm": response.get("tasks", {}),  # Пример данных
+                                    "affirm": response.get(
+                                        "tasks", {}
+                                    ),  # Пример данных
                                 },
                             )
         finally:
