@@ -318,6 +318,8 @@ async def verify_telegram(
     data_dict = dict(pairs)
     user_data = {"user": json.dumps(data_dict)}
 
+    print(f'user_data: {user_data}')
+
     try:
         user_data = await extract_user_data(dict(user_data))
 
