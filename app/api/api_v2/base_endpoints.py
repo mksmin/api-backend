@@ -155,20 +155,15 @@ async def user_profile_tg(request: Request):
     return FileResponse(profile_html)
 
 
-def verify_telegram_data(raw_query: str, bot_token: str, type_auth: str) -> bool:
+def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
     """
     Проверяет валидность данных от Telegram Web Apps
     """
     try:
-        print(f"type_auth: {type_auth}")
 
         # Разбираю строку запроса, получая список кортежей (ключ, значение)
         pairs = parse_qsl(raw_query, keep_blank_values=True)
         data_dict = dict(pairs)
-        print(f"pairs: {pairs}")
-        print(f"data_dict: {data_dict}")
-        print(f"raw_query: {raw_query}")
-
 
         input_hash = data_dict.get("hash", None)
         if not input_hash:
@@ -186,15 +181,12 @@ def verify_telegram_data(raw_query: str, bot_token: str, type_auth: str) -> bool
         # Собираю общую строку
         data_check_str = "\n".join(data_check_list)
 
-        # # Генерация секретного ключа
-        if type_auth == "webapp":
-            secret_key = hmac.new(
-                "WebAppData".encode(),
-                bot_token.encode(),
-                hashlib.sha256,
-            ).digest()
-        else:
-            secret_key = hashlib.sha256(bot_token.encode()).digest()
+        # Генерация секретного ключа
+        secret_key = hmac.new(
+            "WebAppData".encode(),
+            bot_token.encode(),
+            hashlib.sha256,
+        ).digest()
 
         # Генерация хэша
         generated_hash = hmac.new(
@@ -213,6 +205,48 @@ def verify_telegram_data(raw_query: str, bot_token: str, type_auth: str) -> bool
         raise ValueError(f"Verification error: {e}")
 
 
+def verify_telegram_widget(raw_query: str, bot_token: str) -> bool:
+    try:
+        pairs = parse_qsl(raw_query, keep_blank_values=True)
+        data_dict = dict(pairs)
+        input_hash = data_dict.get("hash")
+
+        if not input_hash:
+            return False
+
+        # Разрешенные поля для Widget
+        allowed_fields = {"id", "first_name", "last_name", "username", "auth_date"}
+
+        # Фильтруем и сортируем поля
+        filtered_pairs = [
+            (k, v) for k, v in pairs if k in allowed_fields and k != "hash"
+        ]
+        sorted_pairs = sorted(filtered_pairs, key=lambda x: x[0])
+
+        print(f"Sorted pairs: {sorted_pairs}")
+
+        # Формируем строку с разделителем \n (согласно документации)
+        data_check_str = "\n".join([f"{k}={v}" for k, v in sorted_pairs])
+        print(f"Data check string: {data_check_str}")
+
+        # Генерация секретного ключа для Widget
+        secret_key = hashlib.sha256(bot_token.encode()).digest()
+
+        # Генерация хэша
+        generated_hash = hmac.new(
+            secret_key,
+            data_check_str.encode(),
+            hashlib.sha256,
+        ).hexdigest()
+
+        print(f"Generated hash: {generated_hash}")
+        print(f"Input hash: {input_hash}")
+
+        return hmac.compare_digest(generated_hash, input_hash)
+    except Exception as e:
+        raise ValueError(f"Widget verification error: {e}")
+
+
 # Общая зависимость верификации данных от Telegram
 async def verify_telegram_data_dep(request: Request, bot_name: str, type_auth: str):
     try:
@@ -222,9 +256,16 @@ async def verify_telegram_data_dep(request: Request, bot_name: str, type_auth: s
         if not raw_data_str:
             raise HTTPException(status_code=400, detail="Missing initData")
 
-        if not verify_telegram_data(
-            raw_data_str, settings.api.bot_token[bot_name], type_auth
-        ):
+        if type_auth == "widget":
+            verify_result = verify_telegram_widget(
+                raw_data_str, settings.api.bot_token[bot_name]
+            )
+        else:
+            verify_result = verify_telegram_data(
+                raw_data_str, settings.api.bot_token[bot_name]
+            )
+
+        if not verify_result:
             raise HTTPException(status_code=401, detail="Invalid data")
 
         return parse_qsl(raw_data_str, keep_blank_values=True)
