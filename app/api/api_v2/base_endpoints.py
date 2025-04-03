@@ -232,8 +232,8 @@ def verify_telegram_widget(raw_query: str, bot_token: str) -> bool:
             secret_key, data_check_string.encode(), hashlib.sha256
         ).hexdigest()
 
-        print(f"Generated hash: {hmac_hash}")
-        print(f"Input hash: {received_hash}")
+        # print(f"Generated hash: {hmac_hash}")
+        # print(f"Input hash: {received_hash}")
 
         # Сравниваем вычисленный хэш с полученным (безопасное сравнение)
         return hmac.compare_digest(hmac_hash, received_hash)
@@ -303,7 +303,7 @@ async def verify_telegram(
     data_dict = dict(pairs)
     user_data = {"user": json.dumps(data_dict)}
 
-    print(f"user_data: {user_data}")
+    # print(f"user_data: {user_data}")
 
     user_data = await extract_user_data(user_data)
     data_dict = {"request": request, "user": user_data}
