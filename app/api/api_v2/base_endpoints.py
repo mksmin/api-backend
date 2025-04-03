@@ -155,28 +155,32 @@ async def user_profile_tg(request: Request):
     return FileResponse(profile_html)
 
 
-def verify_telegram_data(init_data: str, bot_token: str) -> dict | bool:
+def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
     """
     Проверяет валидность данных от Telegram Web Apps
     """
     try:
-        # Парсинг данных из initData
-        values = dict()
-        for splitted in init_data.split("&"):
-            key, value = splitted.split("=", 1)
-            values[key] = unquote(value)
+        # Разбираю строку запроса, получая список кортежей (ключ, значение)
+        pairs = parse_qsl(raw_query, keep_blank_values=True)
+        data_dict = dict(pairs)
 
-        # print(f"Полученные данные: {values}")
-        #
-        # if values.get("id", None) == 87396076:
-        #     print(f"Полученные данные: {values}")
+        input_hash = data_dict.get("hash", None)
+        if not input_hash:
+            return False
 
-        # Проверка хэша
-        # Преобразование данных в строку для хэширования
-        data_check_string = "\n".join(
-            f"{key}={value}" for key, value in sorted(values.items()) if key != "hash"
+        # Сортирую по ключам
+        sorted_pairs = sorted(
+            [(k, v) for k, v in pairs if k != "hash"],
+            key=lambda x: x[0],
         )
-        # Генерация секретного ключа
+
+        # Формирую список со строками для хеширования
+        data_check_list = [f"{k}={v}" for k, v in sorted_pairs]
+
+        # Собираю общую строку
+        data_check_str = "\n".join(data_check_list)
+
+        # # Генерация секретного ключа
         secret_key = hmac.new(
             "WebAppData".encode(),
             bot_token.encode(),
@@ -186,101 +190,81 @@ def verify_telegram_data(init_data: str, bot_token: str) -> dict | bool:
         # Генерация хэша
         generated_hash = hmac.new(
             secret_key,
-            data_check_string.encode(),
+            data_check_str.encode(),
             hashlib.sha256,
         ).hexdigest()
-
         # Защита от атаки по времени
-        if not hmac.compare_digest(generated_hash, values["hash"]):
-            return False
-
-        # Парсинг данных из initData
-        user_data = json.loads(values.get("user", "{}"))
-        required_fields = [
-            "id",
-            "first_name",
-            "last_name",
-            "username",
-            "language_code",
-            "photo_url",
-        ]
-        if not all(field in user_data for field in required_fields):
-            print(
-                f"Required fields missing: {[field for field in required_fields if field not in user_data]}"
-            )
-            return False
-        return {
-            "id": user_data.get("id", None),
-            "first_name": user_data.get("first_name", None),
-            "last_name": user_data.get("last_name", None),
-            "username": user_data.get("username", None),
-            "is_premium": user_data.get("is_premium", None),
-            "photo_url": user_data.get("photo_url", None),
-            "language_code": user_data.get("language_code", None),
-            "allows_write_to_pm": user_data.get("allows_write_to_pm", None),
-        }
+        return hmac.compare_digest(generated_hash, input_hash)
 
     except Exception as e:
         raise ValueError(f"Verification error: {e}")
 
 
-@router.post("/verify")
-async def verify_telegram(request: Request):
+# Общая зависимость верификации данных от Telegram
+async def verify_telegram_data_dep(request: Request, bot_name: str):
     try:
-        # Получение init данных из запроса
         raw_data = await request.body()
-        data = parse_qs(raw_data.decode())
-        print(f"data: {data}")
-        parsed = {}
-        for key, value in data.items():
-            if isinstance(value, list) and len(value) == 1:
-                try:
-                    parsed[key] = json.loads(value[0])  # Парсим JSON-строки
-                except json.JSONDecodeError:
-                    parsed[key] = value[0]
-            else:
-                parsed[key] = value
+        raw_data_str = raw_data.decode()
 
-        print(f"parsed: {parsed}")
-
-        data = await request.json()
-        init_data = data.get("initData", None)
-        if not init_data:
+        if not raw_data_str:
             raise HTTPException(status_code=400, detail="Missing initData")
 
-        user_data = verify_telegram_data(init_data, settings.api.bot_token["atombot"])
-        if not user_data:
+        if not verify_telegram_data(raw_data_str, settings.api.bot_token[bot_name]):
             raise HTTPException(status_code=401, detail="Invalid data")
 
-        return templates.TemplateResponse(
-            "profile.html", {"request": request, "user": user_data}
-        )
-    except HTTPException as he:
-        raise he
+        return parse_qsl(raw_data_str, keep_blank_values=True)
 
     except Exception as e:
-        logger.error(f"Error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Verification error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.post("/vaffirm")
-async def verify_telegram(request: Request):
+def get_verified_data(bot_name: str):
+    async def dependency(request: Request):
+        return await verify_telegram_data_dep(request, bot_name)
+
+    return Depends(dependency)
+
+
+# Общая функция для обработки профиля
+async def process_profile(template_name: str, data_dict_for_template):
+
+    return templates.TemplateResponse(template_name, data_dict_for_template)
+
+
+async def extract_user_data(data_dict: dict) -> dict:
+    user_data = json.loads(data_dict["user"])
+    return {
+        "id": user_data.get("id"),
+        "first_name": user_data.get("first_name", None),
+        "last_name": user_data.get("last_name", None),
+        "username": user_data.get("username", None),
+        "is_premium": user_data.get("is_premium", None),
+        "photo_url": user_data.get("photo_url", None),
+        "language_code": user_data.get("language_code", None),
+        "allows_write_to_pm": user_data.get("allows_write_to_pm", None),
+    }
+
+
+@router.post("/verify-tg")
+async def verify_telegram(request: Request, pairs: list = get_verified_data("atombot")):
+    data_dict = dict(pairs)
+    user_data = await extract_user_data(data_dict)
+    data_dict = {"request": request, "user": user_data}
+
+    return await process_profile("profile.html", data_dict)
+
+
+@router.post("/verify-affirm")
+async def verify_affirm(request: Request, pairs: list = get_verified_data("mininbot")):
     try:
-        # Получение init данных из запроса
-        data = await request.json()
-        init_data = data.get("initData", None)
-        if not init_data:
-            raise HTTPException(status_code=400, detail="Missing initData")
-
-        user_data = verify_telegram_data(init_data, settings.api.bot_token["mininbot"])
-        if not user_data:
-            raise HTTPException(status_code=401, detail="Invalid data")
+        user_data = await extract_user_data(dict(pairs))
 
         rabbit_request = {
             "request": "GET",
             "endpoint": "/user/affirmations",
             "data": {
-                "user_tg_id": user_data.get("id", None),
+                "user_tg_id": user_data.get("id"),
             },
         }
 
@@ -305,18 +289,13 @@ async def verify_telegram(request: Request):
                     async with message.process():
                         if message.correlation_id == correlation_id:
                             response = json.loads(message.body)
+                            data_dict = {
+                                "request": request,
+                                "user": user_data,
+                                "affirm": response.get("tasks", {}),  # Пример данных
+                            }
+                            return await process_profile("affirm.html", data_dict)
 
-                            # Передаем данные в шаблон
-                            return templates.TemplateResponse(
-                                "affirm.html",
-                                {
-                                    "request": request,
-                                    "user": user_data,
-                                    "affirm": response.get(
-                                        "tasks", {}
-                                    ),  # Пример данных
-                                },
-                            )
         finally:
             await connection.close()
             print("Соединение закрыто")
