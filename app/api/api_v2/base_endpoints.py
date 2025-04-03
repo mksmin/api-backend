@@ -230,7 +230,7 @@ async def verify_telegram(request: Request):
         # Получение init данных из запроса
         raw_data = await request.body()
         data = parse_qs(raw_data.decode())
-
+        print(f"data: {data}")
         parsed = {}
         for key, value in data.items():
             if isinstance(value, list) and len(value) == 1:
