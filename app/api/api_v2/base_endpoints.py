@@ -4,7 +4,7 @@ import hmac
 import json
 import pprint
 import uuid
-from urllib.parse import parse_qsl, unquote
+from urllib.parse import parse_qsl, unquote, parse_qs
 
 import aio_pika
 
@@ -228,6 +228,21 @@ def verify_telegram_data(init_data: str, bot_token: str) -> dict | bool:
 async def verify_telegram(request: Request):
     try:
         # Получение init данных из запроса
+        raw_data = await request.body()
+        data = parse_qs(raw_data.decode())
+
+        parsed = {}
+        for key, value in data.items():
+            if isinstance(value, list) and len(value) == 1:
+                try:
+                    parsed[key] = json.loads(value[0])  # Парсим JSON-строки
+                except json.JSONDecodeError:
+                    parsed[key] = value[0]
+            else:
+                parsed[key] = value
+
+        print(f"parsed: {parsed}")
+
         data = await request.json()
         init_data = data.get("initData", None)
         if not init_data:
