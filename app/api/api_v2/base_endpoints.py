@@ -399,7 +399,10 @@ async def verify_affirm(
             "request": "GET",
             "endpoint": "/user/affirmations",
             "data": {
-                "user_tg_id": user_data.get("id"),
+                "user_tg_id": int(user_data.get("id")),
+                "first_name": user_data.get("first_name", ""),
+                "last_name": user_data.get("last_name", ""),
+                "username": user_data.get("username", ""),
             },
         }
 
