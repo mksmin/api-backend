@@ -324,7 +324,7 @@ async def verify_telegram(
 
 @router.post("/verify-affirm")
 async def verify_affirm(
-    request: Request, pairs: list = get_verified_data("testbot", type_auth="webapp")
+    request: Request, pairs: list = get_verified_data("minibot", type_auth="webapp")
 ):
     try:
         user_data = await extract_user_data(dict(pairs))
