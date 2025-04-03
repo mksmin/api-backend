@@ -313,12 +313,12 @@ async def verify_telegram(
 
 @router.post("/verify-widget-tg-affirm")
 async def verify_telegram(
-        request: Request, pairs: list = get_verified_data("atombot", type_auth="widget")
+    request: Request, pairs: list = get_verified_data("atombot", type_auth="widget")
 ):
     data_dict = dict(pairs)
     user_data = {"user": json.dumps(data_dict)}
 
-    print(f'user_data: {user_data}')
+    # print(f"user_data: {user_data}")
 
     try:
         user_data = await extract_user_data(dict(user_data))
@@ -327,7 +327,7 @@ async def verify_telegram(
             "request": "GET",
             "endpoint": "/user/affirmations",
             "data": {
-                "user_tg_id": user_data.get("id"),
+                "user_tg_id": int(user_data.get("id")),
             },
         }
 
