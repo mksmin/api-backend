@@ -155,7 +155,7 @@ async def user_profile_tg(request: Request):
     return FileResponse(profile_html)
 
 
-def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
+def verify_telegram_data(raw_query: str, bot_token: str, type_auth: str) -> bool:
     """
     Проверяет валидность данных от Telegram Web Apps
     """
@@ -181,11 +181,14 @@ def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
         data_check_str = "\n".join(data_check_list)
 
         # # Генерация секретного ключа
-        secret_key = hmac.new(
-            "WebAppData".encode(),
-            bot_token.encode(),
-            hashlib.sha256,
-        ).digest()
+        if type_auth == "webapp":
+            secret_key = hmac.new(
+                "WebAppData".encode(),
+                bot_token.encode(),
+                hashlib.sha256,
+            ).digest()
+        else:
+            secret_key = hashlib.sha256(bot_token.encode()).digest()
 
         # Генерация хэша
         generated_hash = hmac.new(
@@ -205,7 +208,7 @@ def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
 
 
 # Общая зависимость верификации данных от Telegram
-async def verify_telegram_data_dep(request: Request, bot_name: str):
+async def verify_telegram_data_dep(request: Request, bot_name: str, type_auth: str):
     try:
         raw_data = await request.body()
         raw_data_str = raw_data.decode()
@@ -213,7 +216,9 @@ async def verify_telegram_data_dep(request: Request, bot_name: str):
         if not raw_data_str:
             raise HTTPException(status_code=400, detail="Missing initData")
 
-        if not verify_telegram_data(raw_data_str, settings.api.bot_token[bot_name]):
+        if not verify_telegram_data(
+            raw_data_str, settings.api.bot_token[bot_name], type_auth
+        ):
             raise HTTPException(status_code=401, detail="Invalid data")
 
         return parse_qsl(raw_data_str, keep_blank_values=True)
@@ -223,9 +228,9 @@ async def verify_telegram_data_dep(request: Request, bot_name: str):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-def get_verified_data(bot_name: str):
+def get_verified_data(bot_name: str, type_auth: str = "webapp"):
     async def dependency(request: Request):
-        return await verify_telegram_data_dep(request, bot_name)
+        return await verify_telegram_data_dep(request, bot_name, type_auth)
 
     return Depends(dependency)
 
@@ -250,8 +255,21 @@ async def extract_user_data(data_dict: dict) -> dict:
     }
 
 
+@router.post("/verify-widget-tg")
+async def verify_telegram(
+    request: Request, pairs: list = get_verified_data("atombot", type_auth="widget")
+):
+    data_dict = dict(pairs)
+    user_data = await extract_user_data(data_dict)
+    data_dict = {"request": request, "user": user_data}
+
+    return await process_profile("profile.html", data_dict)
+
+
 @router.post("/verify-tg")
-async def verify_telegram(request: Request, pairs: list = get_verified_data("atombot")):
+async def verify_telegram(
+    request: Request, pairs: list = get_verified_data("atombot", type_auth="webapp")
+):
     data_dict = dict(pairs)
     user_data = await extract_user_data(data_dict)
     data_dict = {"request": request, "user": user_data}
@@ -260,7 +278,9 @@ async def verify_telegram(request: Request, pairs: list = get_verified_data("ato
 
 
 @router.post("/verify-affirm")
-async def verify_affirm(request: Request, pairs: list = get_verified_data("mininbot")):
+async def verify_affirm(
+    request: Request, pairs: list = get_verified_data("mininbot", type_auth="webapp")
+):
     try:
         user_data = await extract_user_data(dict(pairs))
 
