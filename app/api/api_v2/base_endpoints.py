@@ -163,6 +163,10 @@ def verify_telegram_data(raw_query: str, bot_token: str, type_auth: str) -> bool
         # Разбираю строку запроса, получая список кортежей (ключ, значение)
         pairs = parse_qsl(raw_query, keep_blank_values=True)
         data_dict = dict(pairs)
+        print(f"pairs: {pairs}")
+        print(f"data_dict: {data_dict}")
+        print(f"raw_query: {raw_query}")
+
 
         input_hash = data_dict.get("hash", None)
         if not input_hash:
