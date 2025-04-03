@@ -160,6 +160,8 @@ def verify_telegram_data(raw_query: str, bot_token: str, type_auth: str) -> bool
     Проверяет валидность данных от Telegram Web Apps
     """
     try:
+        print(f"type_auth: {type_auth}")
+
         # Разбираю строку запроса, получая список кортежей (ключ, значение)
         pairs = parse_qsl(raw_query, keep_blank_values=True)
         data_dict = dict(pairs)
