@@ -195,8 +195,8 @@ def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
             hashlib.sha256,
         ).hexdigest()
 
-        print(f"Generated hash: {generated_hash}")
-        print(f"Input hash: {input_hash}")
+        # print(f"Generated hash: {generated_hash}")
+        # print(f"Input hash: {input_hash}")
 
         # Защита от атаки по времени
         return hmac.compare_digest(generated_hash, input_hash)
