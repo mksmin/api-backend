@@ -301,7 +301,9 @@ async def verify_telegram(
     request: Request, pairs: list = get_verified_data("atombot", type_auth="widget")
 ):
     data_dict = dict(pairs)
-    user_data = {"user": str(data_dict)}
+    user_data = {"user": json.dumps(data_dict)}
+
+    print(f"user_data: {user_data}")
 
     user_data = await extract_user_data(user_data)
     data_dict = {"request": request, "user": user_data}
