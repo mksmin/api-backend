@@ -358,7 +358,7 @@ async def verify_telegram(
                             data_dict = {
                                 "request": request,
                                 "user": user_data,
-                                "affirm": response.get("tasks", {}),  # Пример данных
+                                "affirm": response.get("tasks", []),  # Пример данных
                             }
                             return await process_profile("affirm.html", data_dict)
 
@@ -427,7 +427,7 @@ async def verify_affirm(
                             data_dict = {
                                 "request": request,
                                 "user": user_data,
-                                "affirm": response.get("tasks", {}),  # Пример данных
+                                "affirm": response.get("tasks", []),  # Пример данных
                             }
                             return await process_profile("affirm.html", data_dict)
 
