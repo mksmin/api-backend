@@ -309,7 +309,7 @@ async def verify_telegram(
 
 @router.post("/verify-tg")
 async def verify_telegram(
-    request: Request, pairs: list = get_verified_data("atombot", type_auth="webapp")
+    request: Request, pairs: list = get_verified_data("testbot", type_auth="webapp")
 ):
     data_dict = dict(pairs)
     user_data = await extract_user_data(data_dict)
@@ -320,7 +320,7 @@ async def verify_telegram(
 
 @router.post("/verify-affirm")
 async def verify_affirm(
-    request: Request, pairs: list = get_verified_data("mininbot", type_auth="webapp")
+    request: Request, pairs: list = get_verified_data("testbot", type_auth="webapp")
 ):
     try:
         user_data = await extract_user_data(dict(pairs))
