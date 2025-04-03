@@ -207,42 +207,36 @@ def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
 
 def verify_telegram_widget(raw_query: str, bot_token: str) -> bool:
     try:
-        pairs = parse_qsl(raw_query, keep_blank_values=True)
-        data_dict = dict(pairs)
-        input_hash = data_dict.get("hash")
+        pairs = parse_qs(raw_query, keep_blank_values=True)
+        data = {k: v[0] for k, v in pairs.items()}
 
-        if not input_hash:
+        # Извлекаем hash и удаляем его из словаря
+        received_hash = data.pop("hash", None)
+
+        if not received_hash:
+            print("Параметр hash не найден в данных.")
             return False
 
-        # Разрешенные поля для Widget
-        allowed_fields = {"id", "first_name", "last_name", "username", "auth_date"}
+        # Формируем строку проверки: сортируем ключи и объединяем их в формате "ключ=значение",
+        # разделяя строки символом перевода строки "\n"
+        data_check_arr = []
+        for key in sorted(data.keys()):
+            data_check_arr.append(f"{key}={data[key]}")
+        data_check_string = "\n".join(data_check_arr)
 
-        # Фильтруем и сортируем поля
-        filtered_pairs = [
-            (k, v) for k, v in pairs if k in allowed_fields and k != "hash"
-        ]
-        sorted_pairs = sorted(filtered_pairs, key=lambda x: x[0])
-
-        print(f"Sorted pairs: {sorted_pairs}")
-
-        # Формируем строку с разделителем \n (согласно документации)
-        data_check_str = "\n".join([f"{k}={v}" for k, v in sorted_pairs])
-        print(f"Data check string: {data_check_str}")
-
-        # Генерация секретного ключа для Widget
+        # Вычисляем секретный ключ: SHA256-хэш от токена бота
         secret_key = hashlib.sha256(bot_token.encode()).digest()
 
-        # Генерация хэша
-        generated_hash = hmac.new(
-            secret_key,
-            data_check_str.encode(),
-            hashlib.sha256,
+        # Вычисляем HMAC-SHA256 от data_check_string, используя secret_key
+        hmac_hash = hmac.new(
+            secret_key, data_check_string.encode(), hashlib.sha256
         ).hexdigest()
 
-        print(f"Generated hash: {generated_hash}")
-        print(f"Input hash: {input_hash}")
+        print(f"Generated hash: {hmac_hash}")
+        print(f"Input hash: {received_hash}")
 
-        return hmac.compare_digest(generated_hash, input_hash)
+        # Сравниваем вычисленный хэш с полученным (безопасное сравнение)
+        return hmac.compare_digest(hmac_hash, received_hash)
     except Exception as e:
         raise ValueError(f"Widget verification error: {e}")
 
