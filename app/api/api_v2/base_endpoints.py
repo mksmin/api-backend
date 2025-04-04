@@ -249,20 +249,25 @@ async def verify_telegram_data_dep(request: Request, bot_name: str, type_auth: s
 
         if not raw_data_str:
             raise HTTPException(status_code=400, detail="Missing initData")
-
-        if type_auth == "widget":
-            verify_result = verify_telegram_widget(
-                raw_data_str, settings.api.bot_token[bot_name]
-            )
-        else:
-            verify_result = verify_telegram_data(
-                raw_data_str, settings.api.bot_token[bot_name]
-            )
+        try:
+            if type_auth == "widget":
+                verify_result = verify_telegram_widget(
+                    raw_data_str, settings.api.bot_token[bot_name]
+                )
+            else:
+                verify_result = verify_telegram_data(
+                    raw_data_str, settings.api.bot_token[bot_name]
+                )
+        except ValueError as e:
+            raise HTTPException(status_code=401, detail=str(e))
 
         if not verify_result:
             raise HTTPException(status_code=401, detail="Invalid data")
 
         return parse_qsl(raw_data_str, keep_blank_values=True)
+
+    except HTTPException as he:
+        raise he
 
     except Exception as e:
         logger.error(f"Verification error: {str(e)}")
