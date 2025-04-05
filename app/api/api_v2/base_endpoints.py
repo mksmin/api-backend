@@ -1,21 +1,21 @@
 # import lib
-import hashlib
-import hmac
+from urllib.parse import parse_qsl
+
+import aio_pika
 import json
 import pprint
 import uuid
-from urllib.parse import parse_qsl, unquote, parse_qs
-
-import aio_pika
 
 # import from lib
-from fastapi import APIRouter, Depends, Request, HTTPException, Cookie
+from fastapi import APIRouter, Depends, Request, HTTPException, Cookie, status
 from fastapi.responses import JSONResponse, FileResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
 
+
 # import from modules
 from app.core import settings, logger
+from .auth import auth_utils
 
 router = APIRouter()
 BASE_DIR = Path.cwd().parent  # project working directory api_atomlab/app
@@ -41,12 +41,18 @@ async def get_current_user(
     access_token: str | None = Cookie(default=None, alias="access_token"),
 ) -> dict | None:
     """Middleware для проверки токена"""
-    # Пропускаем публичные эндпоинты
+    print("1 Получил access_token: ", access_token)
 
+    # Пропускаем публичные эндпоинты
     if not access_token:
         return None
+
     try:
-        user_id = 123456
+        print("Получил access_token: ", access_token)
+        payload = await auth_utils.decode_jwt(access_token)
+        print(f"payload: {payload}")
+
+        user_id: str = payload.get("user_id")
         if not user_id:
             return None
 
@@ -60,10 +66,10 @@ async def get_current_user(
             "language_code": "ru",
             "allows_write_to_pm": True,
         }
-
         return user_data
 
-    except Exception as e:
+    except HTTPException as he:
+        logger.error(f"Ошибка в middleware: {he}")
         return None
 
 
@@ -183,170 +189,130 @@ async def user_profile_tg(request: Request, user: dict = Depends(get_current_use
     )
 
 
-def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
-    """
-    Проверяет валидность данных от Telegram Web Apps
-    """
+@router.get("/content")
+async def get_content(request: Request):
+    token = request.cookies.get("jwt_token")
+    if not token:
+        raise HTTPException(401, "Unauthorized")
+
     try:
+        await auth_utils.decode_jwt(token)
+    except HTTPException as he:
+        raise he
 
-        # Разбираю строку запроса, получая список кортежей (ключ, значение)
-        pairs = parse_qsl(raw_query, keep_blank_values=True)
-        data_dict = dict(pairs)
-
-        input_hash = data_dict.get("hash", None)
-        if not input_hash:
-            return False
-
-        # Сортирую по ключам
-        sorted_pairs = sorted(
-            [(k, v) for k, v in pairs if k != "hash"],
-            key=lambda x: x[0],
-        )
-
-        # Формирую список со строками для хеширования
-        data_check_list = [f"{k}={v}" for k, v in sorted_pairs]
-
-        # Собираю общую строку
-        data_check_str = "\n".join(data_check_list)
-
-        # Генерация секретного ключа
-        secret_key = hmac.new(
-            "WebAppData".encode(),
-            bot_token.encode(),
-            hashlib.sha256,
-        ).digest()
-
-        # Генерация хэша
-        generated_hash = hmac.new(
-            secret_key,
-            data_check_str.encode(),
-            hashlib.sha256,
-        ).hexdigest()
-
-        # print(f"Generated hash: {generated_hash}")
-        # print(f"Input hash: {input_hash}")
-
-        # Защита от атаки по времени
-        return hmac.compare_digest(generated_hash, input_hash)
-
-    except Exception as e:
-        raise ValueError(f"Verification error: {e}")
+    page = request.query_params.get("page", "profile")
+    content_template = f"{page}.html"
+    html_content = templates.TemplateResponse(
+        content_template,
+        {
+            "request": request,
+            "user": {
+                "id": 1234456,
+                "first_name": "Тестов",
+                "last_name": "Тестович",
+                "username": "testovich",
+                "is_premium": True,
+                "photo_url": None,
+                "language_code": "ru",
+                "allows_write_to_pm": True,
+            },
+        },
+    )
 
 
-def verify_telegram_widget(raw_query: str, bot_token: str) -> bool:
+@router.post("/auth")
+async def auth_user(
+    request: Request,
+    access_validate: list = auth_utils.get_verified_data("atombot"),
+    client_type: str = Depends(auth_utils.verify_client),
+):
+    raw_data = await request.body()
+    raw_data_str = raw_data.decode()
+    pairs = parse_qsl(raw_data_str, keep_blank_values=True)
+    data_dict = dict(pairs)
+    if client_type == "TelegramWidget":
+        user_data = {"user": json.dumps(data_dict)}
+    else:
+        user_data = {"id": 123456}
+
+    print(f"data_dict: {data_dict}")
+    print(f"user_data: {user_data}")
+    user_id = user_data.get("id")
+    print(f"user_id: {user_id}")
+
+    # Генерирую токены
+    jwt_token = await auth_utils.sign_jwt_token(int(data_dict.get("id")))
+    csrf_token = await auth_utils.sign_csrf_token()
+
+    # Формирую ответ
+    response = JSONResponse(content={"status": "Authenticated"}, status_code=200)
+
+    # Устанавливаю куки
+    response.set_cookie(
+        key="access_token",
+        value=jwt_token["access_token"],
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=auth_utils.ACCESS_TOKEN_EXPIRE_HOURS * 3600,
+    )
+
+    response.set_cookie(
+        key="csrf_token",
+        value=csrf_token,
+        secure=True,
+        samesite="lax",
+        max_age=1800,
+    )
+    return response
+
+
+@router.post("/refresh-csrf")
+async def refresh_csrf(request: Request):
+    # Проверяю JWT токен
+    token = request.cookies.get("jwt_token")
+    if not token:
+        raise HTTPException(401, "Unauthorized")
+
     try:
-        pairs = parse_qs(raw_query, keep_blank_values=True)
-        data = {k: v[0] for k, v in pairs.items()}
-
-        # Извлекаем hash и удаляем его из словаря
-        received_hash = data.pop("hash", None)
-
-        if not received_hash:
-            print("Параметр hash не найден в данных.")
-            return False
-
-        # Формируем строку проверки: сортируем ключи и объединяем их в формате "ключ=значение",
-        # разделяя строки символом перевода строки "\n"
-        data_check_arr = []
-        for key in sorted(data.keys()):
-            data_check_arr.append(f"{key}={data[key]}")
-        data_check_string = "\n".join(data_check_arr)
-
-        # Вычисляем секретный ключ: SHA256-хэш от токена бота
-        secret_key = hashlib.sha256(bot_token.encode()).digest()
-
-        # Вычисляем HMAC-SHA256 от data_check_string, используя secret_key
-        hmac_hash = hmac.new(
-            secret_key, data_check_string.encode(), hashlib.sha256
-        ).hexdigest()
-
-        # print(f"Generated hash: {hmac_hash}")
-        # print(f"Input hash: {received_hash}")
-
-        # Сравниваем вычисленный хэш с полученным (безопасное сравнение)
-        return hmac.compare_digest(hmac_hash, received_hash)
-    except Exception as e:
-        raise ValueError(f"Widget verification error: {e}")
-
-
-# Общая зависимость верификации данных от Telegram
-async def verify_telegram_data_dep(request: Request, bot_name: str, type_auth: str):
-    try:
-        raw_data = await request.body()
-        raw_data_str = raw_data.decode()
-
-        if not raw_data_str:
-            raise HTTPException(status_code=400, detail="Missing initData")
-        try:
-            if type_auth == "widget":
-                verify_result = verify_telegram_widget(
-                    raw_data_str, settings.api.bot_token[bot_name]
-                )
-            else:
-                verify_result = verify_telegram_data(
-                    raw_data_str, settings.api.bot_token[bot_name]
-                )
-        except ValueError as e:
-            raise HTTPException(status_code=401, detail=str(e))
-
-        if not verify_result:
-            raise HTTPException(status_code=401, detail="Invalid data")
-
-        return parse_qsl(raw_data_str, keep_blank_values=True)
+        await auth_utils.decode_jwt(token)
 
     except HTTPException as he:
         raise he
 
-    except Exception as e:
-        logger.error(f"Verification error: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+    new_csrf_token = await auth_utils.sign_csrf_token()
 
-
-def get_verified_data(bot_name: str, type_auth: str = "webapp"):
-    async def dependency(request: Request):
-        return await verify_telegram_data_dep(request, bot_name, type_auth)
-
-    return Depends(dependency)
-
-
-# Общая функция для обработки профиля
-async def process_profile(template_name: str, data_dict_for_template):
-
-    return templates.TemplateResponse(template_name, data_dict_for_template)
-
-
-async def extract_user_data(data_dict: dict) -> dict:
-    user_data = json.loads(data_dict["user"])
-    return {
-        "id": user_data.get("id"),
-        "first_name": user_data.get("first_name", None),
-        "last_name": user_data.get("last_name", None),
-        "username": user_data.get("username", None),
-        "is_premium": user_data.get("is_premium", None),
-        "photo_url": user_data.get("photo_url", None),
-        "language_code": user_data.get("language_code", None),
-        "allows_write_to_pm": user_data.get("allows_write_to_pm", None),
-    }
+    response = JSONResponse({"status": "CSRF token refreshed"})
+    response.set_cookie(
+        key="csrf_token",
+        value=new_csrf_token,
+        secure=True,
+        samesite="lax",
+        max_age=1800,
+    )
+    return response
 
 
 @router.post("/verify-widget-tg")
 async def verify_telegram(
-    request: Request, pairs: list = get_verified_data("atombot", type_auth="widget")
+    request: Request,
+    pairs: list = auth_utils.get_verified_data("atombot"),
 ):
     data_dict = dict(pairs)
     user_data = {"user": json.dumps(data_dict)}
 
     # print(f"user_data: {user_data}")
 
-    user_data = await extract_user_data(user_data)
+    user_data = await auth_utils.extract_user_data(user_data)
     data_dict = {"request": request, "user": user_data}
 
-    return await process_profile("profile.html", data_dict)
+    return await auth_utils.process_profile("profile.html", data_dict)
 
 
 @router.post("/verify-widget-tg-affirm")
 async def verify_telegram(
-    request: Request, pairs: list = get_verified_data("atombot", type_auth="widget")
+    request: Request,
+    pairs: list = auth_utils.get_verified_data("atombot"),
 ):
     data_dict = dict(pairs)
     user_data = {"user": json.dumps(data_dict)}
@@ -354,7 +320,7 @@ async def verify_telegram(
     # print(f"user_data: {user_data}")
 
     try:
-        user_data = await extract_user_data(dict(user_data))
+        user_data = await auth_utils.extract_user_data(dict(user_data))
 
         rabbit_request = {
             "request": "GET",
@@ -393,7 +359,9 @@ async def verify_telegram(
                                 "user": user_data,
                                 "affirm": response.get("tasks", []),  # Пример данных
                             }
-                            return await process_profile("affirm.html", data_dict)
+                            return await auth_utils.process_profile(
+                                "affirm.html", data_dict
+                            )
 
         finally:
             await connection.close()
@@ -412,21 +380,23 @@ async def verify_telegram(
 
 @router.post("/verify-tg")
 async def verify_telegram(
-    request: Request, pairs: list = get_verified_data("testbot", type_auth="webapp")
+    request: Request,
+    pairs: list = auth_utils.get_verified_data("testbot"),
 ):
     data_dict = dict(pairs)
-    user_data = await extract_user_data(data_dict)
+    user_data = await auth_utils.extract_user_data(data_dict)
     data_dict = {"request": request, "user": user_data}
 
-    return await process_profile("profile.html", data_dict)
+    return await auth_utils.process_profile("profile.html", data_dict)
 
 
 @router.post("/verify-affirm")
 async def verify_affirm(
-    request: Request, pairs: list = get_verified_data("mininbot", type_auth="webapp")
+    request: Request,
+    pairs: list = auth_utils.get_verified_data("mininbot"),
 ):
     try:
-        user_data = await extract_user_data(dict(pairs))
+        user_data = await auth_utils.extract_user_data(dict(pairs))
 
         rabbit_request = {
             "request": "GET",
@@ -465,7 +435,9 @@ async def verify_affirm(
                                 "user": user_data,
                                 "affirm": response.get("tasks", []),  # Пример данных
                             }
-                            return await process_profile("affirm.html", data_dict)
+                            return await auth_utils.process_profile(
+                                "affirm.html", data_dict
+                            )
 
         finally:
             await connection.close()
