@@ -191,6 +191,7 @@ async def get_content(request: Request, user: dict = Depends(get_current_user)):
         )
     print("test affirm:", request.query_params.get("page"))
     page = request.query_params.get("page", "profile")
+    page.replace("/", "")
     content_template = f"{page}.html"
     print(f"Content template: {content_template}")
 
