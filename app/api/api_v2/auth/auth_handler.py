@@ -58,7 +58,6 @@ async def sign_jwt_token(user_id: int) -> dict:
     }
 
     token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
-    print(f"Отправил токен: {token}")
     return token_response(token)
 
 
@@ -178,6 +177,9 @@ def verify_telegram_widget(raw_query: str, bot_token: str) -> bool:
             secret_key, data_check_string.encode(), hashlib.sha256
         ).hexdigest()
 
+        # print(f"hmac_hash: {hmac_hash}")
+        # print(f"received_hash: {received_hash}")
+
         # Сравниваем вычисленный хэш с полученным (безопасное сравнение)
         return hmac.compare_digest(hmac_hash, received_hash)
     except Exception as e:
@@ -194,9 +196,11 @@ async def verify_telegram_data_dep(
         raw_data_str = raw_data.decode()
 
         if not raw_data_str:
+            logger.error('"raw_data_str" is empty')
             raise HTTPException(status_code=400, detail="Missing data")
 
         try:
+            logger.info(f"client_type: {client_type}")
             if client_type == "TelegramWidget":
                 verify_result = verify_telegram_widget(
                     raw_data_str, settings.api.bot_token[bot_name]
@@ -206,12 +210,17 @@ async def verify_telegram_data_dep(
                     raw_data_str, settings.api.bot_token[bot_name]
                 )
             else:
+                logger.error(
+                    '"client_type" is not "TelegramMiniApp" or "TelegramWidget"'
+                )
                 raise HTTPException(status_code=400, detail="Invalid client type")
 
         except ValueError as e:
+            logger.error('"raw_data_str" is not valid')
             raise HTTPException(status_code=401, detail=str(e))
 
         if not verify_result:
+            logger.error('"raw_data_str" is not valid')
             raise HTTPException(status_code=401, detail="Invalid data")
 
         return True

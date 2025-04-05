@@ -41,7 +41,6 @@ async def get_current_user(
     access_token: str | None = Cookie(default=None, alias="access_token"),
 ) -> dict | None:
     """Middleware для проверки токена"""
-
     # Пропускаем публичные эндпоинты
     if not access_token:
         return None
@@ -171,13 +170,13 @@ async def html_path(name_script: str):
     return FileResponse(result, status_code=status)
 
 
-# @router.get("/affirm", include_in_schema=False)
+@router.get("/affirm", include_in_schema=False)
 @router.get("/profile", include_in_schema=False)
 async def user_profile_tg(request: Request, user: dict = Depends(get_current_user)):
     """Главная страница профиля"""
     # Определяем контент в зависимости от авторизации
-    content_template = "profile.html" if user else "auth_widget.html"
-
+    # content_template = "profile.html" if user else "auth_widget.html"
+    content_template = "auth_widget.html"
     return templates.TemplateResponse(
         "base.html",
         {"request": request, "content_template": content_template, "user": user},
@@ -185,15 +184,11 @@ async def user_profile_tg(request: Request, user: dict = Depends(get_current_use
 
 
 @router.get("/content")
-async def get_content(request: Request):
-    token = request.cookies.get("jwt_token")
-    if not token:
-        raise HTTPException(401, "Unauthorized")
-
-    try:
-        await auth_utils.decode_jwt(token)
-    except HTTPException as he:
-        raise he
+async def get_content(request: Request, user: dict = Depends(get_current_user)):
+    if not user:
+        return JSONResponse(
+            content={"status": "Unauthorized"}, status_code=status.HTTP_401_UNAUTHORIZED
+        )
 
     page = request.query_params.get("page", "profile")
     content_template = f"{page}.html"
@@ -213,6 +208,7 @@ async def get_content(request: Request):
             },
         },
     )
+    return html_content
 
 
 @router.post("/auth")
@@ -230,9 +226,9 @@ async def auth_user(
     else:
         user_data = await auth_utils.extract_user_data(data_dict)
         user_id = user_data.get("id")
-
-    print(f"data_dict: {data_dict}")
-    print(f"user_data: {user_id}")
+    #
+    # print(f"data_dict: {data_dict}")
+    # print(f"user_data: {user_id}")
 
     # Генерирую токены
     jwt_token = await auth_utils.sign_jwt_token(int(user_id))
