@@ -223,7 +223,7 @@ async def get_content(request: Request):
 @router.post("/auth")
 async def auth_user(
     request: Request,
-    access_validate: list = auth_utils.get_verified_data("atombot"),
+    access_validate: list = auth_utils.get_verified_data("testbot"),
     client_type: str = Depends(auth_utils.verify_client),
 ):
     raw_data = await request.body()
