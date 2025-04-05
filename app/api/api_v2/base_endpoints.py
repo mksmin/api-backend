@@ -189,7 +189,7 @@ async def get_content(request: Request, user: dict = Depends(get_current_user)):
         return JSONResponse(
             content={"status": "Unauthorized"}, status_code=status.HTTP_401_UNAUTHORIZED
         )
-    print('test affirm:', request.query_params.get("page"))
+    print("test affirm:", request.query_params.get("page"))
     page = request.query_params.get("page", "profile")
     content_template = f"{page}.html"
     print(f"Content template: {content_template}")
@@ -216,7 +216,7 @@ async def get_content(request: Request, user: dict = Depends(get_current_user)):
 @router.post("/auth")
 async def auth_user(
     request: Request,
-    access_validate: list = auth_utils.get_verified_data("testbot"),
+    access_validate: list = auth_utils.get_verified_data("atombot"),
     client_type: str = Depends(auth_utils.verify_client),
 ):
     raw_data = await request.body()
