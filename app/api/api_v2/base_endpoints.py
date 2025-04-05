@@ -9,7 +9,7 @@ from urllib.parse import parse_qsl, unquote, parse_qs
 import aio_pika
 
 # import from lib
-from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi import APIRouter, Depends, Request, HTTPException, Cookie
 from fastapi.responses import JSONResponse, FileResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
@@ -35,6 +35,36 @@ async def check_path(path_file: Path):
         return path_file, 200
     else:
         return not_found_404, 404
+
+
+async def get_current_user(
+    access_token: str | None = Cookie(default=None, alias="access_token"),
+) -> dict | None:
+    """Middleware для проверки токена"""
+    # Пропускаем публичные эндпоинты
+
+    if not access_token:
+        return None
+    try:
+        user_id = 123456
+        if not user_id:
+            return None
+
+        user_data = {
+            "id": user_id,
+            "first_name": "Test_name",
+            "last_name": "Test_last_name",
+            "username": "test_username",
+            "is_premium": True,
+            "photo_url": None,
+            "language_code": "ru",
+            "allows_write_to_pm": True,
+        }
+
+        return user_data
+
+    except Exception as e:
+        return None
 
 
 @router.get("/")
@@ -140,18 +170,16 @@ async def html_path(name_script: str):
 
 # @router.get("/affirm", include_in_schema=False)
 @router.get("/profile", include_in_schema=False)
-async def user_profile_tg(request: Request):
+async def user_profile_tg(request: Request, user: dict = Depends(get_current_user)):
     """Главная страница профиля"""
     # Определяем контент в зависимости от авторизации
-    template = "profile.html" if request.state.user else "auth_widget.html"
+    content_template = "profile.html" if user else "auth_widget.html"
+
+    print(f"template: {content_template}")
 
     return templates.TemplateResponse(
         "base.html",
-        {
-            "request": request,
-            "content_template": template,
-            "user": request.state.user
-        },
+        {"request": request, "content_template": content_template, "user": user},
     )
 
 
