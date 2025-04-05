@@ -138,21 +138,21 @@ async def html_path(name_script: str):
     return FileResponse(result, status_code=status)
 
 
-@router.get("/affirm", include_in_schema=False)
+# @router.get("/affirm", include_in_schema=False)
 @router.get("/profile", include_in_schema=False)
 async def user_profile_tg(request: Request):
-    """
-    Returns the user profile HTML file.
+    """Главная страница профиля"""
+    # Определяем контент в зависимости от авторизации
+    template = "profile.html" if request.state.user else "auth_widget.html"
 
-    Args:
-        request (Request): The incoming request object.
-
-    Returns:
-        FileResponse: The user profile HTML file.
-    """
-    profile_html = FRONTEND_DIR / "templates/base.html"
-
-    return FileResponse(profile_html)
+    return templates.TemplateResponse(
+        "base.html",
+        {
+            "request": request,
+            "content_template": template,
+            "user": request.state.user
+        },
+    )
 
 
 def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
