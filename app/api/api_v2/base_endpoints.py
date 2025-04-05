@@ -192,6 +192,8 @@ async def get_content(request: Request, user: dict = Depends(get_current_user)):
 
     page = request.query_params.get("page", "profile")
     content_template = f"{page}.html"
+    print(f"Content template: {content_template}")
+
     html_content = templates.TemplateResponse(
         content_template,
         {
