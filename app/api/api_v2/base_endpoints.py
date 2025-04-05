@@ -41,16 +41,13 @@ async def get_current_user(
     access_token: str | None = Cookie(default=None, alias="access_token"),
 ) -> dict | None:
     """Middleware для проверки токена"""
-    print("1 Получил access_token: ", access_token)
 
     # Пропускаем публичные эндпоинты
     if not access_token:
         return None
 
     try:
-        print("Получил access_token: ", access_token)
         payload = await auth_utils.decode_jwt(access_token)
-        print(f"payload: {payload}")
 
         user_id: str = payload.get("user_id")
         if not user_id:
@@ -181,8 +178,6 @@ async def user_profile_tg(request: Request, user: dict = Depends(get_current_use
     # Определяем контент в зависимости от авторизации
     content_template = "profile.html" if user else "auth_widget.html"
 
-    print(f"template: {content_template}")
-
     return templates.TemplateResponse(
         "base.html",
         {"request": request, "content_template": content_template, "user": user},
@@ -231,17 +226,16 @@ async def auth_user(
     pairs = parse_qsl(raw_data_str, keep_blank_values=True)
     data_dict = dict(pairs)
     if client_type == "TelegramWidget":
-        user_data = {"user": json.dumps(data_dict)}
+        user_id = data_dict.get("id")
     else:
-        user_data = {"id": 123456}
+        user_data = await auth_utils.extract_user_data(data_dict)
+        user_id = user_data.get("id")
 
     print(f"data_dict: {data_dict}")
-    print(f"user_data: {user_data}")
-    user_id = user_data.get("id")
-    print(f"user_id: {user_id}")
+    print(f"user_data: {user_id}")
 
     # Генерирую токены
-    jwt_token = await auth_utils.sign_jwt_token(int(data_dict.get("id")))
+    jwt_token = await auth_utils.sign_jwt_token(int(user_id))
     csrf_token = await auth_utils.sign_csrf_token()
 
     # Формирую ответ
