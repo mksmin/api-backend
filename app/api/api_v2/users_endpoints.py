@@ -79,7 +79,7 @@ async def get_token(user_id: int):
             content={"message": f"{user_id} is not an integer"}, status_code=400
         )
 
-    result = await ah.sign_jwt(user_id)
+    result = await ah.sign_jwt_token(user_id)
     return JSONResponse(content=result, status_code=201)
 
 
