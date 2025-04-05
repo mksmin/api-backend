@@ -10,10 +10,12 @@ import api.api_v1_archived.api_v1.auth.auth_handler as ah
 postapp = APIRouter()
 
 
-@postapp.post('/registration/', include_in_schema=False)
+@postapp.post("/registration/", include_in_schema=False)
 async def create_user(data=Body()):
-    message_to_badreq = {"message": "Bad Request: You don't have "
-                                    "the necessary parameters in the request body"}
+    message_to_badreq = {
+        "message": "Bad Request: You don't have "
+        "the necessary parameters in the request body"
+    }
     bad_request = JSONResponse(content=message_to_badreq, status_code=400)
     if not data.get("params"):
         return bad_request
@@ -27,31 +29,41 @@ async def create_user(data=Body()):
         # Проверяем, что требуемые параметры существуют в запросе
         return bad_request
 
-    params_from_json = await get_data_from_json(params)  # получаем словарь из обработанного json
+    params_from_json = await get_data_from_json(
+        params
+    )  # получаем словарь из обработанного json
 
-    colums_names_db = await rq.get_colums_name('atomlabreguser')  # Получаем список всех столбцов в БД
-    difference_column = set([x.lower() for x in params_from_json]).difference(colums_names_db)
+    colums_names_db = await rq.get_colums_name(
+        "atomlabreguser"
+    )  # Получаем список всех столбцов в БД
+    difference_column = set([x.lower() for x in params_from_json]).difference(
+        colums_names_db
+    )
 
     if len(difference_column) > 0:
         # Если есть новые столбцы в запросе - создаем столбец в БД
-        await rq.add_column_for_db(difference_column, 'atomlabreguser', params_from_json)
+        await rq.add_column_for_db(
+            difference_column, "atomlabreguser", params_from_json
+        )
 
     try:
         # Сохраняем пользователя в БД
-        await rq.set_user_registration(params_from_json, 'atomlabreguser')
+        await rq.set_user_registration(params_from_json, "atomlabreguser")
     except Exception as e:
         text_message = {"message": str(e)}
         return JSONResponse(content=text_message, status_code=400)
     else:
-        return JSONResponse(content={"Message": "Request was successful!"}, status_code=201)
+        return JSONResponse(
+            content={"Message": "Request was successful!"}, status_code=201
+        )
 
 
-@postapp.post('/get_token/{user_id}', include_in_schema=False)
+@postapp.post("/get_token/{user_id}", include_in_schema=False)
 async def get_token(user_id: int):
     if not isinstance(user_id, int):
-        return JSONResponse(content={"message": f"{user_id} is not an integer"}, status_code=400)
+        return JSONResponse(
+            content={"message": f"{user_id} is not an integer"}, status_code=400
+        )
 
-    result = await ah.sign_jwt(user_id)
+    result = await ah.sign_jwt_token(user_id)
     return JSONResponse(content=result, status_code=201)
-
-
