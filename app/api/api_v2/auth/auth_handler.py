@@ -34,6 +34,22 @@ JWT_ALGORITHM = settings.api.algorithm
 ACCESS_TOKEN_EXPIRE_HOURS = 1
 
 
+BOT_CONFIG = {
+    "bot1": {
+        "name": "atombot",
+        "redirect_uri": "/profile",
+    },
+    "bot2": {
+        "name": "mininbot",
+        "redirect_uri": "/affirm",
+    },
+    "bot3": {
+        "name": "testbot",
+        "redirect_uri": "/profile",
+    },
+}
+
+
 def token_response(token: str) -> dict:
     return {"access_token": token, "token_type": "bearer"}
 
@@ -250,7 +266,22 @@ def get_verified_data(bot_name: str):
         verified_data = await verify_telegram_data_dep(request, bot_name, client_type)
         return verified_data
 
-    return Depends(dependency)
+    return dependency
+
+
+async def verified_data_dependency(
+    request: Request,
+    bot_name: str,
+    client_type: str = Depends(verify_client),
+):
+    print(f"bot_name: {bot_name}")
+
+    bot_data = BOT_CONFIG.get(bot_name, None)
+    if not bot_data:
+        raise HTTPException(status_code=404, detail="Bot not Found")
+
+    dependency_func = get_verified_data(bot_data["name"])
+    return await dependency_func(request, client_type)
 
 
 # Общая функция для обработки профиля

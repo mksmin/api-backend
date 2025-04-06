@@ -8,7 +8,7 @@ import uuid
 
 # import from lib
 from fastapi import APIRouter, Depends, Request, HTTPException, Cookie, status
-from fastapi.responses import JSONResponse, FileResponse, HTMLResponse
+from fastapi.responses import JSONResponse, FileResponse, HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
 
@@ -58,7 +58,7 @@ async def get_current_user(
             "last_name": "Test_last_name",
             "username": "test_username",
             "is_premium": True,
-            "photo_url": None,
+            "photo_url": "https://t.me/i/userpic/320/KAW0oZ7WjH_Mp1p43zuUi2lzp_IW2rxF954-zq5f3us.jpg",
             "language_code": "ru",
             "allows_write_to_pm": True,
         }
@@ -189,25 +189,24 @@ async def get_content(request: Request, user: dict = Depends(get_current_user)):
         return JSONResponse(
             content={"status": "Unauthorized"}, status_code=status.HTTP_401_UNAUTHORIZED
         )
-    print("test affirm:", request.query_params.get("page"))
+
     page = request.query_params.get("page", "profile")
     page = page.replace("/", "")
     content_template = f"{page}.html"
-    print(f"Content template: {content_template}")
 
     html_content = templates.TemplateResponse(
         content_template,
         {
             "request": request,
             "user": {
-                "id": 1234456,
-                "first_name": "Тестов",
-                "last_name": "Тестович",
-                "username": "testovich",
-                "is_premium": True,
-                "photo_url": None,
-                "language_code": "ru",
-                "allows_write_to_pm": True,
+                "id": user.get("id"),
+                "first_name": user.get("first_name", None),
+                "last_name": user.get("last_name", None),
+                "username": user.get("username", None),
+                "is_premium": user.get("is_premium", None),
+                "photo_url": user.get("photo_url", None),
+                "language_code": user.get("language_code", None),
+                "allows_write_to_pm": user.get("allows_write_to_pm", None),
             },
         },
     )
@@ -215,11 +214,27 @@ async def get_content(request: Request, user: dict = Depends(get_current_user)):
 
 
 @router.post("/auth")
+async def auth_redirect():
+    # Редирект на /auth/bot1 с нужным кодом
+    return RedirectResponse(
+        url="/auth/bot1", status_code=status.HTTP_307_TEMPORARY_REDIRECT
+    )
+
+
+@router.post("/auth/{bot_name}")
 async def auth_user(
     request: Request,
-    access_validate: list = auth_utils.get_verified_data("atombot"),
+    bot_name: str | None = Path(default=None),
+    access_validate: list = Depends(auth_utils.verified_data_dependency),
     client_type: str = Depends(auth_utils.verify_client),
 ):
+    bot_data = auth_utils.BOT_CONFIG.get(bot_name)
+    redirect_url = bot_data.get("redirect_url", "/profile")
+
+    print(f"access_validate: {access_validate}")
+    print(f"client_type: {client_type}")
+    print(f"redirect_url: {redirect_url}")
+
     raw_data = await request.body()
     raw_data_str = raw_data.decode()
     pairs = parse_qsl(raw_data_str, keep_blank_values=True)
@@ -238,7 +253,7 @@ async def auth_user(
     csrf_token = await auth_utils.sign_csrf_token()
 
     # Формирую ответ
-    response = JSONResponse(content={"status": "Authenticated"}, status_code=200)
+    response = RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
 
     # Устанавливаю куки
     response.set_cookie(
