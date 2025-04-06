@@ -190,8 +190,23 @@ async def get_content(request: Request, user: dict = Depends(get_current_user)):
             content={"status": "Unauthorized"}, status_code=status.HTTP_401_UNAUTHORIZED
         )
 
-    page = request.query_params.get("page", "profile")
-    page = page.replace("/", "")
+    # Получаем путь без домена и начальной /
+    path = request.scope.get("path", "").lstrip("/")
+    # Разделяем путь по слэшам
+    path_parts = path.split("/")
+
+    # Определяем страницу на основе логики
+    if len(path_parts) == 1:
+        page = path_parts[0]
+    elif len(path_parts) == 2 and path_parts[0] == "apps":
+        bot_name = auth_utils.BOT_CONFIG.get(path_parts[1])
+        if not bot_name:
+            page = "profile"
+        else:
+            page = bot_name['redirect_url']
+    else:
+        page = "profile"
+
     content_template = f"{page}.html"
 
     html_content = templates.TemplateResponse(
