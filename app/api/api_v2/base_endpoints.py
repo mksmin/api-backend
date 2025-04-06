@@ -45,7 +45,6 @@ async def get_current_user(
     if not access_token:
         return None
 
-    print(f"Проверка токена: {access_token}")
 
     try:
         payload = await auth_utils.decode_jwt(access_token)
