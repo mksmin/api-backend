@@ -41,7 +41,7 @@ BOT_CONFIG = {
     },
     "bot2": {
         "name": "mininbot",
-        "redirect_url": "/affirm",
+        "redirect_url": "/affirmations",
     },
     "bot3": {
         "name": "testbot",

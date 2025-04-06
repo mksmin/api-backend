@@ -172,7 +172,7 @@ async def html_path(name_script: str):
     return FileResponse(result, status_code=status)
 
 
-@router.get("/affirm", include_in_schema=False)
+@router.get("/affirmations", include_in_schema=False)
 @router.get("/profile", include_in_schema=False)
 async def user_profile_tg(request: Request):
     """Главная страница профиля"""
