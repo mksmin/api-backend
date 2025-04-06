@@ -214,9 +214,7 @@ async def get_content(request: Request, user: dict = Depends(get_current_user)):
 
 
 @router.get("/apps/{bot_name}", response_class=HTMLResponse)
-async def handle_telegram_init(
-    request: Request, bot_name: str, tgWebAppData: str = Query(None)
-):
+async def handle_telegram_init(request: Request, bot_name: str):
     # Проверяем существование бота
     bot_config = auth_utils.BOT_CONFIG.get(bot_name)
     if not bot_config:
