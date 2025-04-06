@@ -25,7 +25,7 @@ class User(IntIdMixin, TimestampsMixin, Base):
 
     uuid = mapped_column(
         UUID(as_uuid=True),
-        nullable=True,
+        nullable=False,
         default=uuid.uuid4,
         unique=True,
     )
