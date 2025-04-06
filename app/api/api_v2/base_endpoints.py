@@ -7,7 +7,7 @@ import pprint
 import uuid
 
 # import from lib
-from fastapi import APIRouter, Depends, Request, HTTPException, Cookie, status
+from fastapi import APIRouter, Depends, Request, HTTPException, Cookie, status, Query
 from fastapi.responses import JSONResponse, FileResponse, HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
@@ -215,8 +215,7 @@ async def get_content(request: Request, user: dict = Depends(get_current_user)):
 
 @router.get("/apps/{bot_name}", response_class=HTMLResponse)
 async def handle_telegram_init(
-        request: Request,
-        bot_name: str,
+    request: Request, bot_name: str, tgWebAppData: str = Query(None)
 ):
     # Проверяем существование бота
     bot_config = auth_utils.BOT_CONFIG.get(bot_name)
@@ -225,14 +224,29 @@ async def handle_telegram_init(
 
     # Генерируем HTML с автоматической отправкой формы
     return f"""
-    <html>
-        <body>
-            <form id="authForm" action="/auth/{bot_name}" method="post">
-            </form>
-            <script>document.getElementById('authForm').submit()</script>
-        </body>
-    </html>
-    """
+        <html>
+            <body>
+                <script>
+                    // Отправляем POST запрос с кастомным заголовком
+                    fetch('/auth/{bot_name}', {{
+                        method: 'POST',
+                        headers: {{
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-Client-Source': 'TelegramMiniApp'
+                        }},
+                        body: new URLSearchParams({{
+                            'tgWebAppData': '{tgWebAppData}'
+                        }})
+                    }})
+                    .then(response => {{
+                        if(response.redirected) {{
+                            window.location.href = response.url;
+                        }}
+                    }});
+                </script>
+            </body>
+        </html>
+        """
 
 
 @router.post("/auth")
