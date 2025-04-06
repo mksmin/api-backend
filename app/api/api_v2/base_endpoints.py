@@ -174,14 +174,14 @@ async def html_path(name_script: str):
 
 @router.get("/affirm", include_in_schema=False)
 @router.get("/profile", include_in_schema=False)
-async def user_profile_tg(request: Request, user: dict = Depends(get_current_user)):
+async def user_profile_tg(request: Request):
     """Главная страница профиля"""
     # Определяем контент в зависимости от авторизации
     # content_template = "profile.html" if user else "auth_widget.html"
     content_template = "auth_widget.html"
     return templates.TemplateResponse(
         "base.html",
-        {"request": request, "content_template": content_template, "user": user},
+        {"request": request, "content_template": content_template},
     )
 
 
