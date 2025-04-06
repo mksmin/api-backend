@@ -9,8 +9,10 @@ from app.core import logger
 
 
 class UserSchema(BaseModel):
-    id_bid_ya: int
-    date_bid_ya: datetime
+    uuid: str
+
+    external_id_bid: Optional[int] = None
+    external_date_bid: Optional[datetime] = None
     first_name: Optional[str] = None
     middle_name: Optional[str] = None
     last_name: Optional[str] = None
@@ -29,9 +31,6 @@ class UserSchema(BaseModel):
     birth_date: Optional[datetime] = None
     sex: Optional[str] = None
 
-    project_id: Optional[int] = None
-    track: Optional[str] = None
-
     @model_validator(mode="before")
     @classmethod
     def prevalidate(cls, values: dict[str, any]) -> dict[str, any]:
@@ -43,11 +42,11 @@ class UserSchema(BaseModel):
                 logger.warning(f"Skipping key: {key}")
                 continue
             try:
-                if key in ("date_bid_ya", "birth_date"):
+                if key in ("external_date_bid", "birth_date"):
                     process_result[key] = cls.parse_datetime(value)
                 elif key == "timezone":
                     process_result[key] = str(value)
-                elif key in ("tg_id", "id_bid_ya", "project_id"):
+                elif key in ("tg_id", "external_id_bid"):
                     process_result[key] = int(value)
                 else:
                     process_result[key] = str(value)
@@ -64,7 +63,4 @@ class UserSchema(BaseModel):
         except Exception as e:
             raise ValueError(f"Invalid datetime format for value: {value}: {str(e)}")
 
-    model_config = ConfigDict(
-        from_attributes=True,
-        extra='ignore'
-    )
+    model_config = ConfigDict(from_attributes=True, extra="ignore")

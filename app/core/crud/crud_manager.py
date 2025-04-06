@@ -96,9 +96,6 @@ class UserManager(BaseCRUDManager[User]):
     async def create(self, data: dict) -> User:
         result = await self._validate_user_data(data)
 
-        if await self.exists_by_field("id_bid_ya", result["id_bid_ya"]):
-            raise ValueError("Пользователь с таким id_bid_ya уже существует")
-
         return await super().create(**result)
 
     @staticmethod

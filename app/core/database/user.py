@@ -22,18 +22,24 @@ from .base import Base
 
 
 class User(IntIdMixin, TimestampsMixin, Base):
-    id_bid_ya = mapped_column(
-        BigInteger,
-        nullable=False,
+
+    uuid = mapped_column(
+        UUID(as_uuid=True),
+        nullable=True,
+        default=uuid.uuid4,
         unique=True,
-        comment="ID заявки из внешнего сервиса регистраций (Yandex.Form)",
-        index=True,
     )
-    date_bid_ya: Mapped[datetime] = mapped_column(
+
+    external_id_bid = mapped_column(
+        BigInteger,
+        nullable=True,
+        comment="ID заявки из внешнего сервиса регистраций (например, Yandex.Form)",
+    )
+    external_date_bid: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        nullable=False,
+        nullable=True,
         default=datetime.utcnow,
-        comment="Дата регистрации пользователя во внешнем сервисе (Yandex.Form)",
+        comment="Дата регистрации пользователя во внешнем сервисе (например, Yandex.Form)",
     )
 
     # ФИО
@@ -44,7 +50,8 @@ class User(IntIdMixin, TimestampsMixin, Base):
     # Контакты
     email: Mapped[str] = mapped_column(String(250), nullable=True, index=True)
     mobile: Mapped[str] = mapped_column(String(60), nullable=True, index=True)
-    tg_id = mapped_column(BigInteger, nullable=True)
+    tg_id = mapped_column(BigInteger, nullable=True, index=True)
+    username: Mapped[str] = mapped_column(String(100), nullable=True)
 
     # Проживание и учеба
     citizenship: Mapped[str] = mapped_column(String(250), nullable=True)
@@ -61,14 +68,6 @@ class User(IntIdMixin, TimestampsMixin, Base):
     # Прочее
     birth_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
     sex: Mapped[str] = mapped_column(String(20), nullable=True, comment="Пол")
-
-    # Проект
-    project_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("projects.id"), nullable=True, unique=False
-    )
-    track: Mapped[str] = mapped_column(
-        String(250), nullable=True, comment="Название компетенции/трека"
-    )
 
     prj = relationship("Project", back_populates="user", uselist=False)
 
@@ -98,6 +97,7 @@ class User(IntIdMixin, TimestampsMixin, Base):
             f"email={self.email}, "
             f"first_name={self.first_name}, "
             f"last_name={self.last_name}, "
+            f"username={self.username},"
             f")>"
         )
 
@@ -107,7 +107,6 @@ class Project(IntIdMixin, TimestampsMixin, Base):
         UUID(as_uuid=True),
         nullable=False,
         default=uuid.uuid4,
-        server_default=text("uuid_generate_v4()"),
         unique=True,
     )
     prj_name: Mapped[str] = mapped_column(String(50), nullable=True)

@@ -20,8 +20,8 @@ FIELD_MAPPING: dict[str, str] = {
     "sex": "sex",
     "timezone": "timezone",
     "project_id": "project_id",
-    "date_bid": "date_bid_ya",
-    "id_bid": "id_bid_ya",
+    "date_bid": "external_date_bid",
+    "id_bid": "external_id_bid",
 }
 MODEL_FIELDS = User.get_model_fields()
 
