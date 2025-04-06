@@ -223,30 +223,11 @@ async def handle_telegram_init(
         raise HTTPException(404, detail="Bot not found")
 
     # Генерируем HTML с автоматической отправкой формы
-    return f"""
-        <html>
-            <body>
-                <script>
-                    // Отправляем POST запрос с кастомным заголовком
-                    fetch('/auth/{bot_name}', {{
-                        method: 'POST',
-                        headers: {{
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                            'X-Client-Source': 'TelegramMiniApp'
-                        }},
-                        body: new URLSearchParams({{
-                            'tgWebAppData': '{tgWebAppData}'
-                        }})
-                    }})
-                    .then(response => {{
-                        if(response.redirected) {{
-                            window.location.href = response.url;
-                        }}
-                    }});
-                </script>
-            </body>
-        </html>
-        """
+    content_template = "auth_widget.html"
+    return templates.TemplateResponse(
+        "base.html",
+        {"request": request, "content_template": content_template},
+    )
 
 
 @router.post("/auth")
