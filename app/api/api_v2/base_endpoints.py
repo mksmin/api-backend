@@ -213,6 +213,28 @@ async def get_content(request: Request, user: dict = Depends(get_current_user)):
     return html_content
 
 
+@router.get("/apps/{bot_name}", response_class=HTMLResponse)
+async def handle_telegram_init(
+        request: Request,
+        bot_name: str,
+):
+    # Проверяем существование бота
+    bot_config = auth_utils.BOT_CONFIG.get(bot_name)
+    if not bot_config:
+        raise HTTPException(404, detail="Bot not found")
+
+    # Генерируем HTML с автоматической отправкой формы
+    return f"""
+    <html>
+        <body>
+            <form id="authForm" action="/auth/{bot_name}" method="post">
+            </form>
+            <script>document.getElementById('authForm').submit()</script>
+        </body>
+    </html>
+    """
+
+
 @router.post("/auth")
 async def auth_redirect():
     # Редирект на /auth/bot1 с нужным кодом
