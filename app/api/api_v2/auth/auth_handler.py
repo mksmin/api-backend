@@ -37,15 +37,15 @@ ACCESS_TOKEN_EXPIRE_HOURS = 1
 BOT_CONFIG = {
     "bot1": {
         "name": "atombot",
-        "redirect_uri": "/profile",
+        "redirect_url": "/profile",
     },
     "bot2": {
         "name": "mininbot",
-        "redirect_uri": "/affirm",
+        "redirect_url": "/affirm",
     },
     "bot3": {
         "name": "testbot",
-        "redirect_uri": "/profile",
+        "redirect_url": "/profile",
     },
 }
 
