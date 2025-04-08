@@ -14,7 +14,8 @@ from pathlib import Path
 
 
 # import from modules
-from app.core import settings, logger
+from app.core import settings, logger, crud_manager
+from app.core.database import User
 from .auth import auth_utils
 
 router = APIRouter()
@@ -28,6 +29,15 @@ templates = Jinja2Templates(directory=FRONTEND_DIR / "templates")
 not_found_404 = FRONTEND_DIR / "src/404.html"
 
 
+async def get_current_user(search_field: str, value: str | int) -> User | None:
+    """
+    Получаю текущего пользователя из БД
+    :return:
+    """
+    user = crud_manager.user.get_one()
+    return user
+
+
 async def check_path(path_file: Path):
     file_exists = Path(path_file).exists()
 
@@ -37,14 +47,13 @@ async def check_path(path_file: Path):
         return not_found_404, 404
 
 
-async def get_current_user(
+async def check_access_token(
     access_token: str | None = Cookie(default=None, alias="access_token"),
 ) -> dict | None:
-    """Middleware для проверки токена"""
+    """Middleware для проверки токена из кук"""
     # Пропускаем публичные эндпоинты
     if not access_token:
         return None
-
 
     try:
         payload = await auth_utils.decode_jwt(access_token)
@@ -52,6 +61,9 @@ async def get_current_user(
         user_id: str = payload.get("user_id")
         if not user_id:
             return None
+
+        # user = await crud_manager.user.get_one(field="tg_id", value=user_id)
+        # print("user", user)
 
         user_data = {
             "id": user_id,
@@ -185,7 +197,7 @@ async def user_profile_tg(request: Request):
 
 
 @router.get("/content")
-async def get_content(request: Request, user: dict = Depends(get_current_user)):
+async def get_content(request: Request, user: dict = Depends(check_access_token)):
     if not user:
         return JSONResponse(
             content={"status": "Unauthorized"}, status_code=status.HTTP_401_UNAUTHORIZED
@@ -266,14 +278,12 @@ async def auth_user(
     raw_data_str = raw_data.decode()
     pairs = parse_qsl(raw_data_str, keep_blank_values=True)
     data_dict = dict(pairs)
+
     if client_type == "TelegramWidget":
         user_id = data_dict.get("id")
     else:
         user_data = await auth_utils.extract_user_data(data_dict)
         user_id = user_data.get("id")
-    #
-    # print(f"data_dict: {data_dict}")
-    # print(f"user_data: {user_id}")
 
     # Генерирую токены
     jwt_token = await auth_utils.sign_jwt_token(int(user_id))
@@ -288,15 +298,17 @@ async def auth_user(
         value=jwt_token["access_token"],
         httponly=True,
         secure=True,
-        samesite="lax",
-        max_age=auth_utils.ACCESS_TOKEN_EXPIRE_HOURS * 3600,
+        samesite=None,
+        path="/",
+        max_age=auth_utils.ACCESS_TOKEN_EXPIRE_HOURS * 900,
     )
 
     response.set_cookie(
         key="csrf_token",
         value=csrf_token,
         secure=True,
-        samesite="lax",
+        samesite=None,
+        path="/",
         max_age=1800,
     )
     return response
