@@ -64,6 +64,9 @@ class BaseCRUDManager(Generic[ModelType]):
             logger.info(f"Created {self.model.__name__} with id: {instance.id}")
             return instance
 
+    async def get_one(self, field: str, value: str) -> ModelType | None:
+        return await self.exists_by_field(field, value)
+
     async def delete(self, field: str, value: str | int) -> None:
         async with self._get_session() as session:
             query = (
