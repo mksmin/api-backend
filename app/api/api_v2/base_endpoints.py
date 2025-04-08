@@ -298,7 +298,7 @@ async def auth_user(
         value=jwt_token["access_token"],
         httponly=True,
         secure=True,
-        samesite=None,
+        samesite="None",
         path="/",
         max_age=auth_utils.ACCESS_TOKEN_EXPIRE_HOURS * 900,
     )
@@ -307,7 +307,7 @@ async def auth_user(
         key="csrf_token",
         value=csrf_token,
         secure=True,
-        samesite=None,
+        samesite="None",
         path="/",
         max_age=1800,
     )
