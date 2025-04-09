@@ -240,7 +240,9 @@ async def get_affirmations_data(user_data: dict):
 
 @router.get("/content")
 async def get_content(request: Request, user: str | bool = Depends(check_access_token)):
+    print('user', user)
     if not user:
+        print('Решил кинуть 401')
         return JSONResponse(
             content={"status": "Unauthorized"}, status_code=status.HTTP_401_UNAUTHORIZED
         )
