@@ -240,9 +240,7 @@ async def get_affirmations_data(user_data: dict):
 
 @router.get("/content")
 async def get_content(request: Request, user: str | bool = Depends(check_access_token)):
-    print("user", user)
     if not user:
-        print("Решил кинуть 401")
         return JSONResponse(
             content={"status": "Unauthorized"}, status_code=status.HTTP_401_UNAUTHORIZED
         )
@@ -266,7 +264,6 @@ async def get_content(request: Request, user: str | bool = Depends(check_access_
     payload = await auth_utils.decode_jwt(user)
     user_id: str = payload.get("user_id")
     user = await crud_manager.user.get_one(field="tg_id", value=int(user_id))
-    print("user", user)
 
     if not user:
         return None
@@ -281,7 +278,7 @@ async def get_content(request: Request, user: str | bool = Depends(check_access_
     if page == "affirmations":
         print("page", page)
         data_dict = await get_affirmations_data(user_data)
-        data_dict['request'] = request
+        data_dict["request"] = request
         html_content = templates.TemplateResponse(content_template, data_dict)
         return html_content
 
