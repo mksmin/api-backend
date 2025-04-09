@@ -259,9 +259,6 @@ async def get_content(request: Request, user: str | bool = Depends(check_access_
 
     content_template = f"{page}.html"
 
-
-
-
     payload = await auth_utils.decode_jwt(user)
     user_id: str = payload.get("user_id")
     user = await crud_manager.user.get_one(field="tg_id", value=int(user_id))
@@ -277,10 +274,9 @@ async def get_content(request: Request, user: str | bool = Depends(check_access_
     }
 
     if page == "affirmations":
+        print("page", page)
         data_dict = await get_affirmations_data(user_data)
-        html_content = templates.TemplateResponse(
-            content_template, data_dict
-        )
+        html_content = templates.TemplateResponse(content_template, data_dict)
         return html_content
 
     html_content = templates.TemplateResponse(
