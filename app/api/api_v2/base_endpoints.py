@@ -59,6 +59,7 @@ async def check_access_token(
         payload = await auth_utils.decode_jwt(access_token)
 
         user_id: str = payload.get("user_id")
+        print(f"user_id: {user_id}")
         if not user_id:
             return False
 
