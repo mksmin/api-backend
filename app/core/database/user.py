@@ -69,8 +69,6 @@ class User(IntIdMixin, TimestampsMixin, Base):
     birth_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
     sex: Mapped[str] = mapped_column(String(20), nullable=True, comment="Пол")
 
-    prj = relationship("Project", back_populates="user", uselist=False)
-
     @classmethod
     def get_model_fields(
         cls,
@@ -112,5 +110,3 @@ class Project(IntIdMixin, TimestampsMixin, Base):
     prj_name: Mapped[str] = mapped_column(String(50), nullable=True)
     prj_description: Mapped[str] = mapped_column(String(200), nullable=True)
     prj_owner = mapped_column(BigInteger, nullable=False, comment="tg_id пользователя")
-
-    user = relationship("User", back_populates="prj")

@@ -49,37 +49,24 @@ async def check_path(path_file: Path):
 
 async def check_access_token(
     access_token: str | None = Cookie(default=None, alias="access_token"),
-) -> dict | None:
+) -> str | bool:
     """Middleware для проверки токена из кук"""
     # Пропускаем публичные эндпоинты
     if not access_token:
-        return None
+        return False
 
     try:
         payload = await auth_utils.decode_jwt(access_token)
 
         user_id: str = payload.get("user_id")
         if not user_id:
-            return None
+            return False
 
-        # user = await crud_manager.user.get_one(field="tg_id", value=user_id)
-        # print("user", user)
-
-        user_data = {
-            "id": user_id,
-            "first_name": "Test_name",
-            "last_name": "Test_last_name",
-            "username": "test_username",
-            "is_premium": True,
-            "photo_url": "https://t.me/i/userpic/320/KAW0oZ7WjH_Mp1p43zuUi2lzp_IW2rxF954-zq5f3us.jpg",
-            "language_code": "ru",
-            "allows_write_to_pm": True,
-        }
-        return user_data
+        return access_token
 
     except HTTPException as he:
         logger.error(f"Ошибка в middleware: {he}")
-        return None
+        return False
 
 
 @router.get("/")
@@ -196,8 +183,62 @@ async def user_profile_tg(request: Request):
     )
 
 
+async def get_affirmations_data(user_data: dict):
+    try:
+        rabbit_request = {
+            "request": "GET",
+            "endpoint": "/user/affirmations",
+            "data": {
+                "user_tg_id": int(user_data.get("id")),
+                "first_name": user_data.get("first_name", ""),
+                "last_name": user_data.get("last_name", ""),
+                "username": user_data.get("username", ""),
+            },
+        }
+        correlation_id = str(uuid.uuid4())
+        connection = await aio_pika.connect_robust(f"{settings.rabbit.url}")
+        channel = await connection.channel()
+        reply_queue = await channel.declare_queue(exclusive=True)
+
+        await channel.default_exchange.publish(
+            aio_pika.Message(
+                body=json.dumps(rabbit_request).encode(),
+                reply_to=reply_queue.name,
+                correlation_id=correlation_id,
+            ),
+            routing_key="tasks",
+        )
+        # Ожидание ответа из временной очереди
+        response = None
+        try:
+            async with reply_queue.iterator() as queue_iter:
+                async for message in queue_iter:
+                    async with message.process():
+                        if message.correlation_id == correlation_id:
+                            response = json.loads(message.body)
+                            data_dict = {
+                                "user": user_data,
+                                "affirm": response.get("tasks", []),  # Пример данных
+                            }
+                            return data_dict
+
+        finally:
+            await connection.close()
+            print("Соединение закрыто")
+        # Проверка ответа и возврат шаблона
+        if not response:
+            raise HTTPException(500, "No response from /tasks")
+
+    except HTTPException as he:
+        raise he
+
+    except Exception as e:
+        logger.error(f"Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/content")
-async def get_content(request: Request, user: dict = Depends(check_access_token)):
+async def get_content(request: Request, user: str | bool = Depends(check_access_token)):
     if not user:
         return JSONResponse(
             content={"status": "Unauthorized"}, status_code=status.HTTP_401_UNAUTHORIZED
@@ -218,19 +259,46 @@ async def get_content(request: Request, user: dict = Depends(check_access_token)
 
     content_template = f"{page}.html"
 
+
+
+
+    payload = await auth_utils.decode_jwt(user)
+    user_id: str = payload.get("user_id")
+    user = await crud_manager.user.get_one(field="tg_id", value=int(user_id))
+
+    if not user:
+        return None
+
+    user_data = {
+        "id": user_id,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "username": user.username,
+    }
+
+    if page == "affirmations":
+        data_dict = await get_affirmations_data(user_data)
+        html_content = templates.TemplateResponse(
+            content_template, data_dict
+        )
+        return html_content
+
     html_content = templates.TemplateResponse(
         content_template,
         {
             "request": request,
             "user": {
-                "id": user.get("id"),
-                "first_name": user.get("first_name", None),
-                "last_name": user.get("last_name", None),
-                "username": user.get("username", None),
-                "is_premium": user.get("is_premium", None),
-                "photo_url": user.get("photo_url", None),
-                "language_code": user.get("language_code", None),
-                "allows_write_to_pm": user.get("allows_write_to_pm", None),
+                "id": user_data.get("id"),
+                "first_name": user_data.get("first_name", None),
+                "last_name": user_data.get("last_name", None),
+                "username": user_data.get("username", None),
+                "is_premium": user_data.get("is_premium", None),
+                "photo_url": user_data.get(
+                    "photo_url",
+                    "https://t.me/i/userpic/320/KAW0oZ7WjH_Mp1p43zuUi2lzp_IW2rxF954-zq5f3us.jpg",
+                ),
+                "language_code": user_data.get("language_code", "ru"),
+                "allows_write_to_pm": user_data.get("allows_write_to_pm", None),
             },
         },
     )
@@ -298,7 +366,7 @@ async def auth_user(
         value=jwt_token["access_token"],
         httponly=True,
         secure=True,
-        samesite="None",
+        samesite="none",
         path="/",
         max_age=auth_utils.ACCESS_TOKEN_EXPIRE_HOURS * 900,
     )
@@ -307,7 +375,7 @@ async def auth_user(
         key="csrf_token",
         value=csrf_token,
         secure=True,
-        samesite="None",
+        samesite="none",
         path="/",
         max_age=1800,
     )

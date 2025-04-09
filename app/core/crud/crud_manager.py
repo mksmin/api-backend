@@ -65,7 +65,14 @@ class BaseCRUDManager(Generic[ModelType]):
             return instance
 
     async def get_one(self, field: str, value: str) -> ModelType | None:
-        return await self.exists_by_field(field, value)
+        result = await self.exists_by_field(field, value)
+        if result:
+            async with self._get_session() as session:
+                query = select(self.model).where(getattr(self.model, field) == value)
+                result = await session.execute(query)
+                return result.scalar_one_or_none()
+
+        return result
 
     async def delete(self, field: str, value: str | int) -> None:
         async with self._get_session() as session:
