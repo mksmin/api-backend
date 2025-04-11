@@ -334,27 +334,43 @@ async def auth_user(
     access_validate: list = Depends(auth_utils.verified_data_dependency),
     client_type: str = Depends(auth_utils.verify_client),
 ):
+    logger.info(
+        "Auth request started | "
+        f"Path: {request.url.path} | "
+        f"Client: {request.client.host} | "
+        f"Client type: {client_type} | "
+        f"Bot: {bot_name} | "
+        f"Access: {access_validate}"
+    )
+
     bot_data = auth_utils.BOT_CONFIG.get(bot_name)
     redirect_url = bot_data.get("redirect_url", "/profile")
-
-    print(f"access_validate: {access_validate}")
-    print(f"client_type: {client_type}")
-    print(f"redirect_url: {redirect_url}")
+    logger.debug(f"Redirect URL: {redirect_url}")
 
     raw_data = await request.body()
     raw_data_str = raw_data.decode()
     pairs = parse_qsl(raw_data_str, keep_blank_values=True)
     data_dict = dict(pairs)
 
+    logger.debug(f"Received data: {data_dict}")
+
     if client_type == "TelegramWidget":
         user_id = data_dict.get("id")
+        logger.debug(f"TelegramWidget, user_id: {user_id}")
     else:
         user_data = await auth_utils.extract_user_data(data_dict)
         user_id = user_data.get("id")
+        logger.debug(f"Extracted user data: {user_data.keys()}")
 
     # Генерирую токены
+    logger.debug(f"Generating tokens for user {user_id}")
     jwt_token = await auth_utils.sign_jwt_token(int(user_id))
     csrf_token = await auth_utils.sign_csrf_token()
+
+    logger.info(
+        f"Tokens generated | User: {user_id} | "
+        f"JWT expiry: {auth_utils.ACCESS_TOKEN_EXPIRE_HOURS}h"
+    )
 
     # Формирую ответ
     response = RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
