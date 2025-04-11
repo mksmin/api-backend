@@ -3,7 +3,13 @@ from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from urllib.parse import unquote, quote
 
-from pydantic import BaseModel, PostgresDsn, computed_field
+from pydantic import (
+    BaseModel,
+    PostgresDsn,
+    computed_field,
+    Field,
+    field_validator,
+)
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -35,7 +41,6 @@ log_dir.mkdir(parents=True, exist_ok=True)
 log_file = log_dir / "app.log"
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 # Консольноый логгер
 console_handler = logging.StreamHandler()
@@ -57,7 +62,6 @@ file_handler.setFormatter(
 
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
-logger.setLevel(logging.INFO)
 
 
 class RunConfig(BaseModel):
@@ -116,6 +120,36 @@ class DatabaseConfig(BaseModel):
     }
 
 
+class LoggerConfig(BaseModel):
+    mode: str = Field(
+        default="INFO",
+        alias="mode",
+        description="Уровень логирования: DEBUG, INFO",
+    )
+
+    @property
+    def level(self) -> int:
+        mapping = {
+            "DEBUG": logging.DEBUG,
+            "INFO": logging.INFO,
+            "WARNING": logging.WARNING,
+            "CRITICAL": logging.CRITICAL,
+            "ERROR": logging.ERROR,
+        }
+        logger.debug("mode: %s", self.mode)
+        return mapping.get(self.mode.upper(), logging.INFO)
+
+    @field_validator("mode")
+    @classmethod
+    def validate_mode(cls, value: str):
+        allowed_values = ["DEBUG", "INFO", "WARNING", "CRITICAL", "ERROR"]
+        if value.upper() not in allowed_values:
+            raise ValueError(
+                f"Уровень логирования должен быть одним из: {', '.join(allowed_values)}"
+            )
+        return value.upper()
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),
@@ -127,6 +161,9 @@ class Settings(BaseSettings):
     db: DatabaseConfig
     run: RunConfig = RunConfig()
     rabbit: RabbitMQConfig = RabbitMQConfig()
+    log: LoggerConfig = LoggerConfig()
 
 
 settings = Settings()
+logger.setLevel(settings.log.level)
+logger.info(f"Set log level to {settings.log.level}")
