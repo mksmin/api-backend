@@ -50,8 +50,7 @@ async def check_path(path_file: Path):
 async def check_access_token(
     access_token: str | None = Cookie(default=None, alias="access_token"),
 ) -> str | bool:
-    """Middleware для проверки токена из кук"""
-    # Пропускаем публичные эндпоинты
+    """Middleware for checking access token from cookies"""
     if not access_token:
         return False
 
@@ -59,14 +58,13 @@ async def check_access_token(
         payload = await auth_utils.decode_jwt(access_token)
 
         user_id: str = payload.get("user_id")
-        print(f"user_id: {user_id}")
+        logger.info(f"Check access token for user_id: {user_id}")
         if not user_id:
             return False
-
         return access_token
 
     except HTTPException as he:
-        logger.error(f"Ошибка в middleware: {he}")
+        logger.error(f"Error in middleware: {he}", exc_info=True)
         return False
 
 
@@ -259,7 +257,6 @@ async def get_content(request: Request, user: str | bool = Depends(check_access_
         page = "profile"
 
     content_template = f"{page}.html"
-    print(f"content_template: {content_template}")
 
     payload = await auth_utils.decode_jwt(user)
     user_id: str = payload.get("user_id")
@@ -311,11 +308,9 @@ async def handle_telegram_init(request: Request, bot_name: str):
     if not bot_config:
         raise HTTPException(404, detail="Bot not found")
 
-    # Генерируем HTML с автоматической отправкой формы
-    content_template = "auth_widget.html"
     return templates.TemplateResponse(
         "base.html",
-        {"request": request, "content_template": content_template},
+        {"request": request},
     )
 
 
@@ -323,7 +318,7 @@ async def handle_telegram_init(request: Request, bot_name: str):
 async def auth_redirect():
     # Редирект на /auth/bot1 с нужным кодом
     return RedirectResponse(
-        url="/auth/bot1", status_code=status.HTTP_307_TEMPORARY_REDIRECT
+        url="/auth/bot1", status_code=status.HTTP_308_PERMANENT_REDIRECT
     )
 
 
@@ -331,9 +326,11 @@ async def auth_redirect():
 async def auth_user(
     request: Request,
     bot_name: str | None = Path(default=None),
-    access_validate: list = Depends(auth_utils.verified_data_dependency),
-    client_type: str = Depends(auth_utils.verify_client),
+    data_validate: dict = Depends(auth_utils.verified_data_dependency),
 ):
+    client_type: str = data_validate.get("client_type")
+    access_validate: bool = data_validate.get("is_authorized")
+
     logger.info(
         "Auth request started | "
         f"Path: {request.url.path} | "
@@ -352,7 +349,7 @@ async def auth_user(
     pairs = parse_qsl(raw_data_str, keep_blank_values=True)
     data_dict = dict(pairs)
 
-    logger.debug(f"Received data: {data_dict}")
+    logger.debug(f"Received data (id): {data_dict.get('id')}")
 
     if client_type == "TelegramWidget":
         user_id = data_dict.get("id")

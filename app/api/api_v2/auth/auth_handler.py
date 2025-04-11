@@ -211,12 +211,18 @@ async def verify_telegram_data_dep(
         raw_data = await request.body()
         raw_data_str = raw_data.decode()
 
+        logger.debug(
+            f"verify_telegram_data_dep | "
+            f"client_type: {client_type} | "
+            f"bot_name: {bot_name}"
+        )
+
         if not raw_data_str:
-            logger.error('"raw_data_str" is empty')
+            logger.error('"raw_data_str" is empty', exc_info=True)
             raise HTTPException(status_code=400, detail="Missing data")
 
         try:
-            logger.info(f"client_type: {client_type}")
+            logger.info(f"Client_type: {client_type}")
             if client_type == "TelegramWidget":
                 verify_result = verify_telegram_widget(
                     raw_data_str, settings.api.bot_token[bot_name]
@@ -227,26 +233,26 @@ async def verify_telegram_data_dep(
                 )
             else:
                 logger.error(
-                    '"client_type" is not "TelegramMiniApp" or "TelegramWidget"'
+                    '"client_type" is not "TelegramMiniApp" or "TelegramWidget"',
+                    exc_info=True,
                 )
                 raise HTTPException(status_code=400, detail="Invalid client type")
 
         except ValueError as e:
-            logger.error('"raw_data_str" is not valid')
+            logger.error('"raw_data_str" is not valid', exc_info=True)
             raise HTTPException(status_code=401, detail=str(e))
 
         if not verify_result:
-            logger.error('"raw_data_str" is not valid')
+            logger.error('"raw_data_str" is not valid', exc_info=True)
             raise HTTPException(status_code=401, detail="Invalid data")
 
         return True
-        # return parse_qsl(raw_data_str, keep_blank_values=True)
 
     except HTTPException as he:
         raise he
 
     except Exception as e:
-        logger.error(f"Verification error: {str(e)}")
+        logger.error(f"Verification error: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
@@ -256,6 +262,10 @@ async def verify_client(request: Request) -> str:
     allowed_clients = ["TelegramMiniApp", "TelegramWidget"]
 
     if client_source not in allowed_clients:
+        logger.error(
+            f"Invalid client source: {client_source}",
+            exc_info=True,
+        )
         raise HTTPException(400, "Invalid client")
 
     return client_source
@@ -273,20 +283,32 @@ async def verified_data_dependency(
     request: Request,
     bot_name: str,
     client_type: str = Depends(verify_client),
-):
-    print(f"bot_name: {bot_name}")
+) -> dict[bool, str]:
+    logger.debug(
+        f"Verified data dependency | "
+        f"request: {request.url.path} | "
+        f"bot_name: {bot_name} | "
+        f"client_type: {client_type}"
+    )
 
     bot_data = BOT_CONFIG.get(bot_name, None)
     if not bot_data:
         raise HTTPException(status_code=404, detail="Bot not Found")
 
-    dependency_func = get_verified_data(bot_data["name"])
-    return await dependency_func(request, client_type)
+    # dependency_func = get_verified_data(bot_data["name"]) # TODO: убрать после успешной замены и проверки
+    dependency_func: bool = await verify_telegram_data_dep(
+        request, bot_data["name"], client_type
+    )
+    result: dict = {
+        "is_authorized": dependency_func,
+        "client_type": client_type,
+    }
+
+    return result
 
 
 # Общая функция для обработки профиля
 async def process_profile(template_name: str, data_dict_for_template):
-
     return templates.TemplateResponse(template_name, data_dict_for_template)
 
 
