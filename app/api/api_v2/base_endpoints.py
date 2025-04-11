@@ -255,9 +255,7 @@ async def get_content(request: Request, user: str | bool = Depends(check_access_
 
     content_template = f"{page}.html"
 
-    logger.info(
-        f"Получен запрос на страницу {page} из пути /content"
-    )
+    logger.info(f"Получен запрос на страницу {page} из пути /content")
 
     payload = await auth_utils.decode_jwt(user)
     user_id: str = payload.get("user_id")
@@ -273,7 +271,7 @@ async def get_content(request: Request, user: str | bool = Depends(check_access_
         "username": user.username,
     }
 
-    if page == "affirmations":
+    if page == "/affirmations":
         print("page", page)
         data_dict = await get_affirmations_data(user_data)
         data_dict["request"] = request
