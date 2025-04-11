@@ -361,11 +361,6 @@ async def auth_user(
     # Формирую ответ
     response = RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
 
-    if client_type == "TelegramMiniApp":
-        logger.info("Returning MiniApp response without JWT token")
-
-        return response
-
     # Генерирую токены
     logger.debug(f"Generating tokens for user {user_id}")
     jwt_token = await auth_utils.sign_jwt_token(int(user_id))
