@@ -334,7 +334,6 @@ async def auth_user(
     logger.info(
         "Auth request started | "
         f"Path: {request.url.path} | "
-        f"Client: {request.client.host} | "
         f"Client type: {client_type} | "
         f"Bot: {bot_name} | "
         f"Access: {access_validate}"
