@@ -248,15 +248,16 @@ async def get_content(request: Request, user: str | bool = Depends(check_access_
     if len(path_parts) == 1:
         page = path_parts[0]
     elif len(path_parts) == 2 and path_parts[0] == "apps":
-        bot_name = auth_utils.BOT_CONFIG.get(path_parts[1])
-        if not bot_name:
-            page = "profile"
-        else:
-            page = bot_name["redirect_url"]
+        bot_name = auth_utils.BOT_CONFIG.get(path_parts[1], None)
+        page = "profile" if not bot_name else bot_name["redirect_url"]
     else:
         page = "profile"
 
     content_template = f"{page}.html"
+
+    logger.info(
+        f"Получен запрос на страницу {page} из пути /content"
+    )
 
     payload = await auth_utils.decode_jwt(user)
     user_id: str = payload.get("user_id")
