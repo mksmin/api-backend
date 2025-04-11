@@ -358,6 +358,14 @@ async def auth_user(
         user_id = user_data.get("id")
         logger.debug(f"Extracted user data: {user_data.keys()}")
 
+    # Формирую ответ
+    response = RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+
+    if client_type == "TelegramMiniApp":
+        logger.info("Returning MiniApp response without JWT token")
+
+        return response
+
     # Генерирую токены
     logger.debug(f"Generating tokens for user {user_id}")
     jwt_token = await auth_utils.sign_jwt_token(int(user_id))
@@ -367,9 +375,6 @@ async def auth_user(
         f"Tokens generated | User: {user_id} | "
         f"JWT expiry: {auth_utils.ACCESS_TOKEN_EXPIRE_HOURS}h"
     )
-
-    # Формирую ответ
-    response = RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
 
     # Устанавливаю куки
     response.set_cookie(
