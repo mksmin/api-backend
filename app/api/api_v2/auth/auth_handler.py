@@ -308,8 +308,13 @@ async def verified_data_dependency(
         raw_data = await request.body()
         raw_data_str = raw_data.decode()
         pairs = parse_qs(raw_data_str, keep_blank_values=True)
-        data = {k: v[0] for k, v in pairs.items() if k not in ("hash", "auth_date")}
-        logger.info(f"Verified data dependency | " f"data: {data}") # TODO: После проверки заменить на debug
+        if client_type == "TelegramWidget":
+            data = {k: v[0] for k, v in pairs.items() if k not in ("hash", "auth_date")}
+        else:
+            data = dict(pairs)
+        logger.info(
+            f"Verified data dependency | " f"data: {data}"
+        )  # TODO: После проверки заменить на debug
         data["tg_id"] = data.pop("id")
         user = await crud_manager.user.create(data)
         logger.debug(f"Получен пользователь: {user}")
