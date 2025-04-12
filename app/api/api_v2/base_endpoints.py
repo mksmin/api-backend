@@ -301,16 +301,24 @@ async def get_content(request: Request, user: str | bool = Depends(check_access_
 
 
 @router.get("/apps/{bot_name}", response_class=HTMLResponse)
-async def handle_telegram_init(request: Request, bot_name: str):
-    # Проверяем существование бота
-    bot_config = auth_utils.BOT_CONFIG.get(bot_name)
-    if not bot_config:
-        raise HTTPException(404, detail="Bot not found")
+async def handle_telegram_init(
+    request: Request, bot_name: str, cookie_token: str = Depends(check_access_token)
+):
+    if not cookie_token:
+        # Проверяем существование бота
+        bot_config = auth_utils.BOT_CONFIG.get(bot_name)
+        if not bot_config:
+            raise HTTPException(404, detail="Bot not found")
 
-    return templates.TemplateResponse(
-        "basebots.html",
-        {"request": request},
-    )
+        return templates.TemplateResponse(
+            "basebots.html",
+            {"request": request},
+        )
+
+    bot_data = auth_utils.BOT_CONFIG.get(bot_name)
+    redirect_url = bot_data.get("redirect_url", "/profile")
+    response = RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+    return response
 
 
 @router.post("/auth")
