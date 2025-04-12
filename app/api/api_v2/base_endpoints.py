@@ -308,7 +308,7 @@ async def handle_telegram_init(request: Request, bot_name: str):
         raise HTTPException(404, detail="Bot not found")
 
     return templates.TemplateResponse(
-        "base.html",
+        "basebots.html",
         {"request": request},
     )
 
