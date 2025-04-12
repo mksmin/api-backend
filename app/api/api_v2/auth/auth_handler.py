@@ -309,7 +309,7 @@ async def verified_data_dependency(
         raw_data_str = raw_data.decode()
         pairs = parse_qs(raw_data_str, keep_blank_values=True)
         data = {k: v[0] for k, v in pairs.items() if k not in ("hash", "auth_date")}
-        logger.debug(f"Verified data dependency | " f"data: {data}")
+        logger.info(f"Verified data dependency | " f"data: {data}") # TODO: После проверки заменить на debug
         data["tg_id"] = data.pop("id")
         user = await crud_manager.user.create(data)
         logger.debug(f"Получен пользователь: {user}")
