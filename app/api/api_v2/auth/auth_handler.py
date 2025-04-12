@@ -16,8 +16,7 @@ from pathlib import Path
 from urllib.parse import parse_qsl, unquote, parse_qs
 
 
-from app.core import settings, logger
-
+from app.core import settings, logger, db_helper, crud_manager
 
 BASE_DIR = Path.cwd().parent  # project working directory api_atomlab/app
 FRONTEND_DIR = (
@@ -303,6 +302,17 @@ async def verified_data_dependency(
         "is_authorized": dependency_func,
         "client_type": client_type,
     }
+
+    # TODO: После успешной проверки зарегистрировать пользователя (решить где это делать)
+    if dependency_func:
+        raw_data = await request.body()
+        raw_data_str = raw_data.decode()
+        pairs = parse_qs(raw_data_str, keep_blank_values=True)
+        data = {k: v[0] for k, v in pairs.items() if k not in ("hash", "auth_date")}
+        logger.debug(f"Verified data dependency | " f"data: {data}")
+        data["tg_id"] = data.pop("id")
+        user = await crud_manager.user.create(data)
+        logger.debug(f"Получен пользователь: {user}")
 
     return result
 

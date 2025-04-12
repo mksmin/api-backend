@@ -45,7 +45,7 @@ class BaseCRUDManager(Generic[ModelType]):
                 logger.exception("Ошибка при работе с базой данных")
                 raise
 
-    async def exists_by_field(self, field: str, value: str) -> bool:
+    async def exists_by_field(self, field: str, value: str) -> bool | ModelType:
         async with self._get_session() as session:
             session = cast(
                 AsyncSession, session
@@ -106,6 +106,9 @@ class UserManager(BaseCRUDManager[User]):
     async def create(self, data: dict) -> User:
         data["uuid"] = db_helper.generate_uuid()
         result = await self._validate_user_data(data)
+        exists = await self.exists_by_field("tg_id", int(data["tg_id"]))
+        if exists:
+            return await super().get_one("tg_id", int(data["tg_id"]))
 
         return await super().create(**result)
 
