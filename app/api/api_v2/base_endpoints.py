@@ -284,7 +284,7 @@ async def get_content(request: Request, user: str | bool = Depends(check_access_
         "username": user.username,
     }
 
-    if page == "/affirmations":
+    if page in ("/affirmations", "affirmations"):
         print("page", page)
         data_dict = await get_affirmations_data(user_data)
         data_dict["request"] = request
