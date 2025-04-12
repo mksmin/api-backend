@@ -171,14 +171,27 @@ async def html_path(name_script: str):
 
 @router.get("/affirmations", include_in_schema=False)
 @router.get("/profile", include_in_schema=False)
-async def user_profile_tg(request: Request):
+async def user_profile_tg(
+    request: Request, cookie_token: str = Depends(check_access_token)
+):
     """Главная страница профиля"""
-    # Определяем контент в зависимости от авторизации
-    # content_template = "profile.html" if user else "auth_widget.html"
-    content_template = "auth_widget.html"
+    data_return = {
+        "request": request,
+        "content_template": None,
+        "user": True,
+    }
+
+    if not cookie_token:
+        # Определяем контент в зависимости от авторизации
+        data_return = {
+            "request": request,
+            "content_template": "auth_widget.html",
+            "user": None,
+        }
+
     return templates.TemplateResponse(
         "base.html",
-        {"request": request, "content_template": content_template},
+        data_return,
     )
 
 
