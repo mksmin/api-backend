@@ -1,3 +1,4 @@
+import uuid
 from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import (
@@ -43,6 +44,10 @@ class DatabaseHelper:
     async def session_getter(self) -> AsyncGenerator[AsyncSession, None]:
         async with self.session_factory() as session:
             yield session
+
+    @staticmethod
+    def generate_uuid():
+        return str(uuid.uuid4())
 
 
 db_helper = DatabaseHelper(

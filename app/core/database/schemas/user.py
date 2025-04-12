@@ -20,6 +20,7 @@ class UserSchema(BaseModel):
     email: Optional[str] = None
     mobile: Optional[str] = None
     tg_id: Optional[int] = None
+    username: Optional[str] = None
 
     citizenship: Optional[str] = None
     country: Optional[str] = None
