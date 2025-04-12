@@ -311,8 +311,11 @@ async def verified_data_dependency(
             pairs = parse_qs(raw_data_str, keep_blank_values=True)
             data = {k: v[0] for k, v in pairs.items() if k not in ("hash", "auth_date")}
         else:
+            logger.info("Зашел в блок TelegramMiniApp, чтобы спарсить данные")
             pairs = parse_qsl(raw_data_str, keep_blank_values=True)
-            data = dict(pairs)
+            data_dict = dict(pairs)
+            data = await extract_user_data(data_dict)
+
         logger.info(
             f"Verified data dependency | " f"data: {data}"
         )  # TODO: После проверки заменить на debug
