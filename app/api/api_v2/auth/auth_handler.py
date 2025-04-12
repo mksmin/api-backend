@@ -68,7 +68,7 @@ async def sign_jwt_token(user_id: int) -> dict:
     payload = {
         "sub": str(user_id),
         "exp": (
-            datetime.now() + timedelta(hours=ACCESS_TOKEN_EXPIRE_HOURS)
+            datetime.now() + timedelta(minutes=(ACCESS_TOKEN_EXPIRE_HOURS * 5))
         ).timestamp(),
         "iat": datetime.now().timestamp(),  # issued at (время создания)
     }

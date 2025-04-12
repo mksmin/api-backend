@@ -399,7 +399,7 @@ async def auth_user(
         secure=True,
         samesite="none",
         path="/",
-        max_age=auth_utils.ACCESS_TOKEN_EXPIRE_HOURS * 900,
+        max_age=auth_utils.ACCESS_TOKEN_EXPIRE_HOURS * 300,
     )
 
     response.set_cookie(

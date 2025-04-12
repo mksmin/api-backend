@@ -104,7 +104,7 @@ class UserManager(BaseCRUDManager[User]):
         super().__init__(session_factory, model=User)
 
     async def create(self, data: dict) -> User:
-        data['uuid'] = db_helper.generate_uuid()
+        data["uuid"] = db_helper.generate_uuid()
         result = await self._validate_user_data(data)
 
         return await super().create(**result)
