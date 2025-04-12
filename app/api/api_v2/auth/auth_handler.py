@@ -307,10 +307,11 @@ async def verified_data_dependency(
     if dependency_func:
         raw_data = await request.body()
         raw_data_str = raw_data.decode()
-        pairs = parse_qs(raw_data_str, keep_blank_values=True)
         if client_type == "TelegramWidget":
+            pairs = parse_qs(raw_data_str, keep_blank_values=True)
             data = {k: v[0] for k, v in pairs.items() if k not in ("hash", "auth_date")}
         else:
+            pairs = parse_qsl(raw_data_str, keep_blank_values=True)
             data = dict(pairs)
         logger.info(
             f"Verified data dependency | " f"data: {data}"
