@@ -1,9 +1,6 @@
 # import lib
-from urllib.parse import parse_qsl
-
 import aio_pika
 import json
-import pprint
 import uuid
 
 # import from lib
@@ -11,12 +8,13 @@ from fastapi import APIRouter, Depends, Request, HTTPException, Cookie, status, 
 from fastapi.responses import JSONResponse, FileResponse, HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
+from urllib.parse import parse_qsl
 
 
 # import from modules
 from app.core import settings, logger, crud_manager
 from app.core.database import User
-from .auth import auth_utils
+from .auth import auth_utils, token_utils
 
 router = APIRouter()
 BASE_DIR = Path.cwd().parent  # project working directory api_atomlab/app
@@ -29,15 +27,6 @@ templates = Jinja2Templates(directory=FRONTEND_DIR / "templates")
 not_found_404 = FRONTEND_DIR / "src/404.html"
 
 
-async def get_current_user(search_field: str, value: str | int) -> User | None:
-    """
-    Получаю текущего пользователя из БД
-    :return:
-    """
-    user = crud_manager.user.get_one()
-    return user
-
-
 async def check_path(path_file: Path):
     file_exists = Path(path_file).exists()
 
@@ -45,27 +34,6 @@ async def check_path(path_file: Path):
         return path_file, 200
     else:
         return not_found_404, 404
-
-
-async def check_access_token(
-    access_token: str | None = Cookie(default=None, alias="access_token"),
-) -> str | bool:
-    """Middleware for checking access token from cookies"""
-    if not access_token:
-        return False
-
-    try:
-        payload = await auth_utils.decode_jwt(access_token)
-
-        user_id: str = payload.get("user_id")
-        logger.info(f"Check access token for user_id: {user_id}")
-        if not user_id:
-            return False
-        return access_token
-
-    except HTTPException as he:
-        logger.error(f"Error in middleware: {he}", exc_info=True)
-        return False
 
 
 @router.get("/")
@@ -172,7 +140,7 @@ async def html_path(name_script: str):
 @router.get("/affirmations", include_in_schema=False)
 @router.get("/profile", include_in_schema=False)
 async def user_profile_tg(
-    request: Request, cookie_token: str = Depends(check_access_token)
+    request: Request, cookie_token: str = Depends(token_utils.check_access_token)
 ):
     """Главная страница профиля"""
     data_return = {
@@ -250,7 +218,9 @@ async def get_affirmations_data(user_data: dict):
 
 
 @router.get("/content")
-async def get_content(request: Request, user: str | bool = Depends(check_access_token)):
+async def get_content(
+    request: Request, user: str | bool = Depends(token_utils.check_access_token)
+):
     if not user:
         return JSONResponse(
             content={"status": "Unauthorized"}, status_code=status.HTTP_401_UNAUTHORIZED
@@ -315,7 +285,9 @@ async def get_content(request: Request, user: str | bool = Depends(check_access_
 
 @router.get("/apps/{bot_name}", response_class=HTMLResponse)
 async def handle_telegram_init(
-    request: Request, bot_name: str, cookie_token: str = Depends(check_access_token)
+    request: Request,
+    bot_name: str,
+    cookie_token: str = Depends(token_utils.check_access_token),
 ):
     if not cookie_token:
         # Проверяем существование бота

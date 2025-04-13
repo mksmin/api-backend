@@ -1,22 +1,18 @@
 # import libraries
-import asyncio
 import json
-import jwt
 import hmac
 import hashlib
-import secrets
 
 
 # import from libraries
-from datetime import datetime, timedelta
 from fastapi import Depends, Request, HTTPException
 from fastapi.templating import Jinja2Templates
-from jwt import ExpiredSignatureError, InvalidTokenError
 from pathlib import Path
 from urllib.parse import parse_qsl, unquote, parse_qs
 
-
+# import from modules
 from app.core import settings, logger, db_helper, crud_manager
+from .access_token_helper import BOT_CONFIG
 
 BASE_DIR = Path.cwd().parent  # project working directory api_atomlab/app
 FRONTEND_DIR = (
@@ -26,90 +22,6 @@ HTML_DIR = FRONTEND_DIR / "src"
 STATIC_DIR = FRONTEND_DIR / "public"
 templates = Jinja2Templates(directory=FRONTEND_DIR / "templates")
 not_found_404 = FRONTEND_DIR / "src/404.html"
-
-
-JWT_SECRET = settings.api.secret
-JWT_ALGORITHM = settings.api.algorithm
-ACCESS_TOKEN_EXPIRE_HOURS = 1
-
-
-BOT_CONFIG = {
-    "bot1": {
-        "name": "atombot",
-        "redirect_url": "/profile",
-    },
-    "bot2": {
-        "name": "mininbot",
-        "redirect_url": "/affirmations",
-    },
-    "bot3": {
-        "name": "testbot",
-        "redirect_url": "/profile",
-    },
-}
-
-
-def token_response(token: str) -> dict:
-    return {"access_token": token, "token_type": "bearer"}
-
-
-async def sign_csrf_token():
-    return secrets.token_urlsafe(32)
-
-
-async def sign_jwt_token(user_id: int) -> dict:
-    """
-    Создаёт JWT-токен для авторизации
-    :param user_id: int
-    :return: dict[str, str] = {"access_token": str, "token_type": "bearer"}
-    """
-
-    payload = {
-        "sub": str(user_id),
-        "exp": (
-            datetime.now() + timedelta(minutes=(ACCESS_TOKEN_EXPIRE_HOURS * 5))
-        ).timestamp(),
-        "iat": datetime.now().timestamp(),  # issued at (время создания)
-    }
-
-    token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
-    return token_response(token)
-
-
-async def decode_jwt(token: str) -> dict:
-    """
-    Decodes a JWT token and returns a dictionary with the decoded token information.
-
-    :param token: (str) The JWT token to be decoded.
-    :return: (dict) A dictionary with the decoded token information.
-    :raises: (HTTPException) If the token is expired or invalid.
-    """
-
-    try:
-        decoded_token = jwt.decode(
-            token, JWT_SECRET, algorithms=[JWT_ALGORITHM], options={"verify_exp": True}
-        )
-        return {
-            "success": True,
-            "user_id": decoded_token["sub"],
-            "issued_at": decoded_token["iat"],
-            "expires_at": decoded_token["exp"],
-        }
-    except ExpiredSignatureError:
-        print(f"Token ExpiredSignatureError")
-        raise HTTPException(
-            status_code=401,
-            detail="Token expired",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    except InvalidTokenError:
-        print(f"Token InvalidTokenError")
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid token",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
 
 
 def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
