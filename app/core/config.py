@@ -79,10 +79,7 @@ class ApiV2Prefix(BaseModel):
 class ApiPrefix(BaseModel):
     prefix: str = "/api"
     v2: ApiV2Prefix = ApiV2Prefix()
-
     bot_token: dict = {"bot_name": "1234567890:DefaultBotToken"}
-    secret: str = "default_secret"
-    algorithm: str = "HS256"
 
 
 class RabbitMQConfig(BaseModel):
@@ -150,6 +147,12 @@ class LoggerConfig(BaseModel):
         return value.upper()
 
 
+class AccessToken(BaseModel):
+    lifetime_seconds: int = 3600
+    secret: str = "default_secret"
+    algorithm: str = "HS256"
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),
@@ -157,11 +160,12 @@ class Settings(BaseSettings):
         env_nested_delimiter="__",
         env_prefix="API_CONFIG__",
     )
+    access_token: AccessToken = AccessToken()
     api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig
-    run: RunConfig = RunConfig()
-    rabbit: RabbitMQConfig = RabbitMQConfig()
     log: LoggerConfig = LoggerConfig()
+    rabbit: RabbitMQConfig = RabbitMQConfig()
+    run: RunConfig = RunConfig()
 
 
 settings = Settings()
