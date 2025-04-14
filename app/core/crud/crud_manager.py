@@ -45,7 +45,7 @@ class BaseCRUDManager(Generic[ModelType]):
                 logger.exception("Ошибка при работе с базой данных")
                 raise
 
-    async def exists_by_field(self, field: str, value: str) -> bool | ModelType:
+    async def exists_by_field(self, field: str, value: str | int) -> bool | ModelType:
         async with self._get_session() as session:
             session = cast(
                 AsyncSession, session
@@ -64,7 +64,7 @@ class BaseCRUDManager(Generic[ModelType]):
             logger.info(f"Created {self.model.__name__} with id: {instance.id}")
             return instance
 
-    async def get_one(self, field: str, value: str) -> ModelType | None:
+    async def get_one(self, field: str, value: str | int) -> ModelType | None:
         result = await self.exists_by_field(field, value)
         if result:
             async with self._get_session() as session:

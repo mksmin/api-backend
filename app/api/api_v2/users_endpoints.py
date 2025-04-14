@@ -15,16 +15,16 @@ from fastapi import (
     status,
     Query,
     Depends,
-    Request,
 )
 from fastapi.responses import JSONResponse
-from pydantic import ValidationError, BaseModel, Field
+from pydantic import ValidationError, BaseModel
 
 # import from modules
 from app.core import logger
 from app.core.crud import crud_manager, get_registration_stat
 from app.core.database.schemas import ProjectResponseSchema, ProjectRequestSchema
-from .auth import auth_handler as ah
+from .auth import auth_utils, token_utils, auth_handler
+
 from .json_helper import get_data_from_json
 
 router = APIRouter()
@@ -38,7 +38,7 @@ async def get_statistics(token=Header()) -> JSONResponse:
     :return: JSONResponse
     """
 
-    decode_result = await ah.decode_jwt(token)
+    decode_result = await token_utils.decode_jwt(token)
     if not decode_result["message"]["success"]:
         message = {"message": {"error": decode_result["message"]["error"]}}
         mess_to_json = json.dumps(message)
@@ -79,7 +79,7 @@ async def get_token(user_id: int):
             content={"message": f"{user_id} is not an integer"}, status_code=400
         )
 
-    result = await ah.sign_jwt_token(user_id)
+    result = await token_utils.sign_jwt_token(user_id)
     return JSONResponse(content=result, status_code=201)
 
 
