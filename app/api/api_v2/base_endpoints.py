@@ -62,7 +62,7 @@ async def favicon():
     return FileResponse(favicon_path)
 
 
-@router.get("/robots.txt", include_in_schema=False)
+@router.get("/robots.txt", include_in_schema=settings.run.dev_mode)
 async def robots():
     """
     Returns the robots TXT file.
@@ -74,7 +74,7 @@ async def robots():
     return FileResponse(robots_path)
 
 
-@router.get("/html/{name_html}", include_in_schema=False)
+@router.get("/html/{name_html}", include_in_schema=settings.run.dev_mode)
 async def html_path(name_html: str):
     """
     Returns the specified HTML file.
@@ -91,7 +91,7 @@ async def html_path(name_html: str):
 
 
 #
-@router.get("/media/{name_media}", include_in_schema=False)
+@router.get("/media/{name_media}", include_in_schema=settings.run.dev_mode)
 async def html_path(name_media: str):
     """
     Returns the specified media file.
@@ -107,7 +107,7 @@ async def html_path(name_media: str):
     return FileResponse(result, status_code=status)
 
 
-@router.get("/style/{name_style}", include_in_schema=False)
+@router.get("/style/{name_style}", include_in_schema=settings.run.dev_mode)
 async def html_path(name_style: str):
     """
     Returns the specified style file.
@@ -123,7 +123,7 @@ async def html_path(name_style: str):
     return FileResponse(result, status_code=status)
 
 
-@router.get("/scripts/{name_script}", include_in_schema=False)
+@router.get("/scripts/{name_script}", include_in_schema=settings.run.dev_mode)
 async def html_path(name_script: str):
     """
     Returns the specified script file.
@@ -139,8 +139,8 @@ async def html_path(name_script: str):
     return FileResponse(result, status_code=status)
 
 
-@router.get("/affirmations", include_in_schema=False)
-@router.get("/profile", include_in_schema=False)
+@router.get("/affirmations", include_in_schema=settings.run.dev_mode)
+@router.get("/profile", include_in_schema=settings.run.dev_mode)
 async def user_profile_tg(
     request: Request, cookie_token: str = Depends(token_utils.check_access_token)
 ):
@@ -219,7 +219,7 @@ async def get_affirmations_data(user_data: dict):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/content")
+@router.get("/content", include_in_schema=settings.run.dev_mode)
 async def get_content(
     request: Request, user: str | bool = Depends(token_utils.check_access_token)
 ):

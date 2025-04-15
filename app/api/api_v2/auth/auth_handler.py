@@ -206,7 +206,6 @@ async def verified_data_dependency(
     if not bot_data:
         raise HTTPException(status_code=404, detail="Bot not Found")
 
-    # dependency_func = get_verified_data(bot_data["name"]) # TODO: убрать после успешной замены и проверки
     dependency_func: bool = await verify_telegram_data_dep(
         request, bot_data["name"], client_type
     )
@@ -228,9 +227,7 @@ async def verified_data_dependency(
             data_dict = dict(pairs)
             data = await extract_user_data(data_dict)
 
-        logger.info(
-            f"Verified data dependency | " f"data: {data}"
-        )  # TODO: После проверки заменить на debug
+        logger.debug(f"Verified data dependency | " f"data: {data}")
         data["tg_id"] = data.pop("id")
         user = await crud_manager.user.create(data)
         logger.debug(f"Получен пользователь: {user}")

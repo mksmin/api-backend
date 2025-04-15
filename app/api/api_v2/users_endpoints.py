@@ -20,17 +20,17 @@ from fastapi.responses import JSONResponse
 from pydantic import ValidationError, BaseModel
 
 # import from modules
-from app.core import logger
+from app.core import logger, settings
 from app.core.crud import crud_manager, get_registration_stat
 from app.core.database.schemas import ProjectResponseSchema, ProjectRequestSchema
-from .auth import auth_utils, token_utils, auth_handler
+from .auth import token_utils
 
 from .json_helper import get_data_from_json
 
 router = APIRouter()
 
 
-@router.get("/statistics/", include_in_schema=False)
+@router.get("/statistics/", include_in_schema=settings.run.dev_mode)
 async def get_statistics(token=Header()) -> JSONResponse:
     """
     Функция подключается к БД и возвращает ответы в JSON
@@ -59,7 +59,7 @@ async def get_statistics(token=Header()) -> JSONResponse:
     return JSONResponse(content=mess_to_json, status_code=200)
 
 
-@router.post("/registration", include_in_schema=False)
+@router.post("/registration", include_in_schema=settings.run.dev_mode)
 async def registration(data=Body()):
     params = data.get("params")
     dict_user = await get_data_from_json(parameters=params)
@@ -72,7 +72,7 @@ async def registration(data=Body()):
     return JSONResponse(content={"message": "Error"}, status_code=500)
 
 
-@router.post("/get_token/{user_id}", include_in_schema=False)
+@router.post("/get_token/{user_id}", include_in_schema=settings.run.dev_mode)
 async def get_token(user_id: int):
     if not isinstance(user_id, int):
         return JSONResponse(
@@ -95,7 +95,7 @@ async def validate_csv(file: UploadFile):
     status_code=status.HTTP_201_CREATED,
     tags=["Projects"],
     response_model=ProjectResponseSchema,
-    include_in_schema=False,
+    include_in_schema=settings.run.dev_mode,
 )
 async def create_project(
     data: ProjectRequestSchema,
@@ -155,7 +155,7 @@ class ProjectFilter(BaseModel):
 
 @router.get(
     "/projects",
-    include_in_schema=False,
+    include_in_schema=settings.run.dev_mode,
     response_model=dict[int, ProjectResponseSchema],
 )
 async def get_projects(
@@ -179,7 +179,7 @@ async def get_projects(
         )
 
 
-@router.post("/csv_to_db", include_in_schema=False)
+@router.post("/csv_to_db", include_in_schema=settings.run.dev_mode)
 async def temp_upload_csv(file: Annotated[UploadFile, File()]):
     # Валидация файла
     await validate_csv(file)
