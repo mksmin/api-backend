@@ -4,16 +4,12 @@ from datetime import datetime
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
-    relationship,
 )
 from sqlalchemy import (
     String,
-    Integer,
     DateTime,
     BigInteger,
-    ForeignKey,
     inspect,
-    text,
 )
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -98,15 +94,3 @@ class User(IntIdMixin, TimestampsMixin, Base):
             f"username={self.username},"
             f")>"
         )
-
-
-class Project(IntIdMixin, TimestampsMixin, Base):
-    uuid = mapped_column(
-        UUID(as_uuid=True),
-        nullable=False,
-        default=uuid.uuid4,
-        unique=True,
-    )
-    prj_name: Mapped[str] = mapped_column(String(50), nullable=True)
-    prj_description: Mapped[str] = mapped_column(String(200), nullable=True)
-    prj_owner = mapped_column(BigInteger, nullable=False, comment="tg_id пользователя")
