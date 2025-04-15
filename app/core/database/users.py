@@ -42,21 +42,35 @@ class User(IntIdMixin, TimestampsMixin, Base):
     )
 
     # ФИО
-    first_name: Mapped[str] = mapped_column(String(150), nullable=True)
-    middle_name: Mapped[str] = mapped_column(String(150), nullable=True)
-    last_name: Mapped[str] = mapped_column(String(150), nullable=True, index=True)
+    first_name: Mapped[str] = mapped_column(String(150), nullable=True, comment="Имя")
+    middle_name: Mapped[str] = mapped_column(
+        String(150), nullable=True, comment="Отчество"
+    )
+    last_name: Mapped[str] = mapped_column(
+        String(150), nullable=True, index=True, comment="Фамилия"
+    )
 
     # Контакты
-    email: Mapped[str] = mapped_column(String(250), nullable=True, index=True)
-    mobile: Mapped[str] = mapped_column(String(60), nullable=True, index=True)
-    tg_id = mapped_column(BigInteger, nullable=True, index=True)
-    username: Mapped[str] = mapped_column(String(100), nullable=True)
+    email: Mapped[str] = mapped_column(
+        String(250), nullable=True, index=True, comment="Email"
+    )
+    mobile: Mapped[str] = mapped_column(
+        String(60), nullable=True, index=True, comment="Телефон"
+    )
+    tg_id = mapped_column(
+        BigInteger, nullable=True, index=True, comment="ID в Telegram"
+    )
+    username: Mapped[str] = mapped_column(String(100), nullable=True, comment="Никнейм")
 
     # Проживание и учеба
-    citizenship: Mapped[str] = mapped_column(String(250), nullable=True)
-    country: Mapped[str] = mapped_column(String(250), nullable=True)
-    city: Mapped[str] = mapped_column(String(250), nullable=True)
-    timezone: Mapped[str] = mapped_column(String(100), nullable=True)
+    citizenship: Mapped[str] = mapped_column(
+        String(250), nullable=True, comment="Гражданство"
+    )
+    country: Mapped[str] = mapped_column(String(250), nullable=True, comment="Страна")
+    city: Mapped[str] = mapped_column(String(250), nullable=True, comment="Город")
+    timezone: Mapped[str] = mapped_column(
+        String(100), nullable=True, comment="Часовой пояс"
+    )
     study_place: Mapped[str] = mapped_column(
         String(500), nullable=True, comment="Учебное заведение"
     )
@@ -65,7 +79,9 @@ class User(IntIdMixin, TimestampsMixin, Base):
     )
 
     # Прочее
-    birth_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
+    birth_date: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=True, comment="Дата рождения"
+    )
     sex: Mapped[str] = mapped_column(String(20), nullable=True, comment="Пол")
 
     extra_fields = relationship("UserExtraField", back_populates="user")
