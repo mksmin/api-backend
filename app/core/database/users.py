@@ -4,12 +4,15 @@ from datetime import datetime
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
+    relationship,
 )
 from sqlalchemy import (
     String,
     DateTime,
     BigInteger,
     inspect,
+    ForeignKey,
+    Integer,
 )
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -65,6 +68,8 @@ class User(IntIdMixin, TimestampsMixin, Base):
     birth_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
     sex: Mapped[str] = mapped_column(String(20), nullable=True, comment="Пол")
 
+    extra_fields = relationship("UserExtraField", back_populates="user")
+
     @classmethod
     def get_model_fields(
         cls,
@@ -94,3 +99,23 @@ class User(IntIdMixin, TimestampsMixin, Base):
             f"username={self.username},"
             f")>"
         )
+
+
+class ExtraField(IntIdMixin, Base):
+    field_name: Mapped[str] = mapped_column(String(250), unique=True, nullable=False)
+    field_type: Mapped[str] = mapped_column(String(30), nullable=False)
+
+    values = relationship("UserExtraField", back_populates="extra_field")
+
+
+class UserExtraField(Base):
+    user_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("users.id"), nullable=False, primary_key=True
+    )
+    extra_field_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("extra_fields.id"), nullable=False
+    )
+    value: Mapped[str] = mapped_column(String(250), nullable=True)
+
+    user = relationship("User", back_populates="extra_fields")
+    extra_field = relationship("ExtraField", back_populates="values")
