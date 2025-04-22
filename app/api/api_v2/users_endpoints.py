@@ -24,10 +24,13 @@ from app.core import logger, settings
 from app.core.crud import crud_manager, get_registration_stat
 from app.core.database.schemas import ProjectResponseSchema, ProjectRequestSchema
 from .auth import token_utils
+from .user_projects import router as user_projects_router
 
 from .json_helper import get_data_from_json
 
 router = APIRouter()
+
+router.include_router(user_projects_router)
 
 
 @router.get("/statistics/", include_in_schema=settings.run.dev_mode)
@@ -70,17 +73,6 @@ async def registration(data=Body()):
         return JSONResponse(content={"message": "Success"}, status_code=201)
 
     return JSONResponse(content={"message": "Error"}, status_code=500)
-
-
-@router.post("/get_token/{user_id}", include_in_schema=settings.run.dev_mode)
-async def get_token(user_id: int):
-    if not isinstance(user_id, int):
-        return JSONResponse(
-            content={"message": f"{user_id} is not an integer"}, status_code=400
-        )
-
-    result = await token_utils.sign_jwt_token(user_id)
-    return JSONResponse(content=result, status_code=201)
 
 
 async def validate_csv(file: UploadFile):
@@ -126,56 +118,6 @@ async def delete_project(project_id: int):
     except RuntimeError as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-        )
-
-
-# Схема для параметров запроса
-class ProjectFilter(BaseModel):
-    owner_id: int
-    project_id: int | None
-    limit: int | None
-    offset: int | None
-
-    @classmethod
-    def from_query(
-        cls,
-        owner_id: int = Query(..., description="tg_id пользователя", alias="prj_owner"),
-        project_id: int | None = Query(None, description="id проекта", alias="prj_id"),
-        limit: int | None = Query(None, description="Лимит"),
-        offset: int | None = Query(None, description="Смещение"),
-    ):
-
-        return cls(
-            owner_id=owner_id,
-            project_id=project_id,
-            limit=limit,
-            offset=offset,
-        )
-
-
-@router.get(
-    "/projects",
-    include_in_schema=settings.run.dev_mode,
-    response_model=dict[int, ProjectResponseSchema],
-)
-async def get_projects(
-    prj_filter: ProjectFilter = Depends(ProjectFilter.from_query),
-):
-
-    try:
-        if prj_filter.project_id:
-            projects = await crud_manager.project.get_project_by_id(
-                prj_filter.owner_id, prj_filter.project_id
-            )
-        else:
-            projects = await crud_manager.project.get_all(prj_filter.owner_id)
-        return {
-            i: ProjectResponseSchema.model_validate(item)
-            for i, item in enumerate(projects)
-        }
-    except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail={"error": str(e)}
         )
 
 
