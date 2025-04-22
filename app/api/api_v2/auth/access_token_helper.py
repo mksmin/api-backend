@@ -67,6 +67,10 @@ async def decode_jwt(token: str) -> dict:
             algorithms=[settings.access_token.algorithm],
             options={"verify_exp": True},
         )
+
+        exp_time = datetime.fromtimestamp(decoded_token["exp"])
+        logger.info(f"Token expired at: {exp_time.strftime('%Y-%m-%d %H:%M:%S')}")
+
         return {
             "success": True,
             "user_id": decoded_token["sub"],
