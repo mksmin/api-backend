@@ -3,16 +3,19 @@ from fastapi import (
     Header,
     Body,
     File,
-    UploadFile,
+    Request,
     HTTPException,
     status,
     Query,
     Depends,
 )
 from pydantic import BaseModel
+from sqlalchemy import select
 
-from app.core import crud_manager, settings
+from .auth import token_utils
+from app.core import crud_manager, settings, db_helper
 from app.core.database.schemas import ProjectResponseSchema
+from ...core.database import Project, User
 
 router = APIRouter(
     prefix="/projects",
@@ -68,3 +71,24 @@ async def get_projects(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail={"error": str(e)}
         )
+
+
+@router.get(
+    "/owner",
+    include_in_schema=settings.run.dev_mode,
+)
+async def get_projects_owner(
+    request: Request, user: str | bool = Depends(token_utils.check_access_token)
+):
+    payload = await token_utils.decode_jwt(user)
+    user_id: str = payload.get("user_id")
+
+    async with db_helper.session_factory() as session:
+        stmt = (
+            select(Project)
+            .join(User, Project.prj_owner == User.id)
+            .where(User.id == int(user_id), Project.deleted_at.is_(None))
+        )
+        results = await session.execute(stmt)
+        projects: Project = results.scalars().all()
+        return {"projects": [{"id": p.id, "name": p.prj_name} for p in projects]}
