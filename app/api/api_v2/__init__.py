@@ -5,6 +5,7 @@ from .users_endpoints import router as users_router
 from .base_endpoints import router as base_router
 from .json_helper import get_data_from_json
 from .rabbit_tasks import router as rabbit_router
+from .devs import router as devs_router
 
 router = APIRouter(
     prefix=settings.api.v2.prefix,
@@ -18,3 +19,5 @@ router.include_router(
     rabbit_router,
     prefix=settings.api.v2.users,
 )
+
+router.include_router(devs_router)
