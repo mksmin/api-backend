@@ -20,19 +20,28 @@ async def registration(data=Body()):
     return RedirectResponse(url=f"{path_mapping['users']}registration", status_code=308)
 
 
-@router.post("/get_token/{user_id}", include_in_schema=False)
-async def get_token(user_id: int):
-    return RedirectResponse(
-        url=f"{path_mapping['users']}get_token/{user_id}", status_code=308
-    )
-
-
-@router.get("/projects", include_in_schema=False)
-@router.post("/projects", include_in_schema=False)
+@router.api_route(
+    "/projects",
+    methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
+    include_in_schema=False,
+)
 async def project_redirect(request: Request):
-    query_params = request.query_params
-    redirect_url = f"{path_mapping['users']}projects?{query_params}"
-    return RedirectResponse(redirect_url, status_code=307)
+    path = f"{path_mapping['users']}projects"
+    if request.query_params:
+        path = f"{path_mapping['users']}projects?{request.query_params}"
+    return RedirectResponse(url=path, status_code=307)
+
+
+@router.api_route(
+    "/projects/{path:path}",
+    methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
+    include_in_schema=False,
+)
+async def project_nested_redirect(request: Request, path: str):
+    query = f"?{request.query_params}" if request.query_params else ""
+    return RedirectResponse(
+        url=f"{path_mapping['users']}projects/{path}{query}", status_code=307
+    )
 
 
 @router.delete("/projects/{project_id}", include_in_schema=False)
