@@ -7,8 +7,9 @@ from pathlib import Path
 from urllib.parse import parse_qsl
 
 # import from modules
-from app.core import logger, settings
 from . import auth_utils, token_utils
+from app.core import logger, settings, crud_manager
+from app.core.database import User
 
 router = APIRouter()
 BASE_DIR = Path.cwd().parent  # project working directory api_atomlab/app
@@ -75,26 +76,28 @@ async def auth_user(
     pairs = parse_qsl(raw_data_str, keep_blank_values=True)
     data_dict = dict(pairs)
 
-    logger.debug(f"Received data (id): {data_dict.get('id')}")
+    logger.debug(f"Received data (id): {data_dict}")
 
     if client_type == "TelegramWidget":
-        user_id = data_dict.get("id")
-        logger.debug(f"TelegramWidget, user_id: {user_id}")
+        user_data = data_dict
     else:
         user_data = await auth_utils.extract_user_data(data_dict)
-        user_id = user_data.get("id")
-        logger.debug(f"Extracted user data: {user_data.keys()}")
+    user_data["tg_id"] = user_data.pop("id")
+    logger.debug(f"User data: {user_data}")
+
+    user: User = await crud_manager.user.create(data=user_data)
+    logger.debug(f"User data saved: {user.id = }")
 
     # Формирую ответ
     response = RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
 
     # Генерирую токены
-    logger.debug(f"Generating tokens for user {user_id}")
-    jwt_token = await token_utils.sign_jwt_token(int(user_id))
+    logger.debug(f"Generating tokens for user {user.id}")
+    jwt_token = await token_utils.sign_jwt_token(int(user.id))
     csrf_token = await token_utils.sign_csrf_token()
 
     logger.info(
-        f"Tokens generated | User: {user_id} | "
+        f"Tokens generated | User: {user.id} | "
         f"JWT expiry: {settings.access_token.lifetime_seconds}s"
     )
 
