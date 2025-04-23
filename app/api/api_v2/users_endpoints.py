@@ -91,18 +91,18 @@ async def create_project(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     return ProjectResponseSchema.model_validate(result)
 
-
-@router.delete(
-    "/projects/{project_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
-)
-async def delete_project(project_id: int):
-    try:
-        await crud_manager.project.delete(project_id)
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-
-    except RuntimeError as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-        )
+# TODO: удалить путь, т.к. создан новый в user_projects.py
+# @router.delete(
+#     "/projects/{project_id}",
+#     status_code=status.HTTP_204_NO_CONTENT,
+# )
+# async def delete_project(project_id: int):
+#     try:
+#         await crud_manager.project.delete(project_id)
+#     except ValueError as e:
+#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+#
+#     except RuntimeError as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+#         )
