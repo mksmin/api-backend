@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi import (
     APIRouter,
     Header,
@@ -83,6 +85,7 @@ async def get_projects_owner(
     payload = await token_utils.decode_jwt(user)
     user_id: str = payload.get("user_id")
 
+    # TODO: Определить метод в crud_manager
     async with db_helper.session_factory() as session:
         stmt = (
             select(Project)
@@ -90,5 +93,57 @@ async def get_projects_owner(
             .where(User.id == int(user_id), Project.deleted_at.is_(None))
         )
         results = await session.execute(stmt)
-        projects: Project = results.scalars().all()
-        return {"projects": [{"id": p.id, "name": p.prj_name} for p in projects]}
+        projects: list[Project] = results.scalars().all()
+        return {
+            "projects": [
+                {
+                    "name": p.prj_name,
+                    "description": p.prj_description,
+                    "created_at": p.created_at,
+                    "uuid": p.uuid,
+                }
+                for p in projects
+            ]
+        }
+
+
+@router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_project(
+    project_id: str, user: str | bool = Depends(token_utils.check_access_token)
+):
+    payload = await token_utils.decode_jwt(user)
+    user_id: str = payload.get("user_id")
+
+    try:
+        project_id = UUID(project_id)
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"error": "Неверный формат ID проекта. Используйте UUID"},
+        )
+
+    # TODO: Определить метод в crud_manager
+    async with db_helper.session_factory() as session:
+        stmt = (
+            select(Project)
+            .join(User, Project.prj_owner == User.id)
+            .where(
+                User.id == int(user_id),
+                Project.uuid == project_id,
+                Project.deleted_at.is_(None),
+            )
+        )
+        result = await session.scalar(stmt)
+        if result:
+            try:
+                await crud_manager.project.delete(result.id)
+            except Exception as e:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST, detail={"error": str(e)}
+                )
+            return {"message": "Проект успешно удален"}
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail={"error": "Проект не найден"},
+            )

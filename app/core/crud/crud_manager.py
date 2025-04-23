@@ -84,7 +84,7 @@ class BaseCRUDManager(Generic[ModelType]):
                         self.model.deleted_at.is_(None),
                     )
                 )
-                .values(deleted_at=datetime.utcnow())
+                .values(deleted_at=datetime.now())
             )
             try:
                 result = await session.execute(query)
