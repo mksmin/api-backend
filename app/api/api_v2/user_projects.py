@@ -1,5 +1,5 @@
-from uuid import UUID
-
+# import from lib
+from datetime import datetime
 from fastapi import (
     APIRouter,
     Header,
@@ -10,18 +10,24 @@ from fastapi import (
     status,
     Query,
     Depends,
+    Response,
 )
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from sqlalchemy import select
+from uuid import UUID
 
+# import from modules
 from .auth import token_utils
 from app.core import crud_manager, settings, db_helper
+from app.core.database import Project, User
 from app.core.database.schemas import ProjectResponseSchema
-from ...core.database import Project, User
+from app.core.database.schemas import project as ProjectSchemas
+
 
 router = APIRouter(
     prefix="/projects",
-    tags=["projects"],
+    tags=["Projects"],
 )
 
 
@@ -57,6 +63,11 @@ class ProjectFilter(BaseModel):
 async def get_projects(
     prj_filter: ProjectFilter = Depends(ProjectFilter.from_query),
 ):
+    """
+
+    :param prj_filter:
+    :return:
+    """
 
     try:
         if prj_filter.project_id:
@@ -77,12 +88,34 @@ async def get_projects(
 
 @router.get(
     "/owner",
+    summary="Get projects by owner",
     include_in_schema=settings.run.dev_mode,
+    status_code=status.HTTP_200_OK,
+    responses={
+        200: {
+            "model": list[ProjectSchemas.ProjectResponseSchema],
+            "description": "Список проектов пользователя",
+        },
+        401: {
+            "model": ProjectSchemas.BaseMessageResponse,
+        },
+    },
 )
 async def get_projects_owner(
-    request: Request, user: str | bool = Depends(token_utils.check_access_token)
+    user: str | bool = Depends(token_utils.check_access_token),
 ):
-    payload = await token_utils.decode_jwt(user)
+    """
+    Возвращает список проектов, принадлежащих указанному пользователю.
+
+    :param user: Токен пользователя (JWT)
+    :return: Список объектов проектов
+    """
+    try:
+        payload = await token_utils.decode_jwt(user)
+    except HTTPException as e:
+        raise e
+
+    # Извлекаем ID пользователя из токена
     user_id: str = payload.get("user_id")
 
     # TODO: Определить метод в crud_manager
@@ -94,23 +127,47 @@ async def get_projects_owner(
         )
         results = await session.execute(stmt)
         projects: list[Project] = results.scalars().all()
-        return {
-            "projects": [
-                {
-                    "name": p.prj_name,
-                    "description": p.prj_description,
-                    "created_at": p.created_at,
-                    "uuid": p.uuid,
-                }
-                for p in projects
-            ]
-        }
+
+        response_list = []
+        for p in projects:
+            response_list.append(ProjectResponseSchema.model_validate(p))
+        return response_list
 
 
-@router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{project_id}",
+    summary="Delete project by UUID and user owner ID",
+    status_code=status.HTTP_200_OK,
+    responses={
+        200: {
+            "model": ProjectSchemas.BaseMessageResponse,
+            "description": "Сообщение успешно удалено",
+        },
+        400: {
+            "model": ProjectSchemas.BaseMessageResponse,
+            "description": "Неверный формат ID проекта",
+        },
+        404: {
+            "model": ProjectSchemas.BaseMessageResponse,
+            "description": "Сообщение не найдено",
+        },
+        500: {
+            "model": ProjectSchemas.BaseMessageResponse,
+            "description": "Внутренняя ошибка сервера",
+        },
+    },
+)
 async def delete_project(
     project_id: str, user: str | bool = Depends(token_utils.check_access_token)
-):
+) -> Response:
+    """
+    Удаляет проект с указанным ID. Удаление подразумевает добавление метки "deleted_at" в таблицу
+
+    :param project_id: UUID проекта.
+    :param user: JWT пользователя.
+    :return: Словарь с сообщением о результате удаления проекта.
+    """
+
     payload = await token_utils.decode_jwt(user)
     user_id: str = payload.get("user_id")
 
@@ -119,7 +176,9 @@ async def delete_project(
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail={"error": "Неверный формат ID проекта. Используйте UUID"},
+            detail=ProjectSchemas.BaseMessageResponse(
+                message="Неверный формат ID проекта. Используйте UUID"
+            ),
         )
 
     # TODO: Определить метод в crud_manager
@@ -139,11 +198,19 @@ async def delete_project(
                 await crud_manager.project.delete(result.id)
             except Exception as e:
                 raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST, detail={"error": str(e)}
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=ProjectSchemas.BaseMessageResponse(message=str(e)),
                 )
-            return {"message": "Проект успешно удален"}
+            return JSONResponse(
+                content=ProjectSchemas.BaseMessageResponse(
+                    message="Проект успешно удален"
+                ),
+                status_code=status.HTTP_200_OK,
+            )
         else:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail={"error": "Проект не найден"},
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=ProjectSchemas.BaseMessageResponse(
+                    message="Запрашиваемый проект не найден"
+                ),
             )
