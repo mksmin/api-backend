@@ -71,23 +71,23 @@ class ProjectResponseSchema(BaseModel):
     Схема для ответа от сервера (сервер -> клиент)
     """
 
-    id: int = Field(..., json_schema_extra={"example": 1})
-    uuid: UUID4 = Field(..., alias="uuid")
     name: str | None = Field(None, alias="prj_name")
     description: str | None = Field(None, alias="prj_description")
-    owner_id: int = Field(..., alias="prj_owner")
     created_at: datetime
+    uuid: UUID4 = Field(..., alias="uuid")
 
     model_config = ConfigDict(
         from_attributes=True,
         json_schema_extra={
             "example": {
-                "id": 1,
-                "uuid": "123e4567-e89b-12d3-a456-426614174000",
                 "prj_name": "Test project",
                 "prj_description": "Test project description",
-                "prj_owner": 123456,
                 "created_at": "2024-01-01T00:00:00",
+                "uuid": "123e4567-e89b-12d3-a456-426614174000",
             }
         },
     )
+
+
+class BaseMessageResponse(BaseModel):
+    message: str
