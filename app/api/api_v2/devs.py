@@ -13,6 +13,7 @@ from .auth import access_token_helper as token_utils
 
 router = APIRouter(
     prefix="/devs",
+    tags=["Devs API"],
 )
 
 
