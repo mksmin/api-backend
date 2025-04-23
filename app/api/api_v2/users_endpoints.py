@@ -1,23 +1,17 @@
 # import lib
 import json
-import pandas as pd
 
 # import from lib
-from io import StringIO
-from typing import Annotated
 from fastapi import (
     APIRouter,
     Header,
     Body,
-    File,
     UploadFile,
     HTTPException,
     status,
-    Query,
-    Depends,
 )
 from fastapi.responses import JSONResponse
-from pydantic import ValidationError, BaseModel
+from pydantic import ValidationError
 
 # import from modules
 from app.core import logger, settings
@@ -75,13 +69,6 @@ async def registration(data=Body()):
     return JSONResponse(content={"message": "Error"}, status_code=500)
 
 
-async def validate_csv(file: UploadFile):
-    if not file.filename.endswith(".csv"):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Only CSV files are allowed"
-        )
-
-
 @router.post(
     "/projects",
     status_code=status.HTTP_201_CREATED,
@@ -119,34 +106,3 @@ async def delete_project(project_id: int):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
         )
-
-
-@router.post("/csv_to_db", include_in_schema=settings.run.dev_mode)
-async def temp_upload_csv(file: Annotated[UploadFile, File()]):
-    # Валидация файла
-    await validate_csv(file)
-
-    try:
-        # Чтение и парсинг CSV
-        contents = await file.read()
-        csv_string = StringIO(contents.decode("utf-8"))
-        df = pd.read_csv(csv_string)
-
-        # Проверка наличия данных
-        if df.empty:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="CSV file is empty"
-            )
-
-        # Конвертация DataFrame в список словарей
-        data = df.to_dict(orient="records")
-
-        for user in data:
-            user.pop("id")
-            user.pop("created_at")
-            user.pop("copmetention")
-
-            await crud_manager.user.create(data=user)
-
-    except Exception as e:
-        logger.error(f"Ошибка при загрузке CSV: {e}")
