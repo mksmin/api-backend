@@ -137,12 +137,9 @@ async def get_projects_owner(
 @router.delete(
     "/{project_id}",
     summary="Delete project by UUID and user owner ID",
+    response_model=ProjectSchemas.BaseMessageResponse,
     status_code=status.HTTP_200_OK,
     responses={
-        200: {
-            "model": ProjectSchemas.BaseMessageResponse,
-            "description": "Сообщение успешно удалено",
-        },
         400: {
             "model": ProjectSchemas.BaseMessageResponse,
             "description": "Неверный формат ID проекта",
@@ -159,7 +156,7 @@ async def get_projects_owner(
 )
 async def delete_project(
     project_id: str, user: str | bool = Depends(token_utils.check_access_token)
-) -> Response:
+) -> ProjectSchemas.BaseMessageResponse | JSONResponse:
     """
     Удаляет проект с указанным ID. Удаление подразумевает добавление метки "deleted_at" в таблицу
 
@@ -174,11 +171,9 @@ async def delete_project(
     try:
         project_id = UUID(project_id)
     except ValueError:
-        raise HTTPException(
+        return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=ProjectSchemas.BaseMessageResponse(
-                message="Неверный формат ID проекта. Используйте UUID"
-            ),
+            content={"message": "Неверный формат ID проекта. Используйте UUID"},
         )
 
     # TODO: Определить метод в crud_manager
@@ -187,30 +182,25 @@ async def delete_project(
             select(Project)
             .join(User, Project.prj_owner == User.id)
             .where(
-                User.id == int(user_id),
+                User.id == user_id,
                 Project.uuid == project_id,
                 Project.deleted_at.is_(None),
             )
         )
-        result = await session.scalar(stmt)
-        if result:
-            try:
-                await crud_manager.project.delete(result.id)
-            except Exception as e:
-                raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=ProjectSchemas.BaseMessageResponse(message=str(e)),
-                )
+        project = await session.scalar(stmt)
+        if not project:
             return JSONResponse(
-                content=ProjectSchemas.BaseMessageResponse(
-                    message="Проект успешно удален"
-                ),
-                status_code=status.HTTP_200_OK,
-            )
-        else:
-            raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=ProjectSchemas.BaseMessageResponse(
-                    message="Запрашиваемый проект не найден"
-                ),
+                content={"message": "Запрашиваемый проект не найден"},
             )
+
+        try:
+            await crud_manager.project.delete(project.id)
+        except Exception as e:
+            return JSONResponse(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                content={"message": f"Ошибка при удалении: {e}"},
+            )
+
+            # 5) Успешный ответ — FastAPI подхватит response_model
+        return {"message": "Проект успешно удалён"}
