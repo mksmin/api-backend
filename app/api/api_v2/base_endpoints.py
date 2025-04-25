@@ -201,7 +201,8 @@ async def get_affirmations_data(user_data: dict):
                             response = json.loads(message.body)
                             data_dict = {
                                 "user": user_data,
-                                "affirm": response.get("tasks", []),  # Пример данных
+                                "affirm": response.get("tasks", []),
+                                "settings": response.get("settings", []),
                             }
                             return data_dict
 
