@@ -85,6 +85,7 @@ class User(IntIdMixin, TimestampsMixin, Base):
     sex: Mapped[str] = mapped_column(String(20), nullable=True, comment="Пол")
 
     extra_fields = relationship("UserExtraField", back_populates="user")
+    roles = relationship("Role", secondary="user_roles", back_populates="users")
 
     @classmethod
     def get_model_fields(
@@ -135,3 +136,42 @@ class UserExtraField(Base):
 
     user = relationship("User", back_populates="extra_fields")
     extra_field = relationship("ExtraField", back_populates="values")
+
+
+class Role(IntIdMixin, Base):
+    name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
+    description: Mapped[str] = mapped_column(String(200), nullable=True)
+
+    users = relationship("User", secondary="user_roles", back_populates="roles")
+    permissions = relationship(
+        "Permission", secondary="role_permissions", back_populates="roles"
+    )
+
+
+class Permission(IntIdMixin, Base):
+    code: Mapped[str] = mapped_column(
+        String(100), unique=True, nullable=False
+    )  # e.g. "can_edit_profiles"
+    description: Mapped[str] = mapped_column(String(200), nullable=True)
+
+    roles = relationship(
+        "Role", secondary="role_permissions", back_populates="permissions"
+    )
+
+
+class UserRole(Base):
+    user_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("users.id"), primary_key=True
+    )
+    role_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("roles.id"), primary_key=True
+    )
+
+
+class RolePermission(Base):
+    role_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("roles.id"), primary_key=True
+    )
+    permission_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("permissions.id"), primary_key=True
+    )
