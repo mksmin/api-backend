@@ -207,7 +207,7 @@ async def get_affirmations_data(user_data: dict):
 
         finally:
             await connection.close()
-            print("Соединение закрыто")
+            logger.info("Соединение с RabbitMQ закрыто")
         # Проверка ответа и возврат шаблона
         if not response:
             raise HTTPException(500, "No response from /tasks")
@@ -255,7 +255,6 @@ async def get_content(
     }
 
     if page in ("/affirmations", "affirmations"):
-        print("page", page)
         data_dict = await get_affirmations_data(user_data)
         data_dict["request"] = request
         html_content = templates.TemplateResponse(content_template, data_dict)
