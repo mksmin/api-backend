@@ -1,11 +1,12 @@
 # import lib
 import jwt
 import secrets
+import uuid
 
 # import from lib
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from fastapi import HTTPException, Cookie
-from jwt import ExpiredSignatureError, InvalidTokenError
+from jwt import ExpiredSignatureError, InvalidTokenError, MissingRequiredClaimError
 
 # import from modules
 from app.core import settings, logger
@@ -32,23 +33,34 @@ def token_response(token: str) -> dict:
 
 async def sign_jwt_token(user_id: int) -> dict:
     """
-    Создаёт JWT-токен для авторизации
+    Создаёт JWT access-токен для авторизации
     :param user_id: int
     :return: dict[str, str] = {"access_token": str, "token_type": "bearer"}
     """
 
+    now = datetime.now(timezone.utc)
+    expire_delta = timedelta(seconds=settings.access_token.lifetime_seconds)
+    jti = str(uuid.uuid4())
+
     payload = {
-        "sub": str(user_id),
-        "exp": (
-            datetime.now() + timedelta(seconds=settings.access_token.lifetime_seconds)
-        ).timestamp(),
-        "iat": datetime.now().timestamp(),  # issued at (время создания)
+        "iss": "mks-min.ru",  # issuer (эмитент)
+        "sub": str(user_id),  # subject (идентификатор субъекта)
+        "iat": int(now.timestamp()),  # issued at (время создания)
+        "exp": int(
+            (now + expire_delta).timestamp()
+        ),  # expiration time (время истечения)
+        "jti": jti,  # JWT ID (идентификатор токена)
     }
 
     token = jwt.encode(
         payload, settings.access_token.secret, algorithm=settings.access_token.algorithm
     )
-    return token_response(token)
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "expires_in": settings.access_token.lifetime_seconds,
+        "jti": jti,
+    }
 
 
 async def decode_jwt(token: str) -> dict:
@@ -65,18 +77,25 @@ async def decode_jwt(token: str) -> dict:
             token,
             settings.access_token.secret,
             algorithms=[settings.access_token.algorithm],
-            options={"verify_exp": True},
+            options={"require": ["exp", "iat", "sub", "jti"]},
         )
+        jti = decoded_token["jti"]
+        user_id = int(decoded_token["sub"])
+        issued_at = int(decoded_token["iat"])
+        expires_at = int(decoded_token["exp"])
 
-        exp_time = datetime.fromtimestamp(decoded_token["exp"])
-        logger.info(f"Token expired at: {exp_time.strftime('%Y-%m-%d %H:%M:%S')}")
+        logger.info(
+            f"Token expired at: {datetime.fromtimestamp(expires_at).strftime('%Y-%m-%d %H:%M:%S')}"
+        )
 
         return {
             "success": True,
-            "user_id": decoded_token["sub"],
-            "issued_at": decoded_token["iat"],
-            "expires_at": decoded_token["exp"],
+            "user_id": user_id,
+            "jti": jti,
+            "issued_at": issued_at,
+            "expires_at": expires_at,
         }
+
     except ExpiredSignatureError:
         print(f"Token ExpiredSignatureError")
         raise HTTPException(
@@ -85,8 +104,8 @@ async def decode_jwt(token: str) -> dict:
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    except InvalidTokenError:
-        print(f"Token InvalidTokenError")
+    except InvalidTokenError as e:
+        logger.exception(f"Invalid token: {e}", exc_info=True)
         raise HTTPException(
             status_code=401,
             detail="Invalid token",
