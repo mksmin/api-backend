@@ -12,6 +12,7 @@ from pathlib import Path
 
 # import from modules
 from app.core import settings, logger, crud_manager
+from app.core.database import User
 from .auth import auth_utils, token_utils, auth_router
 
 router = APIRouter()
@@ -243,14 +244,11 @@ async def get_content(
     logger.info(f"Получен запрос на страницу {page} из пути /content")
 
     payload = await token_utils.decode_jwt(user)
-    user_id: str = payload.get("user_id")
-    user = await crud_manager.user.get_one(field="tg_id", value=int(user_id))
-
-    if not user:
-        user = await crud_manager.user.create(data={"tg_id": int(user_id)})
+    user_id: int = int(payload.get("user_id"))
+    user: User = await crud_manager.user.get_one(field="id", value=user_id)
 
     user_data = {
-        "id": user_id,
+        "id": user.tg_id,
         "first_name": user.first_name,
         "last_name": user.last_name,
         "username": user.username,
