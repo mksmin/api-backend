@@ -129,6 +129,14 @@ class ProjectManager(BaseCRUDManager[Project]):
         super().__init__(session_factory, model=Project)
 
     async def create(self, data: dict) -> Project:
+        user_manager = UserManager(db_helper.session_factory)
+        user = await user_manager.get_one("tg_id", int(data["prj_owner"]))
+        if not user:
+            raise ValueError(
+                f"Пользователь с id = {data['prj_owner']} не найден в базе данных"
+            )
+        data["prj_owner"] = user.id
+
         return await super().create(**data)
 
     async def delete(
