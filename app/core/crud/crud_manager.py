@@ -151,16 +151,34 @@ class ProjectManager(BaseCRUDManager[Project]):
                 raise ValueError(f"У пользователя с id = {owner_id} нет проектов")
             return projects
 
-    async def get_project_by_id(self, owner_id: int, project_id: int) -> list[Project]:
-        async with self._get_session() as session:
-
-            query = select(self.model).where(
-                and_(
-                    self.model.deleted_at.is_(None),
-                    self.model.id == project_id,
-                    self.model.prj_owner == owner_id,
-                )
+    async def get_project_by_id(
+        self,
+        owner_id: int | None = None,
+        project_id: int | None = None,
+        project_uuid: UUID4 = None,
+    ) -> list[Project]:
+        if not project_id and not project_uuid:
+            raise ValueError(
+                "Параметры project_id и project_uuid не могут быть пустыми. Должен быть передан хотя бы один."
             )
+
+        async with self._get_session() as session:
+            if not project_uuid:
+                query = select(self.model).where(
+                    and_(
+                        self.model.deleted_at.is_(None),
+                        self.model.id == project_id,
+                        self.model.prj_owner == owner_id,
+                    )
+                )
+            else:
+                query = select(self.model).where(
+                    and_(
+                        self.model.deleted_at.is_(None),
+                        self.model.uuid == project_uuid,
+                    )
+                )
+
             result = await session.execute(query)
             project = result.scalar_one_or_none()
             if not project:
