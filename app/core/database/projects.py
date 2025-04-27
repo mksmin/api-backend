@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import UUID, String, BigInteger
+from sqlalchemy import UUID, String, BigInteger, ForeignKey
 from sqlalchemy.orm import mapped_column, Mapped
 
 from app.core.database import Base
@@ -16,4 +16,6 @@ class Project(IntIdMixin, TimestampsMixin, Base):
     )
     prj_name: Mapped[str] = mapped_column(String(50), nullable=True)
     prj_description: Mapped[str] = mapped_column(String(200), nullable=True)
-    prj_owner = mapped_column(BigInteger, nullable=False, comment="tg_id пользователя")
+    prj_owner = mapped_column(
+        BigInteger, ForeignKey("users.id"), nullable=False, comment="id пользователя"
+    )
