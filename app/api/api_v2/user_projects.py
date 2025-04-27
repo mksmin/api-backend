@@ -134,6 +134,44 @@ async def get_projects_owner(
         return response_list
 
 
+@router.get(
+    "/{project_id}",
+    include_in_schema=settings.run.dev_mode,
+    response_model=ProjectResponseSchema,
+)
+async def get_project_by_id(
+    project_id: str,
+    access_token: str | bool = Depends(token_utils.check_access_token),
+):
+    if not access_token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized"
+        )
+
+    try:
+        project_id = UUID(project_id)
+    except ValueError:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"message": "Неверный формат ID проекта. Используйте UUID"},
+        )
+    try:
+        project = await crud_manager.project.get_project_by_id(project_uuid=project_id)
+    except ValueError as e:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={"message": "Проект не найден"},
+        )
+
+    if project:
+        return ProjectResponseSchema.model_validate(project[0])
+    else:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={"message": "Проект не найден"},
+        )
+
+
 @router.delete(
     "/{project_id}",
     summary="Delete project by UUID and user owner ID",
