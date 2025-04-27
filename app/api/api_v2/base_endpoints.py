@@ -140,18 +140,63 @@ async def html_path(name_script: str):
     return FileResponse(result, status_code=status)
 
 
-@router.get("/affirmations", include_in_schema=settings.run.dev_mode)
 @router.get("/profile", include_in_schema=settings.run.dev_mode)
-async def user_profile_tg(
+async def user_profile(
     request: Request, cookie_token: str = Depends(token_utils.check_access_token)
 ):
     """Главная страница профиля"""
     data_return = {
         "request": request,
-        "content_template": None,
+        "auth_widget": None,
         "user": True,
     }
 
+    if not cookie_token:
+        # Определяем контент в зависимости от авторизации
+        data_return = {
+            "request": request,
+            "auth_widget": "auth_widget.html",
+            "user": None,
+        }
+        html_content = templates.TemplateResponse(
+            "profiles/profile.html",
+            data_return,
+        )
+        return html_content
+
+    payload = await token_utils.decode_jwt(cookie_token)
+    user_id: int = int(payload.get("user_id"))
+    user: User = await crud_manager.user.get_one(field="id", value=user_id)
+
+    user_data = {
+        "id": user.tg_id,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "username": user.username,
+        "is_premium": True,
+        "photo_url": "https://t.me/i/userpic/320/KAW0oZ7WjH_Mp1p43zuUi2lzp_IW2rxF954-zq5f3us.jpg",
+        "language_code": "ru",
+        "allows_write_to_pm": True,
+    }
+
+    data_return["user"] = user_data
+    html_content = templates.TemplateResponse(
+        "profiles/profile.html",
+        data_return,
+    )
+    return html_content
+
+
+@router.get("/affirmations", include_in_schema=settings.run.dev_mode)
+async def page_user_affirmations(
+    request: Request, cookie_token: str = Depends(token_utils.check_access_token)
+):
+    """Страница с пользовательскими аффирмациями"""
+    data_return = {
+        "request": request,
+        "content_template": None,
+        "user": True,
+    }
     if not cookie_token:
         # Определяем контент в зависимости от авторизации
         data_return = {
@@ -225,6 +270,7 @@ async def get_affirmations_data(user_data: dict):
 async def get_content(
     request: Request, user: str | bool = Depends(token_utils.check_access_token)
 ):
+    # Проверка авторизации (должен быть access_token)
     if not user:
         return JSONResponse(
             content={"status": "Unauthorized"}, status_code=status.HTTP_401_UNAUTHORIZED
@@ -281,3 +327,16 @@ async def get_content(
         },
     )
     return html_content
+
+
+@router.get("/content/{page_name}", include_in_schema=settings.run.dev_mode)
+async def get_content(
+    request: Request,
+    user: str | bool = Depends(token_utils.check_access_token),
+    page_name: str = "user",
+) -> JSONResponse:
+    # Проверка авторизации (должен быть access_token)
+    if not user:
+        return JSONResponse(
+            content={"status": "Unauthorized"}, status_code=status.HTTP_401_UNAUTHORIZED
+        )
