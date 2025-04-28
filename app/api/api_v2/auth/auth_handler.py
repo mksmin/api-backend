@@ -66,7 +66,10 @@ def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
 
         # Защита от атаки по времени
         result = hmac.compare_digest(generated_hash, input_hash)
-        logger.debug(f'verify_telegram_data | result: {result}')
+        logger.debug(f"verify_telegram_data | result: {result}")
+        logger.debug(f"data_dict: {data_dict}")
+        logger.debug(f"generated_hash: {generated_hash}")
+        logger.debug(f"input_hash: {input_hash}")
         return result
 
     except Exception as e:
