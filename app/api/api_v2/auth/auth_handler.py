@@ -65,7 +65,9 @@ def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
         ).hexdigest()
 
         # Защита от атаки по времени
-        return hmac.compare_digest(generated_hash, input_hash)
+        result = hmac.compare_digest(generated_hash, input_hash)
+        logger.debug(f'verify_telegram_data | result: {result}')
+        return result
 
     except Exception as e:
         raise ValueError(f"Verification error: {e}")
