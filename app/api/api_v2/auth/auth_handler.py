@@ -33,6 +33,7 @@ def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
         # Разбираю строку запроса, получая список кортежей (ключ, значение)
         pairs = parse_qsl(raw_query, keep_blank_values=True)
         data_dict = dict(pairs)
+        logger.debug(f'verify_telegram_data | pairs: {pairs}')
 
         input_hash = data_dict.get("hash", None)
         if not input_hash:
@@ -43,12 +44,16 @@ def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
             [(k, v) for k, v in pairs if k != "hash"],
             key=lambda x: x[0],
         )
+        logger.debug(f'verify_telegram_data | sorted_pairs: {sorted_pairs}')
+
 
         # Формирую список со строками для хеширования
         data_check_list = [f"{k}={v}" for k, v in sorted_pairs]
+        logger.debug(f'verify_telegram_data | data_check_list: {data_check_list}')
 
         # Собираю общую строку
         data_check_str = "\n".join(data_check_list)
+        logger.debug(f'verify_telegram_data | data_check_str: {data_check_str}')
 
         # Генерация секретного ключа
         secret_key = hmac.new(
