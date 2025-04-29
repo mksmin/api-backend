@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "API Atomlab"
+name = "API Backend"
 version = "0.1.0"
 description = ""
 license = ""
