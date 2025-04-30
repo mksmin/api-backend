@@ -305,6 +305,7 @@ async def get_content(
         data_dict = await get_affirmations_data(user_data)
         data_dict["request"] = request
         html_content = templates.TemplateResponse(content_template, data_dict)
+        logger.info(f"Возвращен шаблон {content_template}")
         return html_content
 
     html_content = templates.TemplateResponse(
