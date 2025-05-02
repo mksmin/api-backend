@@ -70,12 +70,13 @@ async def get_projects(
     """
 
     try:
+        user = await crud_manager.user.get_one(prj_filter.owner_id)
         if prj_filter.project_id:
             projects = await crud_manager.project.get_project_by_id(
-                prj_filter.owner_id, prj_filter.project_id
+                user.id, prj_filter.project_id
             )
         else:
-            projects = await crud_manager.project.get_all(prj_filter.owner_id)
+            projects = await crud_manager.project.get_all(user.id)
         return {
             i: ProjectResponseSchema.model_validate(item)
             for i, item in enumerate(projects)
