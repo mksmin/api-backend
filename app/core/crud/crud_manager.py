@@ -104,6 +104,8 @@ class UserManager(BaseCRUDManager[User]):
         super().__init__(session_factory, model=User)
 
     async def get_one(self, value: str | int, field: str = "tg_id") -> ModelType | None:
+        logger.info(f"Start searching user with ({field}: {value})")
+
         return await super().get_one('tg_id', value)
 
     async def create(self, data: dict) -> User:
