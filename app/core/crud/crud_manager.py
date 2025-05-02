@@ -105,8 +105,9 @@ class UserManager(BaseCRUDManager[User]):
 
     async def get_one(self, value: str | int, field: str = "tg_id") -> ModelType | None:
         logger.info(f"Start searching user with ({field}: {value})")
-
-        return await super().get_one('tg_id', value)
+        result = await super().get_one(field, value)
+        logger.info(f"Result: {result}")
+        return result
 
     async def create(self, data: dict) -> User:
         data["uuid"] = db_helper.generate_uuid()
