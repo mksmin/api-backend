@@ -1,0 +1,34 @@
+from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
+from typing import Union
+from uuid import UUID
+import datetime
+
+from app.core.crud.managers import BaseCRUDManager
+from app.core.database import APIKey
+from app.core.database.security import schemas as sch, utils as ut
+
+
+class APIKeyManager(BaseCRUDManager[APIKey]):
+    def __init__(self, session_factory: async_sessionmaker[AsyncSession]):
+        super().__init__(session_factory, model=APIKey)
+
+    async def create(
+        self, *, project_id: int, temporary: bool = True
+    ) -> tuple[str, APIKey]:
+        raw_key, hashed_key = await ut.generate_api_key_and_hash()
+
+        new_api_key = {"key_hash": hashed_key, "project_id": project_id}
+        if temporary:
+            new_api_key.update(
+                {
+                    "expires_at": datetime.datetime.now() + datetime.timedelta(days=45),
+                }
+            )
+
+        instance = await super().create(**new_api_key)
+
+        return (
+            raw_key,
+            instance,
+        )
