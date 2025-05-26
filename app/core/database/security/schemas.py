@@ -1,6 +1,11 @@
 from datetime import datetime
+from uuid import UUID
 from pydantic import BaseModel, Field
 from typing import Optional
+
+
+class ProjectUUID(BaseModel):
+    uuid: UUID
 
 
 class APIKeyBase(BaseModel):
@@ -11,11 +16,9 @@ class APIKeyBase(BaseModel):
     """
 
     revoked: bool = Field(False, description="Отозван ли ключ")
-    expires_at: Optional[datetime] = Field(
-        None,
-        description="Время истечения ключа",
-        example=datetime.now(),
-    )
+    temporary: bool = Field(False, description="Временный ключ?")
+    project_id: UUID = Field(..., description="Идентификатор проекта")
+    expires_at: Optional[datetime] = Field(None, description="Дата истечения ключа")
 
 
 class APIKeyCreate(APIKeyBase):
@@ -24,6 +27,8 @@ class APIKeyCreate(APIKeyBase):
 
     This class represents the model for creating API keys. It inherits from the APIKeyBase class.
     """
+
+    pass
 
 
 class APIKeyUpdate(APIKeyBase):
@@ -48,6 +53,7 @@ class APIKeyOut(APIKeyBase):
     created_at: datetime = Field(
         ..., description="Дата создания ключа", example=datetime.now()
     )
+    project_id: UUID = Field(..., description="Идентификатор проекта")
 
     class Config:
         from_attributes = True
@@ -66,3 +72,45 @@ class APIKeyFull(APIKeyOut):
         example="1234567890abcdef1234567890abcdef",
         max_length=47,
     )
+
+
+class APIKeyCreateRequest(BaseModel):
+    """
+    Модель для вью, который создает API ключи. Используется для валидации входных данных.
+    """
+
+    temporary: bool = Field(False, description="Временный ключ")
+    project_id: UUID = Field(..., description="Идентификатор проекта")
+
+
+class APIKeyCreateResponse(BaseModel):
+    """
+    Модель для вью, который создает API ключи. Используется для разовой отправки не хэшированного ключа.
+    """
+
+    key: str = Field(
+        ...,
+        description="API Ключ",
+        example="1234567890abcdef1234567890abcdef",
+        max_length=47,
+    )
+    key_prefix: str = Field(..., description="Префикс ключа", example="tks_123lka")
+    created_at: datetime = Field(
+        ..., description="Дата создания ключа", example=datetime.now()
+    )
+    expires_at: Optional[datetime] = Field(None, description="Дата истечения ключа")
+    project_id: UUID = Field(..., description="Идентификатор проекта")
+
+
+class APIKeyGetResponse(BaseModel):
+    """
+    Модель для вью, который возвращает список API ключей проекта. Сырого ключа нет, только первые 11 символов.
+    """
+
+    key_prefix: str = Field(..., description="Префикс ключа", example="tks_123lka")
+    created_at: datetime = Field(
+        ..., description="Дата создания ключа", example=datetime.now()
+    )
+    expires_at: Optional[datetime] = Field(None, description="Дата истечения ключа")
+    project_id: UUID = Field(..., description="Идентификатор проекта")
+    revoked: bool = Field(False, description="Отозван ли ключ")
