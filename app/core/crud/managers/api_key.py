@@ -18,7 +18,11 @@ class APIKeyManager(BaseCRUDManager[APIKey]):
     ) -> tuple[str, APIKey]:
         raw_key, hashed_key = await ut.generate_api_key_and_hash()
 
-        new_api_key = {"key_hash": hashed_key, "project_id": project_id}
+        new_api_key = {
+            "key_hash": hashed_key,
+            "project_id": project_id,
+            "key_prefix": raw_key[:11],
+        }
         if temporary:
             new_api_key.update(
                 {
