@@ -13,13 +13,17 @@ from pathlib import Path
 # import from modules
 from app.core import settings, logger, crud_manager
 from app.core.database import User
-from .auth import auth_utils, token_utils, auth_router
+from .auth import auth_utils, token_utils, auth_router, api_key_endpoints
 
 router = APIRouter()
 router.include_router(
     auth_router,
+    tags=["Authentication"],
 )
-
+router.include_router(
+    api_key_endpoints.router,
+    tags=["Authentication"],
+)
 BASE_DIR = Path.cwd().parent  # project working directory api_atomlab/app
 FRONTEND_DIR = (
     (BASE_DIR / "api-frontend") if settings.run.dev_mode else (BASE_DIR / "frontend")
