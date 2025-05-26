@@ -29,3 +29,4 @@ class Project(IntIdMixin, TimestampsMixin, Base):
     parent: Mapped["Project"] = relationship(
         "Project", remote_side="Project.id", backref="subprojects", lazy="joined"
     )
+    api_keys = relationship("APIKey", back_populates="project")
