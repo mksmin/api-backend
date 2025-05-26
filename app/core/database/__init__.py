@@ -5,6 +5,7 @@ __all__ = (
     "Project",
     "IntIdMixin",
     "TimestampsMixin",
+    "APIKey",
 )
 
 from .db_helper import db_helper
