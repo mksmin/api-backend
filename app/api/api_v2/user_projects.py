@@ -21,9 +21,8 @@ from uuid import UUID
 from .auth import token_utils
 from app.core import crud_manager, settings, db_helper
 from app.core.database import Project, User
-from app.core.database.schemas import ProjectResponseSchema
-from app.core.database.schemas import project as ProjectSchemas
-
+from app.core.database.schemas import ProjectResponseSchema, project as ProjectSchemas
+from app.core.database.security import schemas as ak_schemas
 
 router = APIRouter(
     prefix="/projects",
@@ -243,3 +242,31 @@ async def delete_project(
 
             # 5) Успешный ответ — FastAPI подхватит response_model
         return {"message": "Проект успешно удалён"}
+
+
+@router.post("/generate-key", response_model=ak_schemas.APIKeyCreateResponse)
+async def generate_api_key(
+    data: ak_schemas.APIKeyCreateRequest,
+    user: str | bool = Depends(token_utils.check_access_token),
+):
+    project = await crud_manager.project.get_project_by_id(project_uuid=data.project_id)
+    project = project[0]
+    if not project:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Project not found"
+        )
+
+    raw_key, instance = await crud_manager.api_keys.create(
+        project_id=project.id,
+        temporary=data.temporary,
+    )
+
+    response_instance = ak_schemas.APIKeyCreateResponse(
+        key=raw_key,
+        key_prefix=instance.key_prefix,
+        created_at=instance.created_at,
+        project_id=project.uuid,
+        expires_at=instance.expires_at,
+    )
+
+    return response_instance
