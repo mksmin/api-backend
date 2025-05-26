@@ -22,7 +22,7 @@ from app.api.redirect import router as redirect_router
 from app.api import base_router
 from fastapi.middleware.cors import CORSMiddleware
 
-PATH_DEV = Path(__file__).parent.parent / "api-atom-front"
+PATH_DEV = Path(__file__).parent.parent / "api-frontend"
 PATH_PROD = Path(__file__).parent.parent / "frontend"
 PATH_STATIC = PATH_DEV if settings.run.dev_mode else PATH_PROD
 

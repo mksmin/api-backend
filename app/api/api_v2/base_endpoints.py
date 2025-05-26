@@ -22,7 +22,7 @@ router.include_router(
 
 BASE_DIR = Path.cwd().parent  # project working directory api_atomlab/app
 FRONTEND_DIR = (
-    (BASE_DIR / "api-atom-front") if settings.run.dev_mode else (BASE_DIR / "frontend")
+    (BASE_DIR / "api-frontend") if settings.run.dev_mode else (BASE_DIR / "frontend")
 )
 HTML_DIR = FRONTEND_DIR / "src"
 STATIC_DIR = FRONTEND_DIR / "public"

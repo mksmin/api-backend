@@ -17,8 +17,15 @@ class Project(IntIdMixin, TimestampsMixin, Base):
     prj_name: Mapped[str] = mapped_column(String(50), nullable=True)
     prj_description: Mapped[str] = mapped_column(String(200), nullable=True)
     prj_owner = mapped_column(
-        BigInteger, ForeignKey("users.id"), nullable=True, comment="id пользователя")
-    parent_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('projects.id'), nullable=True,
-                                           comment="id родительского проекта")
+        BigInteger, ForeignKey("users.id"), nullable=True, comment="id пользователя"
+    )
+    parent_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("projects.id"),
+        nullable=True,
+        comment="id родительского проекта",
+    )
 
-    parent: Mapped["Project"] = relationship("Project", remote_side='Project.id', backref="subprojects", lazy="joined")
+    parent: Mapped["Project"] = relationship(
+        "Project", remote_side="Project.id", backref="subprojects", lazy="joined"
+    )
