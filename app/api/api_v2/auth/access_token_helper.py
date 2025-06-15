@@ -5,7 +5,7 @@ import uuid
 
 # import from lib
 from datetime import datetime, timedelta, timezone
-from fastapi import HTTPException, Cookie
+from fastapi import HTTPException, Cookie, Depends, status
 from jwt import ExpiredSignatureError, InvalidTokenError, MissingRequiredClaimError
 
 # import from modules
@@ -117,6 +117,8 @@ async def check_access_token(
     access_token: str | None = Cookie(default=None, alias="access_token"),
 ) -> str | bool:
     """Middleware for checking access token from cookies"""
+
+    logger.info(f"Check access token: {access_token}")
     if not access_token:
         return False
 
@@ -136,3 +138,14 @@ async def check_access_token(
 
 async def sign_csrf_token():
     return secrets.token_urlsafe(32)
+
+
+async def validate_access_token_dependency(
+    access_token: str | bool = Depends(check_access_token),
+) -> str:
+    if not access_token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+        )
+
+    return access_token

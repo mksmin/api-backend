@@ -102,7 +102,7 @@ async def get_projects(
     },
 )
 async def get_projects_owner(
-    user: str | bool = Depends(token_utils.check_access_token),
+    user: str | bool = Depends(token_utils.validate_access_token_dependency),
 ):
     """
     Возвращает список проектов, принадлежащих указанному пользователю.
@@ -247,7 +247,7 @@ async def delete_project(
 @router.post("/generate-key", response_model=ak_schemas.APIKeyCreateResponse)
 async def generate_api_key(
     data: ak_schemas.APIKeyCreateRequest,
-    user: str | bool = Depends(token_utils.check_access_token),
+    user: str | bool = Depends(token_utils.validate_access_token_dependency),
 ):
     project = await crud_manager.project.get_project_by_id(project_uuid=data.project_id)
     project = project[0]
