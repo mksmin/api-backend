@@ -118,7 +118,7 @@ async def check_access_token(
 ) -> str | bool:
     """Middleware for checking access token from cookies"""
 
-    logger.info(f"Check access token: {access_token}")
+    logger.debug(f"Check access token: {access_token}")
     if not access_token:
         return False
 
