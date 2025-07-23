@@ -244,7 +244,7 @@ async def get_affirmations_data(user_data: dict):
         decoded = result.body.decode("utf-8")
         dict_data: list[dict] = json.loads(decoded)
         return_data = {
-            "user:": user_data,
+            "user": user_data,
             "affirm": dict_data,
             "settings": None,
         }
@@ -255,16 +255,6 @@ async def get_affirmations_data(user_data: dict):
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Service unavailable",
         )
-
-
-@router.get("/test_tasks", include_in_schema=settings.run.dev_mode)
-async def test_tasks():
-    user_data = {
-        "id": 87396076,
-        "first_name": "Максим",
-    }
-    result = await get_affirmations_data(user_data)
-    return result
 
 
 router.include_router(rmq_router)
