@@ -85,10 +85,10 @@ if __name__ == "__main__":
             "host": settings.run.host,
             "port": settings.run.port,
             "log_level": settings.run.log_level,
-            "reload": True,
+            "reload": False,
             "log_config": str(Path(__file__).parent / "app/core/log_conf.json"),
             "use_colors": True,
-            "workers": 2,
+            "workers": 1,
         }
         if not sys.platform.startswith("win") or os.getenv("FORCE_UNIX_SOCKET"):
             run_args["uds"] = "/tmp/uvicorn.sock"
