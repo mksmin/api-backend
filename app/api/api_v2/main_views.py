@@ -1,53 +1,12 @@
 from pathlib import Path
-from typing import Coroutine, Callable, Any
 
-from fastapi import APIRouter, status, HTTPException, Depends
+from fastapi import APIRouter, status, Depends
 from fastapi.responses import FileResponse
 
+from api.api_v2.dependencies import SRC_DIR, PUBLIC_DIR, file_dependency
 from core.config import settings
 
-BASE_DIR = Path.cwd().resolve().parent  # project working directory api_atomlab/app
-FRONTEND_DIR = (
-    (BASE_DIR / "api-frontend") if settings.run.dev_mode else (BASE_DIR / "frontend")
-)
-HTML_DIR = FRONTEND_DIR / "src"
-STATIC_DIR = FRONTEND_DIR / "public"
-NOT_FOUND_PAGE_404 = FRONTEND_DIR / "src/404.html"
-
 router = APIRouter()
-
-
-async def check_path(path_file: Path):
-    file_exists = Path(path_file).exists()
-    return (
-        (
-            path_file,
-            status.HTTP_200_OK,
-        )
-        if file_exists
-        else (
-            NOT_FOUND_PAGE_404,
-            status.HTTP_404_NOT_FOUND,
-        )
-    )
-
-
-def file_dependency(
-    base_dir: Path,
-    sub_dir: str | None = None,
-) -> Callable[[str], Coroutine[Any, Any, Path]]:
-    async def _get_file(
-        name_file: str,
-    ) -> Path:
-        file_path = base_dir / sub_dir / name_file if sub_dir else base_dir / name_file
-        if not file_path.exists():
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"File {name_file} not found",
-            )
-        return file_path
-
-    return _get_file
 
 
 @router.get("/")
@@ -63,7 +22,7 @@ async def index_page():
         This endpoint serves as the entry point for the frontend application.
         It constructs the file path as `HTML_DIR / "index.html"`.
     """
-    index_html = HTML_DIR / "index.html"
+    index_html = SRC_DIR / "index.html"
     return FileResponse(index_html)
 
 
@@ -79,7 +38,7 @@ async def favicon():
         FileResponse: Response object containing the `favicon.ico` file
                       located in the `STATIC_DIR` directory.
     """
-    return FileResponse(STATIC_DIR / "favicon.ico")
+    return FileResponse(PUBLIC_DIR / "favicon.ico")
 
 
 @router.get(
@@ -94,7 +53,7 @@ async def robots():
         FileResponse: The contents of the `robots.txt` file located in the
                       `STATIC_DIR` directory with HTTP 200 OK status.
     """
-    return FileResponse(STATIC_DIR / "robots.txt")
+    return FileResponse(PUBLIC_DIR / "robots.txt")
 
 
 @router.get(
@@ -104,7 +63,7 @@ async def robots():
 async def get_static_html(
     file_path: Path = Depends(
         file_dependency(
-            base_dir=HTML_DIR,
+            base_dir=SRC_DIR,
         )
     )
 ):
@@ -131,7 +90,7 @@ async def get_static_html(
 async def get_static_media(
     file_path: Path = Depends(
         file_dependency(
-            base_dir=STATIC_DIR,
+            base_dir=PUBLIC_DIR,
             sub_dir="media",
         )
     )
@@ -159,7 +118,7 @@ async def get_static_media(
 async def get_static_styles(
     file_path: Path = Depends(
         file_dependency(
-            base_dir=HTML_DIR,
+            base_dir=SRC_DIR,
             sub_dir="style",
         )
     )
@@ -187,7 +146,7 @@ async def get_static_styles(
 async def get_static_scripts(
     file_path: Path = Depends(
         file_dependency(
-            base_dir=HTML_DIR,
+            base_dir=SRC_DIR,
             sub_dir="scripts",
         )
     )
