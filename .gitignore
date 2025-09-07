@@ -1,5 +1,6 @@
 # my project files
 tmp_files
+.gigaide
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
