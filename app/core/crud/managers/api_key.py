@@ -1,9 +1,9 @@
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 import datetime
 
-from app.core.crud.managers import BaseCRUDManager
-from app.core.database.security.models import APIKey
-from app.core.database.security import utils as ut
+from core.crud.managers import BaseCRUDManager
+from core.database.security.models import APIKey
+from core.database.security import utils as ut
 
 
 class APIKeyManager(BaseCRUDManager[APIKey]):

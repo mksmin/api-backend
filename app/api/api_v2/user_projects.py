@@ -19,11 +19,11 @@ from uuid import UUID
 
 # import from modules
 from .auth import token_utils
-from app.core import crud_manager, settings, db_helper
-from app.core.database import User
-from app.core.database.projects import Project
-from app.core.database.schemas import ProjectResponseSchema, project as ProjectSchemas
-from app.core.database.security import schemas as ak_schemas
+from core import crud_manager, settings, db_helper
+from core.database import User
+from core.database.projects import Project
+from core.database.schemas import ProjectResponseSchema, project as ProjectSchemas
+from core.database.security import schemas as ak_schemas
 
 router = APIRouter(
     prefix="/projects",

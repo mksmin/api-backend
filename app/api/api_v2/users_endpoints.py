@@ -14,9 +14,9 @@ from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
 # import from modules
-from app.core import logger, settings
-from app.core.crud import crud_manager, get_registration_stat
-from app.core.database.schemas import ProjectResponseSchema, ProjectRequestSchema
+from core import logger, settings
+from core.crud import crud_manager, get_registration_stat
+from core.database.schemas import ProjectResponseSchema, ProjectRequestSchema
 from .auth import token_utils
 from .user_projects import router as user_projects_router
 

@@ -6,7 +6,7 @@ from sqlalchemy import select, update, and_
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
-from app.core import logger
+from core import logger
 
 ModelType = TypeVar("ModelType")
 

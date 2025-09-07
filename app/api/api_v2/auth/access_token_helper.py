@@ -9,7 +9,7 @@ from fastapi import HTTPException, Cookie, Depends, status
 from jwt import ExpiredSignatureError, InvalidTokenError, MissingRequiredClaimError
 
 # import from modules
-from app.core import settings, logger
+from core import settings, logger
 
 BOT_CONFIG = {
     "bot1": {

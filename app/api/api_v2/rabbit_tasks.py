@@ -3,7 +3,7 @@ import aio_pika
 from fastapi import APIRouter, Body
 from pydantic import BaseModel
 
-from app.core import settings
+from core import settings
 
 
 router = APIRouter()

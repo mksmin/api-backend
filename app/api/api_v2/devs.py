@@ -8,7 +8,7 @@ from io import StringIO
 from typing import Annotated
 
 # import from modules
-from app.core import settings, crud_manager, logger
+from core import settings, crud_manager, logger
 from .auth import access_token_helper as token_utils
 
 router = APIRouter(

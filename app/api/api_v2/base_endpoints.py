@@ -11,8 +11,8 @@ from pathlib import Path
 
 
 # import from modules
-from app.core import settings, logger, crud_manager
-from app.core.database import User
+from core import settings, logger, crud_manager
+from core.database import User
 from .auth import auth_utils, token_utils, auth_router, api_key_endpoints
 
 router = APIRouter()

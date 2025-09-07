@@ -11,7 +11,7 @@ from pathlib import Path
 from urllib.parse import parse_qsl, unquote, parse_qs
 
 # import from modules
-from app.core import settings, logger, db_helper, crud_manager
+from core import settings, logger, db_helper, crud_manager
 from .access_token_helper import BOT_CONFIG
 
 BASE_DIR = Path.cwd().parent  # project working directory api_atomlab/app

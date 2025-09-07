@@ -2,8 +2,8 @@ from sqlalchemy import MetaData
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, declared_attr
 from sqlalchemy.ext.asyncio import AsyncAttrs
 
-from app.core import settings
-from app.utils import camel_case_converter
+from core import settings
+from utils import camel_case_converter
 
 
 class Base(AsyncAttrs, DeclarativeBase):

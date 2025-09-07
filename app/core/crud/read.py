@@ -7,7 +7,7 @@ from sqlalchemy import MetaData, Table, select, func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.config import logger
+from core.config import logger
 from .config import connector
 
 

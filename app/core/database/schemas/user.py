@@ -5,7 +5,7 @@ from dateutil import parser
 
 from pydantic import BaseModel, root_validator, ConfigDict, model_validator
 
-from app.core import logger
+from core import logger
 
 
 class UserSchema(BaseModel):

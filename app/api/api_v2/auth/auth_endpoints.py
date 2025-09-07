@@ -8,8 +8,8 @@ from urllib.parse import parse_qsl
 
 # import from modules
 from . import auth_utils, token_utils
-from app.core import logger, settings, crud_manager
-from app.core.database import User
+from core import logger, settings, crud_manager
+from core.database import User
 
 router = APIRouter()
 BASE_DIR = Path.cwd().parent  # project working directory api_atomlab/app
