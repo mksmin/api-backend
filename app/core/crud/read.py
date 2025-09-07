@@ -8,7 +8,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import logger
-from app.core.database import User, Project
 from .config import connector
 
 

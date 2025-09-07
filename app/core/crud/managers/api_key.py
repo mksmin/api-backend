@@ -1,12 +1,9 @@
-from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
-from typing import Union
-from uuid import UUID
 import datetime
 
 from app.core.crud.managers import BaseCRUDManager
-from app.core.database import APIKey
-from app.core.database.security import schemas as sch, utils as ut
+from app.core.database.security.models import APIKey
+from app.core.database.security import utils as ut
 
 
 class APIKeyManager(BaseCRUDManager[APIKey]):

@@ -4,7 +4,7 @@ import json
 
 # import from lib
 from fastapi import APIRouter, Depends, Request, HTTPException, status
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
 from faststream.rabbit import fastapi, RabbitBroker, RabbitMessage
 from pathlib import Path
@@ -41,116 +41,6 @@ not_found_404 = FRONTEND_DIR / "src/404.html"
 
 def get_broker() -> RabbitBroker:
     return rmq_router.broker
-
-
-async def check_path(path_file: Path):
-    file_exists = Path(path_file).exists()
-
-    if file_exists:
-        return path_file, 200
-    else:
-        return not_found_404, 404
-
-
-@router.get("/")
-async def index_page():
-    """
-    Returns the index HTML file.
-
-    Returns:
-        FileResponse: The index HTML file.
-    """
-    index_html = HTML_DIR / "index.html"
-    return FileResponse(index_html)
-
-
-@router.get("/favicon.ico", include_in_schema=False)
-async def favicon():
-    """
-    Returns the favicon ICO file.
-
-    Returns:
-        FileResponse: The favicon ICO file.
-    """
-    favicon_path = STATIC_DIR / "favicon.ico"
-    return FileResponse(favicon_path)
-
-
-@router.get("/robots.txt", include_in_schema=settings.run.dev_mode)
-async def robots():
-    """
-    Returns the robots TXT file.
-
-    Returns:
-        FileResponse: The robots TXT file.
-    """
-    robots_path = STATIC_DIR / "robots.txt"
-    return FileResponse(robots_path)
-
-
-@router.get("/html/{name_html}", include_in_schema=settings.run.dev_mode)
-async def html_path(name_html: str):
-    """
-    Returns the specified HTML file.
-
-    Args:
-        name_html (str): The name of the HTML file.
-
-    Returns:
-        FileResponse: The specified HTML file.
-    """
-    html_file_path = HTML_DIR / name_html
-    result, status = await check_path(html_file_path)
-    return FileResponse(result, status_code=status)
-
-
-#
-@router.get("/media/{name_media}", include_in_schema=settings.run.dev_mode)
-async def html_path(name_media: str):
-    """
-    Returns the specified media file.
-
-    Args:
-        name_media (str): The name of the media file.
-
-    Returns:
-        FileResponse: The specified media file.
-    """
-    media_path = STATIC_DIR / "media" / name_media
-    result, status = await check_path(media_path)
-    return FileResponse(result, status_code=status)
-
-
-@router.get("/style/{name_style}", include_in_schema=settings.run.dev_mode)
-async def html_path(name_style: str):
-    """
-    Returns the specified style file.
-
-    Args:
-        name_style (str): The name of the style file.
-
-    Returns:
-        FileResponse: The specified style file.
-    """
-    media_path = HTML_DIR / "style" / name_style
-    result, status = await check_path(media_path)
-    return FileResponse(result, status_code=status)
-
-
-@router.get("/scripts/{name_script}", include_in_schema=settings.run.dev_mode)
-async def html_path(name_script: str):
-    """
-    Returns the specified script file.
-
-    Args:
-        name_script (str): The name of the script file.
-
-    Returns:
-        FileResponse: The specified script file.
-    """
-    script_path = HTML_DIR / "scripts" / name_script
-    result, status = await check_path(script_path)
-    return FileResponse(result, status_code=status)
 
 
 @router.get("/profile", include_in_schema=settings.run.dev_mode)

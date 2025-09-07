@@ -59,11 +59,3 @@ async def rabbit_task_create(data=Body()):
 @router.post("/tasks", include_in_schema=False)
 async def rabbit_task_create(data=Body()):
     return RedirectResponse(url=f"{path_mapping['users']}tasks", status_code=308)
-
-
-# @router.get("/auth", include_in_schema=False)
-# @router.post("/auth", include_in_schema=False)
-# async def project_redirect(request: Request):
-#     query_params = request.query_params
-#     redirect_url = f"{path_mapping['users']}auth?{query_params}"
-#     return RedirectResponse(redirect_url, status_code=307)

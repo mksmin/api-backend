@@ -7,7 +7,8 @@ from typing import TypeVar
 
 # import from modules
 from app.core.config import logger
-from app.core.database import User, Project
+from app.core.database import User
+from app.core.database.projects import Project
 from app.core.database.schemas import UserSchema, ProjectSchema
 from .managers import BaseCRUDManager, ModelType, APIKeyManager
 
