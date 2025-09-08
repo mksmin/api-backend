@@ -44,10 +44,13 @@ def get_broker() -> RabbitBroker:
     return rmq_router.broker
 
 
-@router.get("/profile", include_in_schema=settings.run.dev_mode)
+@router.get(
+    "/profile",
+    include_in_schema=settings.run.dev_mode,
+)
 async def user_profile(
     request: Request,
-    user_id: str = Depends(token_utils.check_access_token),
+    user_id: str = Depends(token_utils.soft_validate_access_token),
 ):
     """Главная страница профиля"""
     data_return = {
@@ -95,31 +98,6 @@ async def user_profile(
     return html_content
 
 
-@router.get("/affirmations", include_in_schema=settings.run.dev_mode)
-async def page_user_affirmations(
-    request: Request,
-    cookie_token: str = Depends(token_utils.check_access_token),
-):
-    """Страница с пользовательскими аффирмациями"""
-    data_return = {
-        "request": request,
-        "content_template": None,
-        "user": True,
-    }
-    if not cookie_token:
-        # Определяем контент в зависимости от авторизации
-        data_return = {
-            "request": request,
-            "content_template": "auth_widget.html",
-            "user": None,
-        }
-
-    return templates.TemplateResponse(
-        "base.html",
-        data_return,
-    )
-
-
 async def get_affirmations_data(user_data: dict):
     logger.info(f"Get affirmations data for user {user_data.get('id')}")
     broker = get_broker()
@@ -157,10 +135,13 @@ async def get_affirmations_data(user_data: dict):
 router.include_router(rmq_router)
 
 
-@router.get("/content", include_in_schema=settings.run.dev_mode)
+@router.get(
+    "/content",
+    include_in_schema=settings.run.dev_mode,
+)
 async def get_content(
     request: Request,
-    user_id: str = Depends(token_utils.check_access_token),
+    user_id: str = Depends(token_utils.strict_validate_access_token),
 ):
 
     path = request.query_params.get("page", "profile").lstrip("/")
@@ -219,16 +200,3 @@ async def get_content(
         },
     )
     return html_content
-
-
-@router.get("/content/{page_name}", include_in_schema=settings.run.dev_mode)
-async def get_content(
-    request: Request,
-    user_id: str = Depends(token_utils.check_access_token),
-    page_name: str = "user",
-) -> JSONResponse:
-    # Проверка авторизации (должен быть access_token)
-    if not user_id:
-        return JSONResponse(
-            content={"status": "Unauthorized"}, status_code=status.HTTP_401_UNAUTHORIZED
-        )

@@ -1,16 +1,11 @@
-# import lib
-from typing import Any
-
 import jwt
 import secrets
 import uuid
 
-# import from lib
 from datetime import datetime, timedelta, timezone
 from fastapi import HTTPException, Cookie, Depends, status
-from jwt import ExpiredSignatureError, InvalidTokenError, MissingRequiredClaimError
+from jwt import ExpiredSignatureError, InvalidTokenError
 
-# import from modules
 from core import settings, logger
 
 BOT_CONFIG = {
@@ -115,52 +110,48 @@ async def decode_jwt(token: str) -> dict:
         )
 
 
-async def check_access_token(
+async def parse_access_token(
     access_token: str | None = Cookie(default=None, alias="access_token"),
-) -> str:
+) -> str | None:
     """Middleware for checking access token from cookies"""
 
-    logger.debug(f"Check access token: {access_token}")
     if not access_token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Unauthorized",
-        )
+        return
 
     try:
         payload = await decode_jwt(access_token)
-
         user_id: str = payload.get("user_id")
         logger.info(f"Check access token for user_id: {user_id}")
-        if not user_id:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token",
-            )
         return user_id
 
-    except HTTPException as he:
-        logger.error(
-            f"Error in middleware: {he}",
-            exc_info=True,
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Server error",
-        )
+    except (ExpiredSignatureError, InvalidTokenError) as e:
+        logger.exception("Error while decoding token: %s", e)
+        return
 
 
 async def sign_csrf_token():
     return secrets.token_urlsafe(32)
 
 
-async def validate_access_token_dependency(
-    user_id: str = Depends(check_access_token),
+async def strict_validate_access_token(
+    user_id: str | None = Depends(parse_access_token),
 ) -> str:
+    """
+    Строгая проверка: если токен не передан, то выбрасываем ошибку
+    """
     if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Unauthorized",
         )
 
+    return user_id
+
+
+async def soft_validate_access_token(
+    user_id: str | None = Depends(parse_access_token),
+) -> str | None:
+    """
+    Мягкая проверка: если токен не передан, то возвращаем None
+    """
     return user_id

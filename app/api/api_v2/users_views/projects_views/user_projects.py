@@ -54,7 +54,7 @@ async def get_projects_owner(
     include_in_schema=settings.run.dev_mode,
     response_model=ProjectResponseSchema,
     dependencies=[
-        Depends(token_utils.validate_access_token_dependency),
+        Depends(token_utils.strict_validate_access_token),
     ],
 )
 async def get_project_by_id(
@@ -81,7 +81,7 @@ async def delete_project() -> None:
 @router.post("/generate-key", response_model=ak_schemas.APIKeyCreateResponse)
 async def generate_api_key(
     data: ak_schemas.APIKeyCreateRequest,
-    user: str | bool = Depends(token_utils.validate_access_token_dependency),
+    user: str | bool = Depends(token_utils.strict_validate_access_token),
 ) -> ak_schemas.APIKeyCreateResponse:
     project = await crud_manager.project.get_project_by_id(project_uuid=data.project_id)
     if not project:

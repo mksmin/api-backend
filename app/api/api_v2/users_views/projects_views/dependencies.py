@@ -50,7 +50,7 @@ async def get_user_projects_by_tg_id(
 
 
 async def get_user_projects_by_user_id(
-    user_id: str = Depends(token_utils.validate_access_token_dependency),
+    user_id: str = Depends(token_utils.strict_validate_access_token),
 ) -> dict[int, ProjectResponseSchema]:
     projects = await crud_manager.project.get_all(int(user_id))
     return {
@@ -75,7 +75,7 @@ async def get_project_by_uuid(
 
 async def delete_project_by_uuid(
     project_uuid: UUID = Depends(validate_uuid_str),
-    user_id: str = Depends(token_utils.validate_access_token_dependency),
+    user_id: str = Depends(token_utils.strict_validate_access_token),
 ) -> bool:
     user = await crud_manager.user.get_one(
         field="id",

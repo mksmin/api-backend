@@ -1,7 +1,11 @@
 from fastapi import APIRouter, Header, Body, Request
 from fastapi.responses import JSONResponse, RedirectResponse
 
-router = APIRouter()
+from core import settings
+
+router = APIRouter(
+    tags=["Redirects"],
+)
 
 actual_version = "/api/v2/"
 
@@ -10,12 +14,18 @@ path_mapping = {
 }
 
 
-@router.get("/statistics/", include_in_schema=False)
+@router.get(
+    "/statistics/",
+    include_in_schema=settings.run.dev_mode,
+)
 async def get_statistics(token=Header()) -> RedirectResponse:
     return RedirectResponse(url=f"{path_mapping['users']}statistics", status_code=308)
 
 
-@router.post("/registration", include_in_schema=False)
+@router.post(
+    "/registration",
+    include_in_schema=settings.run.dev_mode,
+)
 async def registration(data=Body()):
     return RedirectResponse(url=f"{path_mapping['users']}registration", status_code=308)
 
@@ -23,7 +33,7 @@ async def registration(data=Body()):
 @router.api_route(
     "/projects",
     methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
-    include_in_schema=False,
+    include_in_schema=settings.run.dev_mode,
 )
 async def project_redirect(request: Request):
     path = f"{path_mapping['users']}projects"
@@ -35,7 +45,7 @@ async def project_redirect(request: Request):
 @router.api_route(
     "/projects/{path:path}",
     methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
-    include_in_schema=False,
+    include_in_schema=settings.run.dev_mode,
 )
 async def project_nested_redirect(request: Request, path: str):
     query = f"?{request.query_params}" if request.query_params else ""
@@ -44,18 +54,27 @@ async def project_nested_redirect(request: Request, path: str):
     )
 
 
-@router.delete("/projects/{project_id}", include_in_schema=False)
+@router.delete(
+    "/projects/{project_id}",
+    include_in_schema=settings.run.dev_mode,
+)
 async def create_project(project_id: int):
     return RedirectResponse(
         url=f"{path_mapping['users']}projects/{project_id}", status_code=308
     )
 
 
-@router.post("/create_task", include_in_schema=False)
+@router.post(
+    "/create_task",
+    include_in_schema=settings.run.dev_mode,
+)
 async def rabbit_task_create(data=Body()):
     return RedirectResponse(url=f"{path_mapping['users']}create_task", status_code=308)
 
 
-@router.post("/tasks", include_in_schema=False)
+@router.post(
+    "/tasks",
+    include_in_schema=settings.run.dev_mode,
+)
 async def rabbit_task_create(data=Body()):
     return RedirectResponse(url=f"{path_mapping['users']}tasks", status_code=308)

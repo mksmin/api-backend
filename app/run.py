@@ -21,6 +21,8 @@ from api import router as api_router
 from api.redirect import router as redirect_router
 from api import base_router
 from api.api_v2.main_views import router as main_router
+from api.api_v2.pages_views import router as pages_router
+
 from fastapi.middleware.cors import CORSMiddleware
 
 PATH_DEV = Path(__file__).parent.parent.parent / "api-frontend"
@@ -75,6 +77,7 @@ routers_for_include = (
     redirect_router,
     api_router,
     base_router,
+    pages_router,
 )
 
 for router in routers_for_include:

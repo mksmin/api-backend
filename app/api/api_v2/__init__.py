@@ -19,5 +19,6 @@ router.include_router(
     prefix=settings.api.v2.users,
 )
 
+
 if settings.run.dev_mode:
     router.include_router(devs_router)

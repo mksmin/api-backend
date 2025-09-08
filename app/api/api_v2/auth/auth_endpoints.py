@@ -23,7 +23,7 @@ templates = Jinja2Templates(directory=FRONTEND_DIR / "templates")
 async def handle_telegram_init(
     request: Request,
     bot_name: str,
-    cookie_token: str = Depends(token_utils.check_access_token),
+    cookie_token: str = Depends(token_utils.soft_validate_access_token),
 ):
     if not cookie_token:
         # Проверяем существование бота
