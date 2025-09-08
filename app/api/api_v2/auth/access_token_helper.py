@@ -1,4 +1,6 @@
 # import lib
+from typing import Any
+
 import jwt
 import secrets
 import uuid
@@ -115,12 +117,15 @@ async def decode_jwt(token: str) -> dict:
 
 async def check_access_token(
     access_token: str | None = Cookie(default=None, alias="access_token"),
-) -> str | bool:
+) -> str:
     """Middleware for checking access token from cookies"""
 
     logger.debug(f"Check access token: {access_token}")
     if not access_token:
-        return False
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Unauthorized",
+        )
 
     try:
         payload = await decode_jwt(access_token)
@@ -128,12 +133,21 @@ async def check_access_token(
         user_id: str = payload.get("user_id")
         logger.info(f"Check access token for user_id: {user_id}")
         if not user_id:
-            return False
-        return access_token
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token",
+            )
+        return user_id
 
     except HTTPException as he:
-        logger.error(f"Error in middleware: {he}", exc_info=True)
-        return False
+        logger.error(
+            f"Error in middleware: {he}",
+            exc_info=True,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Server error",
+        )
 
 
 async def sign_csrf_token():
@@ -141,11 +155,12 @@ async def sign_csrf_token():
 
 
 async def validate_access_token_dependency(
-    access_token: str | bool = Depends(check_access_token),
+    user_id: str = Depends(check_access_token),
 ) -> str:
-    if not access_token:
+    if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Unauthorized",
         )
 
-    return access_token
+    return user_id

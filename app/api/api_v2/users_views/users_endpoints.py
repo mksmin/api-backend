@@ -17,14 +17,13 @@ from pydantic import ValidationError
 from core import logger, settings
 from core.crud import crud_manager, get_registration_stat
 from core.database.schemas import ProjectResponseSchema, ProjectRequestSchema
-from .auth import token_utils
-from .user_projects import router as user_projects_router
+from api.api_v2.auth import token_utils
 
-from .json_helper import get_data_from_json
+from api.api_v2.json_helper import get_data_from_json
 
-router = APIRouter()
-
-router.include_router(user_projects_router)
+router = APIRouter(
+    tags=["Users"],
+)
 
 
 @router.get("/statistics/", include_in_schema=settings.run.dev_mode)

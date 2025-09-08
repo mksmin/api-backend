@@ -1,6 +1,7 @@
 # import lib
 import asyncio
 import json
+from typing import Any
 
 # import from lib
 from fastapi import APIRouter, Depends, Request, HTTPException, status
@@ -45,7 +46,8 @@ def get_broker() -> RabbitBroker:
 
 @router.get("/profile", include_in_schema=settings.run.dev_mode)
 async def user_profile(
-    request: Request, cookie_token: str = Depends(token_utils.check_access_token)
+    request: Request,
+    user_id: str = Depends(token_utils.check_access_token),
 ):
     """Главная страница профиля"""
     data_return = {
@@ -54,7 +56,7 @@ async def user_profile(
         "user": True,
     }
 
-    if not cookie_token:
+    if not user_id:
         # Определяем контент в зависимости от авторизации
         data_return = {
             "request": request,
@@ -67,9 +69,12 @@ async def user_profile(
         )
         return html_content
 
-    payload = await token_utils.decode_jwt(cookie_token)
-    user_id: int = int(payload.get("user_id"))
-    user: User = await crud_manager.user.get_one(field="id", value=user_id)
+    # payload = await token_utils.decode_jwt(cookie_token)
+    # user_id: int = int(payload.get("user_id"))
+    user: User = await crud_manager.user.get_one(
+        field="id",
+        value=user_id,
+    )
 
     user_data = {
         "id": user.tg_id,
@@ -92,7 +97,8 @@ async def user_profile(
 
 @router.get("/affirmations", include_in_schema=settings.run.dev_mode)
 async def page_user_affirmations(
-    request: Request, cookie_token: str = Depends(token_utils.check_access_token)
+    request: Request,
+    cookie_token: str = Depends(token_utils.check_access_token),
 ):
     """Страница с пользовательскими аффирмациями"""
     data_return = {
@@ -138,6 +144,7 @@ async def get_affirmations_data(user_data: dict):
             "affirm": dict_data,
             "settings": None,
         }
+
         return return_data
 
     except asyncio.TimeoutError:
@@ -152,13 +159,9 @@ router.include_router(rmq_router)
 
 @router.get("/content", include_in_schema=settings.run.dev_mode)
 async def get_content(
-    request: Request, user: str | bool = Depends(token_utils.check_access_token)
+    request: Request,
+    user_id: str = Depends(token_utils.check_access_token),
 ):
-    # Проверка авторизации (должен быть access_token)
-    if not user:
-        return JSONResponse(
-            content={"status": "Unauthorized"}, status_code=status.HTTP_401_UNAUTHORIZED
-        )
 
     path = request.query_params.get("page", "profile").lstrip("/")
     path_parts = path.split("/")
@@ -173,10 +176,14 @@ async def get_content(
     content_template = f"{page}.html"
 
     logger.info(f"Получен запрос на страницу {page} из пути /content")
-
-    payload = await token_utils.decode_jwt(user)
-    user_id: int = int(payload.get("user_id"))
-    user: User = await crud_manager.user.get_one(field="id", value=user_id)
+    #
+    # payload = await token_utils.decode_jwt(user)
+    # user_id: int = int(payload.get("user_id"))
+    user: User = await crud_manager.user.get_one(
+        field="id",
+        value=user_id,
+    )
+    print(f"Получен пользователь {user.first_name} с данными: {user.__dict__}")
 
     user_data = {
         "id": user.tg_id,
@@ -217,11 +224,11 @@ async def get_content(
 @router.get("/content/{page_name}", include_in_schema=settings.run.dev_mode)
 async def get_content(
     request: Request,
-    user: str | bool = Depends(token_utils.check_access_token),
+    user_id: str = Depends(token_utils.check_access_token),
     page_name: str = "user",
 ) -> JSONResponse:
     # Проверка авторизации (должен быть access_token)
-    if not user:
+    if not user_id:
         return JSONResponse(
             content={"status": "Unauthorized"}, status_code=status.HTTP_401_UNAUTHORIZED
         )
