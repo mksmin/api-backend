@@ -7,7 +7,9 @@ from core.database.security import schemas as sch
 from core.database.security import utils as ut
 
 # global
-router = APIRouter(prefix="/api-key", tags=["api-key"])
+router = APIRouter(
+    prefix="/api-key",
+)
 
 
 @router.post(

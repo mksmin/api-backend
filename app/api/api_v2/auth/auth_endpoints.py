@@ -12,6 +12,7 @@ from core import logger, settings, crud_manager
 from core.database import User
 
 router = APIRouter()
+
 BASE_DIR = Path.cwd().parent  # project working directory api_atomlab/app
 FRONTEND_DIR = (
     (BASE_DIR / "api-atom-front") if settings.run.dev_mode else (BASE_DIR / "frontend")

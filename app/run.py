@@ -19,9 +19,9 @@ from pathlib import Path
 from core import logger, settings, db_helper
 from api import router as api_router
 from api.redirect import router as redirect_router
-from api import base_router
 from api.api_v2.main_views import router as main_router
 from api.api_v2.pages_views import router as pages_router
+from api.api_v2.auth import router as auth_router
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -73,10 +73,10 @@ main_app.add_middleware(
 )
 
 routers_for_include = (
-    main_router,
-    redirect_router,
+    auth_router,
     api_router,
-    base_router,
+    redirect_router,
+    main_router,
     pages_router,
 )
 
