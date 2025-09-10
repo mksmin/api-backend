@@ -1,24 +1,116 @@
+import asyncio
+import json
+import logging
 from typing import Any
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
 from fastapi.requests import Request
 from fastapi.templating import Jinja2Templates
+from pydantic import BaseModel
+from faststream.rabbit import fastapi, RabbitBroker, RabbitMessage
 
 from api.api_v2.auth import token_utils
 from api.api_v2.dependencies import (
     FRONTEND_DIR,
 )
+from core import settings
+from core.crud import crud_manager
+from core.database import User
 
 
 TEMPLATES = Jinja2Templates(directory=FRONTEND_DIR / "templates")
+rmq_router = fastapi.RabbitRouter(
+    settings.rabbit.url,
+)
 
 
-def return_template_for_affirmations(
-    request: Request,
+def get_broker() -> RabbitBroker:
+    return rmq_router.broker
+
+
+class UserDataReadSchema(BaseModel):
+    id: int
+    tg_id: int
+    first_name: str | None
+    last_name: str | None
+    username: str | None
+    is_premium: bool
+    photo_url: str | None
+    language_code: str | None
+    allows_write_to_pm: bool
+
+
+async def return_user_data(
     user_id: str = Depends(token_utils.soft_validate_access_token),
+) -> UserDataReadSchema | None:
+    if user_id is None:
+        return
+
+    user: User = await crud_manager.user.get_one(
+        field="id",
+        value=user_id,
+    )
+    return UserDataReadSchema(
+        id=user.id,
+        tg_id=user.tg_id,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        username=user.username,
+        is_premium=True,
+        photo_url="https://t.me/i/userpic/320/KAW0oZ7WjH_Mp1p43zuUi2lzp_IW2rxF954-zq5f3us.jpg",
+        language_code="ru",
+        allows_write_to_pm=True,
+    )
+
+
+async def return_data_for_user_profile_template(
+    request: Request,
+    user_data: UserDataReadSchema | None = Depends(return_user_data),
 ) -> dict[str, Any]:
     return {
         "request": request,
-        "content_template": None if user_id else "auth_widget.html",
-        "user": True if user_id else None,
+        "auth_widget": None if user_data else "auth_widget.html",
+        "user": user_data.model_dump() if user_data else None,
     }
+
+
+async def get_dict_with_user_affirmations(
+    request: Request,
+    user_data: UserDataReadSchema | None = Depends(return_user_data),
+) -> dict[str, Any]:
+    if not user_data:
+        return {
+            "request": request,
+            "auth_widget": "auth_widget.html",
+        }
+    broker = get_broker()
+    try:
+        rabbit_request = {
+            "command": "get_paginated_tasks",
+            "payload": {
+                "user_tg": user_data.tg_id,
+                "offset": 0,
+                "limit": 100,
+            },
+        }
+        result: RabbitMessage = await broker.request(
+            rabbit_request,
+            queue="affirmations",
+            timeout=3,
+        )
+        decoded_result = result.body.decode("utf-8")
+        affirmations_list: list[dict[str, Any]] = json.loads(decoded_result)
+        return {
+            "request": request,
+            "user": user_data.model_dump(),
+            "affirm": affirmations_list,
+            "settings": {
+                "count_tasks": "--",
+                "time_send": "--",
+            },
+        }
+    except asyncio.TimeoutError:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Service unavailable",
+        )
