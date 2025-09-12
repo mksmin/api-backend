@@ -26,7 +26,7 @@ from api.api_v2.auth import router as auth_router
 from fastapi.middleware.cors import CORSMiddleware
 
 PATH_DEV = Path(__file__).parent.parent.parent / "api-frontend"
-PATH_PROD = Path(__file__).parent.parent / "frontend"
+PATH_PROD = Path(__file__).parent.parent.parent / "frontend"
 PATH_STATIC = PATH_DEV if settings.run.dev_mode else PATH_PROD
 
 

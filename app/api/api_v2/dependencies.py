@@ -8,7 +8,7 @@ from core import settings
 
 BASE_DIR = Path.cwd().resolve().parent  # project working directory ../app
 FRONTEND_DIR = (
-    (BASE_DIR / "api-frontend") if settings.run.dev_mode else (BASE_DIR / "frontend")
+    (BASE_DIR / "api-frontend") if settings.run.dev_mode else (BASE_DIR.parent / "frontend")
 )
 SRC_DIR = FRONTEND_DIR / "src"
 PUBLIC_DIR = FRONTEND_DIR / "public"
