@@ -2,13 +2,16 @@
 import json
 import hmac
 import hashlib
-from typing import Any
+from typing import Any, Coroutine, Callable
 
 # import from libraries
 from fastapi import Depends, Request, HTTPException
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
 from urllib.parse import parse_qsl, unquote, parse_qs
+
+from starlette.requests import Request
+from starlette.responses import HTMLResponse
 
 # import from modules
 from core import settings, logger
@@ -120,7 +123,9 @@ def verify_telegram_widget(raw_query: str, bot_token: str) -> bool:
 
 # Общая зависимость верификации данных от Telegram
 async def verify_telegram_data_dep(
-    request: Request, bot_name: str, client_type: str
+    request: Request,
+    bot_name: str,
+    client_type: str,
 ) -> bool:
     try:
         # Получаю данные тела запроса для валидации от телеграма
@@ -187,10 +192,14 @@ async def verify_client(request: Request) -> str:
     return client_source
 
 
-def get_verified_data(bot_name: str):
-    async def dependency(request: Request, client_type: str = Depends(verify_client)):
-        verified_data = await verify_telegram_data_dep(request, bot_name, client_type)
-        return verified_data
+def get_verified_data(
+    bot_name: str,
+) -> Callable[[Request, str], Coroutine[Any, Any, bool]]:
+    async def dependency(
+        request: Request,
+        client_type: str = Depends(verify_client),
+    ) -> bool:
+        return await verify_telegram_data_dep(request, bot_name, client_type)
 
     return dependency
 
@@ -247,11 +256,16 @@ async def verified_data_dependency(
 
 
 # Общая функция для обработки профиля
-async def process_profile(template_name: str, data_dict_for_template):
+async def process_profile(
+    template_name: str,
+    data_dict_for_template: dict[str, Any],
+) -> HTMLResponse:
     return templates.TemplateResponse(template_name, data_dict_for_template)
 
 
-async def extract_user_data(data_dict: dict) -> dict:
+async def extract_user_data(
+    data_dict: dict[str, Any],
+) -> dict[str, Any]:
     user_data = json.loads(data_dict["user"])
     return {
         "id": user_data.get("id"),

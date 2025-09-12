@@ -46,7 +46,7 @@ class DatabaseHelper:
             yield session
 
     @staticmethod
-    def generate_uuid():
+    def generate_uuid() -> str:
         return str(uuid.uuid4())
 
 

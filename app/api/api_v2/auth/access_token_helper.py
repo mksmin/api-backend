@@ -1,3 +1,7 @@
+__all__ = ("BOT_CONFIG",)
+
+from typing import Any
+
 import jwt
 import secrets
 import uuid
@@ -24,11 +28,18 @@ BOT_CONFIG: dict[str, dict[str, str]] = {
 }
 
 
-def token_response(token: str) -> dict:
-    return {"access_token": token, "token_type": "bearer"}
+def token_response(
+    token: str,
+) -> dict[str, str]:
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+    }
 
 
-async def sign_jwt_token(user_id: int) -> dict:
+async def sign_jwt_token(
+    user_id: int,
+) -> dict[str, str | int]:
     """
     Создаёт JWT access-токен для авторизации
     :param user_id: int
@@ -60,7 +71,9 @@ async def sign_jwt_token(user_id: int) -> dict:
     }
 
 
-async def decode_jwt(token: str) -> dict:
+async def decode_jwt(
+    token: str,
+) -> dict[str, Any]:
     """
     Decodes a JWT token and returns a dictionary with the decoded token information.
 
@@ -112,7 +125,7 @@ async def decode_jwt(token: str) -> dict:
 
 async def parse_access_token(
     access_token: str | None = Cookie(default=None, alias="access_token"),
-) -> str | None:
+) -> int | None:
     """Middleware for checking access token from cookies"""
 
     if not access_token:
@@ -120,7 +133,7 @@ async def parse_access_token(
 
     try:
         payload = await decode_jwt(access_token)
-        user_id: str = payload["user_id"]
+        user_id: int = payload["user_id"]
         logger.info(f"Check access token for user_id: {user_id}")
         return user_id
 
@@ -129,7 +142,7 @@ async def parse_access_token(
         return None
 
 
-async def sign_csrf_token():
+def sign_csrf_token() -> str:
     return secrets.token_urlsafe(32)
 
 

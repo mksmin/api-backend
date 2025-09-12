@@ -1,6 +1,6 @@
 import logging
 from io import StringIO
-from typing import Any, Annotated
+from typing import Any, Annotated, cast
 
 import pandas as pd
 from fastapi import UploadFile, HTTPException, File
@@ -52,7 +52,7 @@ async def read_and_parse_csv(
             user.pop("created_at", None)
             user.pop("copmetention", None)
 
-            await crud_manager.user.create(data=user)
+            await crud_manager.user.create(data=user)  # type: ignore[arg-type]
 
     except Exception as e:
         log.warning("Error reading CSV file: %s", e)

@@ -34,7 +34,7 @@ types-python-dateutil = "^2.9.0.20250822"
 
 
 [tool.mypy]  # mypy settings
-strict = false
+strict = true
 plugins = [
     "pydantic.mypy",
 ]

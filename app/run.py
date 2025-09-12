@@ -4,7 +4,7 @@ This is the main entry point of the application. It is responsible for starting 
 
 import os
 import sys
-from typing import Any
+from typing import Any, Generator, AsyncGenerator
 
 # import libraries
 import uvicorn
@@ -32,7 +32,7 @@ PATH_STATIC = PATH_DEV if settings.run.dev_mode else PATH_PROD
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """
     WIP
 

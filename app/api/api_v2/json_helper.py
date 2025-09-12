@@ -37,7 +37,9 @@ def json_key_to_model_field(json_key: str) -> str:
     return FIELD_MAPPING.get(snake_case, snake_case)
 
 
-def map_json_to_model(json_data: dict) -> dict:
+def map_json_to_model(
+    json_data: dict[str, Any],
+) -> dict[str, Any]:
     return {
         json_key_to_model_field(k): v
         for k, v in json_data.items()

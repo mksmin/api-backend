@@ -28,15 +28,16 @@ templates = Jinja2Templates(directory=FRONTEND_DIR / "templates")
 @router.get(
     "/apps/{bot_name}",
     response_class=HTMLResponse,
+    response_model=None,
 )
 async def handle_telegram_init(
     request: Request,
     bot_name: str,
     cookie_token: str = Depends(token_utils.soft_validate_access_token),
-):
+) -> RedirectResponse | HTMLResponse:
     if not cookie_token:
         # Проверяем существование бота
-        bot_config = auth_utils.BOT_CONFIG.get(bot_name)
+        bot_config = token_utils.BOT_CONFIG.get(bot_name)
         if not bot_config:
             raise HTTPException(404, detail="Bot not found")
 
@@ -45,14 +46,14 @@ async def handle_telegram_init(
             {"request": request},
         )
 
-    bot_data = auth_utils.BOT_CONFIG.get(bot_name, {})
+    bot_data = token_utils.BOT_CONFIG.get(bot_name, {})
     redirect_url = bot_data.get("redirect_url", "/profile")
     response = RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
     return response
 
 
 @router.post("/auth")
-async def auth_redirect():
+async def auth_redirect() -> RedirectResponse:
     # Редирект на /auth/bot1 с нужным кодом
     return RedirectResponse(
         url="/auth/bot1", status_code=status.HTTP_308_PERMANENT_REDIRECT
@@ -64,7 +65,7 @@ async def auth_user(
     request: Request,
     bot_name: str,
     data_validate: dict[str, Any] = Depends(auth_utils.verified_data_dependency),
-):
+) -> RedirectResponse:
     client_type: str = data_validate["client_type"]
     access_validate: bool = data_validate["is_authorized"]
 
@@ -76,7 +77,7 @@ async def auth_user(
         f"Access: {access_validate}"
     )
 
-    bot_data = auth_utils.BOT_CONFIG.get(bot_name, {})
+    bot_data = token_utils.BOT_CONFIG.get(bot_name, {})
     redirect_url = bot_data.get("redirect_url", "/profile")
     logger.debug(f"Redirect URL: {redirect_url}")
 
@@ -103,7 +104,7 @@ async def auth_user(
     # Генерирую токены
     logger.debug(f"Generating tokens for user {user.id}")
     jwt_token = await token_utils.sign_jwt_token(int(user.id))
-    csrf_token = await token_utils.sign_csrf_token()
+    csrf_token = token_utils.sign_csrf_token()
 
     logger.info(
         f"Tokens generated | User: {user.id} | "
@@ -113,7 +114,7 @@ async def auth_user(
     # Устанавливаю куки
     response.set_cookie(
         key="access_token",
-        value=jwt_token["access_token"],
+        value=str(jwt_token["access_token"]),
         httponly=True,
         secure=True,
         samesite="none",
@@ -133,7 +134,9 @@ async def auth_user(
 
 
 @router.post("/refresh-csrf")
-async def refresh_csrf(request: Request):
+async def refresh_csrf(
+    request: Request,
+) -> JSONResponse:
     # Проверяю JWT токен
     token = request.cookies.get("jwt_token")
     if not token:
@@ -145,7 +148,7 @@ async def refresh_csrf(request: Request):
     except HTTPException as he:
         raise he
 
-    new_csrf_token = await token_utils.sign_csrf_token()
+    new_csrf_token = token_utils.sign_csrf_token()
 
     response = JSONResponse({"status": "CSRF token refreshed"})
     response.set_cookie(

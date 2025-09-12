@@ -1,3 +1,5 @@
+from typing import Any
+
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 import datetime
 
@@ -15,7 +17,7 @@ class APIKeyManager(BaseCRUDManager[APIKey]):
     ) -> tuple[str, APIKey]:
         raw_key, hashed_key = await ut.generate_api_key_and_hash()
 
-        new_api_key = {
+        new_api_key: dict[str, Any] = {
             "key_hash": hashed_key,
             "project_id": project_id,
             "key_prefix": raw_key[:11],

@@ -1,4 +1,6 @@
 import traceback
+from typing import Any
+
 from dateutil import parser
 
 import asyncpg  # type: ignore[import-untyped]
@@ -12,7 +14,10 @@ from .config import connector
 
 
 @connector
-async def get_registration_stat(session: AsyncSession, name_db: str) -> dict:
+async def get_registration_stat(
+    session: AsyncSession,
+    name_db: str,
+) -> dict[str, Any]:
     """
     Вернет статистику регистрации пользователей в виде словаря:
     {

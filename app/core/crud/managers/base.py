@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 from datetime import datetime
-from typing import Generic, Type, AsyncIterator, cast, TypeVar, TYPE_CHECKING
+from typing import Generic, Type, AsyncIterator, cast, TypeVar, TYPE_CHECKING, Any
 
 from sqlalchemy import select, update, and_
 from sqlalchemy.exc import SQLAlchemyError
@@ -33,16 +33,15 @@ class BaseCRUDManager(Generic[ModelType]):
 
     async def exists_by_field(self, field: str, value: str | int) -> bool:
         async with self._get_session() as session:
-            session = cast(
-                AsyncSession, session
-            )  # asynccontextmanager не передает аннотацию AsyncSession, поэтому явно указываем
             query = select(self.model).where(getattr(self.model, field) == value)
             result = await session.execute(query)
             return result.scalar_one_or_none() is not None
 
-    async def create(self, **kwargs) -> ModelType:
+    async def create(
+        self,
+        **kwargs: dict[str, Any],
+    ) -> ModelType:
         async with self._get_session() as session:
-            session = cast(AsyncSession, session)
             instance = self.model(**kwargs)
             session.add(instance)
             await session.flush()
@@ -52,7 +51,6 @@ class BaseCRUDManager(Generic[ModelType]):
 
     async def get_one(self, field: str, value: str | int) -> ModelType | None:
         async with self._get_session() as session:
-            session = cast(AsyncSession, session)
             query = select(self.model).where(getattr(self.model, field) == value)
             result = await session.execute(query)
             return result.scalar_one_or_none()

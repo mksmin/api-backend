@@ -18,7 +18,7 @@ class ProjectFilter(BaseModel):
         ),
         limit: int | None = Query(None, description="Лимит"),
         offset: int | None = Query(None, description="Смещение"),
-    ):
+    ) -> "ProjectFilter":
 
         return cls(
             owner_id=owner_id,

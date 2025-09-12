@@ -32,7 +32,10 @@ class CustomFormatter(logging.Formatter):
         logging.CRITICAL: bold_red + format_str + reset,
     }
 
-    def format(self, record):
+    def format(
+        self,
+        record: logging.LogRecord,
+    ) -> str:
         log_fmt = self.FORMATS.get(record.levelno)
         formatter = logging.Formatter(log_fmt, "%Y/%m/%d %H:%M:%S")
         return formatter.format(record)
@@ -81,7 +84,7 @@ class ApiV2Prefix(BaseModel):
 class ApiPrefix(BaseModel):
     prefix: str = "/api"
     v2: ApiV2Prefix = ApiV2Prefix()
-    bot_token: dict = {"bot_name": "1234567890:DefaultBotToken"}
+    bot_token: dict[str, str] = {"bot_name": "1234567890:DefaultBotToken"}
 
 
 class RabbitMQConfig(BaseModel):
@@ -140,7 +143,7 @@ class LoggerConfig(BaseModel):
 
     @field_validator("mode")
     @classmethod
-    def validate_mode(cls, value: str):
+    def validate_mode(cls, value: str) -> str:
         allowed_values = ["DEBUG", "INFO", "WARNING", "CRITICAL", "ERROR"]
         if value.upper() not in allowed_values:
             raise ValueError(

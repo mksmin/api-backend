@@ -3,7 +3,7 @@
 from pydantic import ValidationError, UUID4
 from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-from typing import TypeVar, cast, Sequence
+from typing import TypeVar, cast, Sequence, Any
 
 # import from modules
 from core.config import logger
@@ -38,7 +38,10 @@ class UserManager(BaseCRUDManager[User]):
         logger.info(f"Result: {result}")
         return result
 
-    async def create(self, data: dict) -> User:  # type: ignore[override]
+    async def create(  # type: ignore[override]
+        self,
+        data: dict[str, Any],
+    ) -> User:
         data["uuid"] = db_helper.generate_uuid()
         result = await self._validate_user_data(data)
         exists = await self.exists_by_field("tg_id", int(data["tg_id"]))
@@ -48,7 +51,9 @@ class UserManager(BaseCRUDManager[User]):
         return await super().create(**result)
 
     @staticmethod
-    async def _validate_user_data(data: dict):
+    async def _validate_user_data(
+        data: dict[str, Any],
+    ) -> dict[str, Any]:
         try:
             user_schema = UserSchema(**data)
             return user_schema.model_dump()
@@ -65,7 +70,7 @@ class ProjectManager(BaseCRUDManager[Project]):
 
     async def create(  # type: ignore[override]
         self,
-        data: dict,
+        data: dict[str, Any],
     ) -> Project:
         user_manager = UserManager(db_helper.session_factory)
         user = await user_manager.get_one("tg_id", int(data["prj_owner"]))
@@ -86,10 +91,6 @@ class ProjectManager(BaseCRUDManager[Project]):
 
     async def get_all(self, owner_id: int) -> Sequence[Project]:
         async with self._get_session() as session:
-            session = cast(
-                AsyncSession,
-                session,
-            )
             query = (
                 select(self.model)
                 .where(self.model.deleted_at.is_(None))
@@ -111,10 +112,6 @@ class ProjectManager(BaseCRUDManager[Project]):
             )
 
         async with self._get_session() as session:
-            session = cast(
-                AsyncSession,
-                session,
-            )
             if not project_uuid:
                 query = select(self.model).where(
                     and_(
@@ -141,7 +138,9 @@ class ProjectManager(BaseCRUDManager[Project]):
             return project
 
     @staticmethod
-    async def _validate_project_data(data: dict):
+    async def _validate_project_data(
+        data: dict[str, Any],
+    ) -> dict[str, Any]:
         try:
             project_schema = ProjectSchema(**data)
             return project_schema.model_dump()
@@ -153,7 +152,10 @@ class ProjectManager(BaseCRUDManager[Project]):
 
 
 class CRUDManager:
-    def __init__(self, session_factory: async_sessionmaker):
+    def __init__(
+        self,
+        session_factory: async_sessionmaker[AsyncSession],
+    ):
         self.user: UserManager = UserManager(session_factory)
         self.project: ProjectManager = ProjectManager(session_factory)
         self.api_keys: APIKeyManager = APIKeyManager(session_factory)
