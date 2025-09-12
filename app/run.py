@@ -4,6 +4,7 @@ This is the main entry point of the application. It is responsible for starting 
 
 import os
 import sys
+from typing import Any
 
 # import libraries
 import uvicorn
@@ -85,7 +86,7 @@ for router in routers_for_include:
 
 if __name__ == "__main__":
     try:
-        run_args = {
+        run_args: dict[str, Any] = {
             "app": "run:main_app",
             "host": settings.run.host,
             "port": settings.run.port,

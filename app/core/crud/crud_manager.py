@@ -28,18 +28,22 @@ class UserManager(BaseCRUDManager[User]):
     def __init__(self, session_factory: async_sessionmaker[AsyncSession]):
         super().__init__(session_factory, model=User)
 
-    async def get_one(self, value: str | int, field: str = "tg_id") -> ModelType | None:
+    async def get_one(
+        self,
+        field: str = "tg_id",
+        value: str | int = ...,  # type: ignore[assignment]
+    ) -> User | None:
         logger.info(f"Start searching user with ({field}: {value})")
         result = await super().get_one(field, value)
         logger.info(f"Result: {result}")
         return result
 
-    async def create(self, data: dict) -> User:
+    async def create(self, data: dict) -> User:  # type: ignore[override]
         data["uuid"] = db_helper.generate_uuid()
         result = await self._validate_user_data(data)
         exists = await self.exists_by_field("tg_id", int(data["tg_id"]))
         if exists:
-            return await super().get_one("tg_id", int(data["tg_id"]))
+            return await super().get_one("tg_id", int(data["tg_id"]))  # type: ignore[return-value]
 
         return await super().create(**result)
 
@@ -59,7 +63,10 @@ class ProjectManager(BaseCRUDManager[Project]):
     def __init__(self, session_factory: async_sessionmaker[AsyncSession]):
         super().__init__(session_factory, model=Project)
 
-    async def create(self, data: dict) -> Project:
+    async def create(  # type: ignore[override]
+        self,
+        data: dict,
+    ) -> Project:
         user_manager = UserManager(db_helper.session_factory)
         user = await user_manager.get_one("tg_id", int(data["prj_owner"]))
         if not user:
@@ -72,8 +79,8 @@ class ProjectManager(BaseCRUDManager[Project]):
 
     async def delete(
         self,
-        value: int,
-        field: str = "id",
+        field: str,
+        value: int,  # type: ignore[override]
     ) -> None:
         await super().delete(field, value)
 
@@ -96,7 +103,7 @@ class ProjectManager(BaseCRUDManager[Project]):
         self,
         owner_id: int | None = None,
         project_id: int | None = None,
-        project_uuid: UUID4 = None,
+        project_uuid: UUID4 | None = None,
     ) -> Project | None:
         if not project_id and not project_uuid:
             raise ValueError(

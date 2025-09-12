@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Any
 
 from dateutil import parser
 
@@ -34,8 +34,11 @@ class UserSchema(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def prevalidate(cls, values: dict[str, any]) -> dict[str, any]:
-        process_result = {}
+    def prevalidate(
+        cls,
+        values: dict[str, Any],
+    ) -> dict[str, Any]:
+        process_result: dict[str, Any] = {}
 
         for key, value in values.items():
 
@@ -58,7 +61,7 @@ class UserSchema(BaseModel):
         return process_result
 
     @classmethod
-    def parse_datetime(cls, value: any) -> datetime:
+    def parse_datetime(cls, value: Any) -> datetime:
         try:
             return parser.parse(value) if isinstance(value, str) else value
         except Exception as e:

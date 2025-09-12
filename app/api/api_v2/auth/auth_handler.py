@@ -2,7 +2,7 @@
 import json
 import hmac
 import hashlib
-
+from typing import Any
 
 # import from libraries
 from fastapi import Depends, Request, HTTPException
@@ -11,12 +11,15 @@ from pathlib import Path
 from urllib.parse import parse_qsl, unquote, parse_qs
 
 # import from modules
-from core import settings, logger, db_helper, crud_manager
+from core import settings, logger
+from core.crud import crud_manager
 from .access_token_helper import BOT_CONFIG
 
 BASE_DIR = Path.cwd().parent  # project working directory api_atomlab/app
 FRONTEND_DIR = (
-    (BASE_DIR / "api-atom-front") if settings.run.dev_mode else (BASE_DIR.parent / "frontend")
+    (BASE_DIR / "api-atom-front")
+    if settings.run.dev_mode
+    else (BASE_DIR.parent / "frontend")
 )
 HTML_DIR = FRONTEND_DIR / "src"
 STATIC_DIR = FRONTEND_DIR / "public"
@@ -196,7 +199,7 @@ async def verified_data_dependency(
     request: Request,
     bot_name: str,
     client_type: str = Depends(verify_client),
-) -> dict[bool, str]:
+) -> dict[str, str | bool]:
     logger.debug(
         f"Verified data dependency | "
         f"request: {request.url.path} | "
@@ -211,7 +214,7 @@ async def verified_data_dependency(
     dependency_func: bool = await verify_telegram_data_dep(
         request, bot_data["name"], client_type
     )
-    result: dict = {
+    result: dict[str, str | bool] = {
         "is_authorized": dependency_func,
         "client_type": client_type,
     }
@@ -221,12 +224,18 @@ async def verified_data_dependency(
         raw_data = await request.body()
         raw_data_str = raw_data.decode()
         if client_type == "TelegramWidget":
-            pairs = parse_qs(raw_data_str, keep_blank_values=True)
-            data = {k: v[0] for k, v in pairs.items() if k not in ("hash", "auth_date")}
+            windget_pairs = parse_qs(raw_data_str, keep_blank_values=True)
+            data = {
+                k: v[0]
+                for k, v in windget_pairs.items()
+                if k not in ("hash", "auth_date")
+            }
         else:
             logger.info("Зашел в блок TelegramMiniApp, чтобы спарсить данные")
-            pairs = parse_qsl(raw_data_str, keep_blank_values=True)
-            data_dict = dict(pairs)
+            miniapp_pairs: list[tuple[str, str]] = parse_qsl(
+                raw_data_str, keep_blank_values=True
+            )
+            data_dict = dict(miniapp_pairs)
             data = await extract_user_data(data_dict)
 
         logger.debug(f"Verified data dependency | " f"data: {data}")

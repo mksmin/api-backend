@@ -8,7 +8,7 @@ from jwt import ExpiredSignatureError, InvalidTokenError
 
 from core import settings, logger
 
-BOT_CONFIG = {
+BOT_CONFIG: dict[str, dict[str, str]] = {
     "bot1": {
         "name": "atombot",
         "redirect_url": "/profile",
@@ -116,17 +116,17 @@ async def parse_access_token(
     """Middleware for checking access token from cookies"""
 
     if not access_token:
-        return
+        return None
 
     try:
         payload = await decode_jwt(access_token)
-        user_id: str = payload.get("user_id")
+        user_id: str = payload["user_id"]
         logger.info(f"Check access token for user_id: {user_id}")
         return user_id
 
     except (ExpiredSignatureError, InvalidTokenError) as e:
         logger.exception("Error while decoding token: %s", e)
-        return
+        return None
 
 
 async def sign_csrf_token():

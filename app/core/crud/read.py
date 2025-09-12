@@ -1,7 +1,7 @@
 import traceback
 from dateutil import parser
 
-import asyncpg
+import asyncpg  # type: ignore[import-untyped]
 from sqlalchemy import MetaData, Table, select, func
 
 from sqlalchemy.exc import SQLAlchemyError
@@ -29,7 +29,7 @@ async def get_registration_stat(session: AsyncSession, name_db: str) -> dict:
     metadata = MetaData()
 
     try:
-        async with session.bind.connect() as conn:
+        async with session.bind.connect() as conn:  # type: ignore[union-attr]
             registration_table = await conn.run_sync(
                 lambda sync_conn: Table(name_db, metadata, autoload_with=sync_conn)
             )

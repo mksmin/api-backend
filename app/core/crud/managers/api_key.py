@@ -10,7 +10,7 @@ class APIKeyManager(BaseCRUDManager[APIKey]):
     def __init__(self, session_factory: async_sessionmaker[AsyncSession]):
         super().__init__(session_factory, model=APIKey)
 
-    async def create(
+    async def create(  # type: ignore[override]
         self, *, project_id: int, temporary: bool = True
     ) -> tuple[str, APIKey]:
         raw_key, hashed_key = await ut.generate_api_key_and_hash()

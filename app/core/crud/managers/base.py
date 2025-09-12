@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 from datetime import datetime
-from typing import Generic, Type, AsyncIterator, cast, TypeVar
+from typing import Generic, Type, AsyncIterator, cast, TypeVar, TYPE_CHECKING
 
 from sqlalchemy import select, update, and_
 from sqlalchemy.exc import SQLAlchemyError
@@ -8,7 +8,9 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
 from core import logger
 
-ModelType = TypeVar("ModelType")
+from core.database.base import Base
+
+ModelType = TypeVar("ModelType", bound=Base)
 
 
 class BaseCRUDManager(Generic[ModelType]):
@@ -45,7 +47,7 @@ class BaseCRUDManager(Generic[ModelType]):
             session.add(instance)
             await session.flush()
             await session.refresh(instance)
-            logger.info(f"Created {self.model.__name__} with id: {instance.id}")
+            logger.info(f"Created {self.model.__name__} with id: {instance.id}")  # type: ignore[attr-defined]
             return instance
 
     async def get_one(self, field: str, value: str | int) -> ModelType | None:
@@ -62,7 +64,7 @@ class BaseCRUDManager(Generic[ModelType]):
                 .where(
                     and_(
                         getattr(self.model, field) == value,
-                        self.model.deleted_at.is_(None),
+                        self.model.deleted_at.is_(None),  # type: ignore[attr-defined]
                     )
                 )
                 .values(deleted_at=datetime.now())

@@ -1,4 +1,6 @@
 # import from lib
+from typing import Any
+
 from fastapi import APIRouter, Depends, Request, HTTPException, status
 from fastapi.responses import JSONResponse, HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -8,19 +10,25 @@ from urllib.parse import parse_qsl
 
 # import from modules
 from . import auth_utils, token_utils
-from core import logger, settings, crud_manager
+from core import logger, settings
+from core.crud import crud_manager
 from core.database import User
 
 router = APIRouter()
 
 BASE_DIR = Path.cwd().parent  # project working directory api_atomlab/app
 FRONTEND_DIR = (
-    (BASE_DIR / "api-atom-front") if settings.run.dev_mode else (BASE_DIR.parent / "frontend")
+    (BASE_DIR / "api-atom-front")
+    if settings.run.dev_mode
+    else (BASE_DIR.parent / "frontend")
 )
 templates = Jinja2Templates(directory=FRONTEND_DIR / "templates")
 
 
-@router.get("/apps/{bot_name}", response_class=HTMLResponse)
+@router.get(
+    "/apps/{bot_name}",
+    response_class=HTMLResponse,
+)
 async def handle_telegram_init(
     request: Request,
     bot_name: str,
@@ -37,7 +45,7 @@ async def handle_telegram_init(
             {"request": request},
         )
 
-    bot_data = auth_utils.BOT_CONFIG.get(bot_name)
+    bot_data = auth_utils.BOT_CONFIG.get(bot_name, {})
     redirect_url = bot_data.get("redirect_url", "/profile")
     response = RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
     return response
@@ -54,11 +62,11 @@ async def auth_redirect():
 @router.post("/auth/{bot_name}")
 async def auth_user(
     request: Request,
-    bot_name: str | None = Path(default=None),
-    data_validate: dict = Depends(auth_utils.verified_data_dependency),
+    bot_name: str,
+    data_validate: dict[str, Any] = Depends(auth_utils.verified_data_dependency),
 ):
-    client_type: str = data_validate.get("client_type")
-    access_validate: bool = data_validate.get("is_authorized")
+    client_type: str = data_validate["client_type"]
+    access_validate: bool = data_validate["is_authorized"]
 
     logger.info(
         "Auth request started | "
@@ -68,7 +76,7 @@ async def auth_user(
         f"Access: {access_validate}"
     )
 
-    bot_data = auth_utils.BOT_CONFIG.get(bot_name)
+    bot_data = auth_utils.BOT_CONFIG.get(bot_name, {})
     redirect_url = bot_data.get("redirect_url", "/profile")
     logger.debug(f"Redirect URL: {redirect_url}")
 

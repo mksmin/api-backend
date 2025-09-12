@@ -46,10 +46,13 @@ async def return_user_data(
     if user_id is None:
         return
 
-    user: User = await crud_manager.user.get_one(
+    user: User | None = await crud_manager.user.get_one(
         field="id",
         value=user_id,
     )
+    if not user:
+        raise ValueError("User not found")
+
     return UserDataReadSchema(
         id=user.id,
         tg_id=user.tg_id,
@@ -85,7 +88,7 @@ async def get_dict_with_user_affirmations(
         }
     broker = get_broker()
     try:
-        rabbit_request = {
+        rabbit_request: dict[str, Any] = {
             "command": "get_paginated_tasks",
             "payload": {
                 "user_tg": user_data.tg_id,

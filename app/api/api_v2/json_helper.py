@@ -1,5 +1,6 @@
 import json
 import re
+from typing import Any, cast
 
 from core import logger
 from core.database import User
@@ -44,8 +45,8 @@ def map_json_to_model(json_data: dict) -> dict:
     }
 
 
-async def get_data_from_json(parameters: dict) -> dict[str, str]:
-    answers = parameters.get("answers")
+async def get_data_from_json(parameters: dict[str, Any]) -> dict[str, str]:
+    answers = cast(str, parameters.get("answers"))
     answers_dict = json.loads(answers)
     data_answers = answers_dict["answer"]["data"]
 

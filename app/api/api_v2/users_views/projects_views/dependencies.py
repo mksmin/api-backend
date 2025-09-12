@@ -26,7 +26,7 @@ async def get_user_projects_by_tg_id(
     ],
 ) -> dict[int, ProjectResponseSchema]:
     try:
-        user = await crud_manager.user.get_one(prj_filter.owner_id)
+        user = await crud_manager.user.get_one(value=prj_filter.owner_id)
         if user is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -103,5 +103,5 @@ async def delete_project_by_uuid(
             detail="Недостаточно прав для удаления проекта",
         )
 
-    await crud_manager.project.delete(project.id)
+    await crud_manager.project.delete("id", project.id)
     return True

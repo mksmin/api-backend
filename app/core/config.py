@@ -22,14 +22,14 @@ class CustomFormatter(logging.Formatter):
     bold_red = "\x1b[31;1m"
     green = "\x1b[32;20m"
     reset = "\x1b[0m"
-    format = "[%(asctime)s] %(levelname)s: %(message)s (%(filename)s:%(lineno)d)"
+    format_str = "[%(asctime)s] %(levelname)s: %(message)s (%(filename)s:%(lineno)d)"
 
     FORMATS = {
-        logging.DEBUG: grey + format + reset,
-        logging.INFO: green + format + reset,
-        logging.WARNING: yellow + format + reset,
-        logging.ERROR: red + format + reset,
-        logging.CRITICAL: bold_red + format + reset,
+        logging.DEBUG: grey + format_str + reset,
+        logging.INFO: green + format_str + reset,
+        logging.WARNING: yellow + format_str + reset,
+        logging.ERROR: red + format_str + reset,
+        logging.CRITICAL: bold_red + format_str + reset,
     }
 
     def format(self, record):
@@ -91,7 +91,7 @@ class RabbitMQConfig(BaseModel):
     password: str = "wpwd"
     vhostname: str = "vhost"
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def url(self) -> str:
         safe_username = quote(self.username, safe="")

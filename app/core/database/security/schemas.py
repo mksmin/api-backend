@@ -1,4 +1,5 @@
 from datetime import datetime
+from email.policy import default
 from uuid import UUID
 from pydantic import BaseModel, Field
 from typing import Optional
@@ -38,7 +39,7 @@ class APIKeyUpdate(APIKeyBase):
     This class represents the model for updating API keys. It inherits from the APIKeyBase class and contains a field for updating the revoked status of the key.
     """
 
-    revoked: Optional[bool] = Field(None, description="Обновление статуса ключа")
+    revoked: bool = Field(False, description="Обновление статуса ключа")
 
 
 class APIKeyOut(APIKeyBase):
@@ -48,10 +49,16 @@ class APIKeyOut(APIKeyBase):
     This class represents the model for outputting API keys. It inherits from the APIKeyBase class and contains fields for the key identifier, key prefix, and creation time.
     """
 
-    id: int = Field(..., description="Идентификатор ключа")
-    key_prefix: str = Field(..., description="Префикс ключа", example="123456")
+    id: int = Field(default=..., description="Идентификатор ключа")
+    key_prefix: str = Field(
+        default=...,
+        description="Префикс ключа",
+        examples=["123456"],
+    )
     created_at: datetime = Field(
-        ..., description="Дата создания ключа", example=datetime.now()
+        default=...,
+        description="Дата создания ключа",
+        examples=[datetime.now()],
     )
     project_id: UUID = Field(..., description="Идентификатор проекта")
 
@@ -67,9 +74,9 @@ class APIKeyFull(APIKeyOut):
     """
 
     key: str = Field(
-        ...,
+        default=...,
         description="Ключ",
-        example="1234567890abcdef1234567890abcdef",
+        examples=["1234567890abcdef1234567890abcdef"],
         max_length=47,
     )
 
@@ -91,12 +98,18 @@ class APIKeyCreateResponse(BaseModel):
     key: str = Field(
         ...,
         description="API Ключ",
-        example="1234567890abcdef1234567890abcdef",
+        examples=["1234567890abcdef1234567890abcdef"],
         max_length=47,
     )
-    key_prefix: str = Field(..., description="Префикс ключа", example="tks_123lka")
+    key_prefix: str = Field(
+        ...,
+        description="Префикс ключа",
+        examples=["tks_123lka"],
+    )
     created_at: datetime = Field(
-        ..., description="Дата создания ключа", example=datetime.now()
+        ...,
+        description="Дата создания ключа",
+        examples=[datetime.now()],
     )
     expires_at: Optional[datetime] = Field(None, description="Дата истечения ключа")
     project_id: UUID = Field(..., description="Идентификатор проекта")
@@ -107,9 +120,15 @@ class APIKeyGetResponse(BaseModel):
     Модель для вью, который возвращает список API ключей проекта. Сырого ключа нет, только первые 11 символов.
     """
 
-    key_prefix: str = Field(..., description="Префикс ключа", example="tks_123lka")
+    key_prefix: str = Field(
+        ...,
+        description="Префикс ключа",
+        examples=["tks_123lka"],
+    )
     created_at: datetime = Field(
-        ..., description="Дата создания ключа", example=datetime.now()
+        ...,
+        description="Дата создания ключа",
+        examples=[datetime.now()],
     )
     expires_at: Optional[datetime] = Field(None, description="Дата истечения ключа")
     project_id: UUID = Field(..., description="Идентификатор проекта")
