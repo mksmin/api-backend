@@ -1,7 +1,7 @@
 from functools import wraps
 from typing import Callable
 
-from app.core import db_helper
+from core import db_helper
 
 
 def connector(function: Callable) -> Callable:

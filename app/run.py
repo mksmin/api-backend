@@ -16,13 +16,16 @@ from pathlib import Path
 
 
 # import from modules
-from app.core import logger, settings, db_helper
-from app.api import router as api_router
-from app.api.redirect import router as redirect_router
-from app.api import base_router
+from core import logger, settings, db_helper
+from api import router as api_router
+from api.redirect import router as redirect_router
+from api.api_v2.main_views import router as main_router
+from api.api_v2.pages_views import router as pages_router
+from api.api_v2.auth import router as auth_router
+
 from fastapi.middleware.cors import CORSMiddleware
 
-PATH_DEV = Path(__file__).parent.parent / "api-frontend"
+PATH_DEV = Path(__file__).parent.parent.parent / "api-frontend"
 PATH_PROD = Path(__file__).parent.parent / "frontend"
 PATH_STATIC = PATH_DEV if settings.run.dev_mode else PATH_PROD
 
@@ -70,9 +73,11 @@ main_app.add_middleware(
 )
 
 routers_for_include = (
-    redirect_router,
+    auth_router,
     api_router,
-    base_router,
+    redirect_router,
+    main_router,
+    pages_router,
 )
 
 for router in routers_for_include:
@@ -86,7 +91,7 @@ if __name__ == "__main__":
             "port": settings.run.port,
             "log_level": settings.run.log_level,
             "reload": False,
-            "log_config": str(Path(__file__).parent / "app/core/log_conf.json"),
+            "log_config": str(Path(__file__).parent / "core/log_conf.json"),
             "use_colors": True,
             "workers": 1,
         }

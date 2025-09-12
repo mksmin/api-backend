@@ -2,7 +2,7 @@ from datetime import datetime
 from sqlalchemy import String, Column, Boolean, DateTime, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.core.database import Base, IntIdMixin, TimestampsMixin
+from core.database import Base, IntIdMixin, TimestampsMixin
 
 
 class APIKey(IntIdMixin, TimestampsMixin, Base):

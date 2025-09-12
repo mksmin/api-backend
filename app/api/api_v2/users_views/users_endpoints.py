@@ -6,7 +6,6 @@ from fastapi import (
     APIRouter,
     Header,
     Body,
-    UploadFile,
     HTTPException,
     status,
 )
@@ -14,20 +13,22 @@ from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
 # import from modules
-from app.core import logger, settings
-from app.core.crud import crud_manager, get_registration_stat
-from app.core.database.schemas import ProjectResponseSchema, ProjectRequestSchema
-from .auth import token_utils
-from .user_projects import router as user_projects_router
+from core import logger, settings
+from core.crud import crud_manager, get_registration_stat
+from core.database.schemas import ProjectResponseSchema, ProjectRequestSchema
+from api.api_v2.auth import token_utils
 
-from .json_helper import get_data_from_json
+from api.api_v2.json_helper import get_data_from_json
 
-router = APIRouter()
+router = APIRouter(
+    tags=["Users"],
+)
 
-router.include_router(user_projects_router)
 
-
-@router.get("/statistics/", include_in_schema=settings.run.dev_mode)
+@router.get(
+    "/statistics/",
+    include_in_schema=settings.run.dev_mode,
+)
 async def get_statistics(token=Header()) -> JSONResponse:
     """
     Функция подключается к БД и возвращает ответы в JSON
@@ -56,7 +57,10 @@ async def get_statistics(token=Header()) -> JSONResponse:
     return JSONResponse(content=mess_to_json, status_code=200)
 
 
-@router.post("/registration", include_in_schema=settings.run.dev_mode)
+@router.post(
+    "/registration",
+    include_in_schema=settings.run.dev_mode,
+)
 async def registration(data=Body()):
     params = data.get("params")
     dict_user = await get_data_from_json(parameters=params)
@@ -79,6 +83,7 @@ async def registration(data=Body()):
 async def create_project(
     data: ProjectRequestSchema,
 ):
+    # TODO: перенести в projects_views/user_projects.py
     db_data = data.model_dump(by_alias=True)
     try:
         result = await crud_manager.project.create(db_data)

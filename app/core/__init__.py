@@ -6,5 +6,5 @@ __all__ = (
 )
 
 from .config import settings, logger
-from .database import db_helper
+from .database.db_helper import db_helper
 from .crud import crud_manager

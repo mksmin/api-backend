@@ -3,8 +3,8 @@ import uuid
 from sqlalchemy import UUID, String, BigInteger, ForeignKey
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 
-from app.core.database import Base
-from app.core.database.mixins import IntIdMixin, TimestampsMixin
+from core.database import Base
+from core.database.mixins import IntIdMixin, TimestampsMixin
 
 
 class Project(IntIdMixin, TimestampsMixin, Base):

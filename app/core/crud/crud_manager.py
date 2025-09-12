@@ -3,12 +3,13 @@
 from pydantic import ValidationError, UUID4
 from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-from typing import TypeVar
+from typing import TypeVar, cast, Sequence
 
 # import from modules
-from app.core.config import logger
-from app.core.database import User, Project
-from app.core.database.schemas import UserSchema, ProjectSchema
+from core.config import logger
+from core.database import User
+from core.database.projects import Project
+from core.database.schemas import UserSchema, ProjectSchema
 from .managers import BaseCRUDManager, ModelType, APIKeyManager
 
 from .. import db_helper
@@ -76,8 +77,12 @@ class ProjectManager(BaseCRUDManager[Project]):
     ) -> None:
         await super().delete(field, value)
 
-    async def get_all(self, owner_id: int) -> list[Project]:
+    async def get_all(self, owner_id: int) -> Sequence[Project]:
         async with self._get_session() as session:
+            session = cast(
+                AsyncSession,
+                session,
+            )
             query = (
                 select(self.model)
                 .where(self.model.deleted_at.is_(None))
@@ -85,8 +90,6 @@ class ProjectManager(BaseCRUDManager[Project]):
             )
             result = await session.execute(query)
             projects = result.scalars().all()
-            if not projects:
-                raise ValueError(f"У пользователя с id = {owner_id} нет проектов")
             return projects
 
     async def get_project_by_id(
@@ -94,13 +97,17 @@ class ProjectManager(BaseCRUDManager[Project]):
         owner_id: int | None = None,
         project_id: int | None = None,
         project_uuid: UUID4 = None,
-    ) -> list[Project]:
+    ) -> Project | None:
         if not project_id and not project_uuid:
             raise ValueError(
                 "Параметры project_id и project_uuid не могут быть пустыми. Должен быть передан хотя бы один."
             )
 
         async with self._get_session() as session:
+            session = cast(
+                AsyncSession,
+                session,
+            )
             if not project_uuid:
                 query = select(self.model).where(
                     and_(
@@ -118,15 +125,13 @@ class ProjectManager(BaseCRUDManager[Project]):
                 )
 
             result = await session.execute(query)
-            project = result.scalar_one_or_none()
+            project: Project | None = result.scalar_one_or_none()
             if not project:
-                logger.error(
-                    f"Проект с id = {project_id} / uuid = {str(project_uuid)[:8]} не найден у пользователя {owner_id}"
+                logger.info(
+                    "Проект с id=%s не найден",
+                    str(project_uuid)[:8] if project_uuid else str(project_id),
                 )
-                raise ValueError(
-                    f"Проект с id = {project_id} / uuid = {str(project_uuid)[:8]} не найден у пользователя {owner_id}, либо удален."
-                )
-            return [project]
+            return project
 
     @staticmethod
     async def _validate_project_data(data: dict):

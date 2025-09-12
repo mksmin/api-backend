@@ -4,7 +4,7 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field, field_validator, UUID4
 from uuid import UUID
 
-from app.core import logger
+from core import logger
 
 
 class ProjectSchema(BaseModel):

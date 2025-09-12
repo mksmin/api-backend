@@ -6,7 +6,7 @@ from sqlalchemy import select, update, and_
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
-from app.core import logger
+from core import logger
 
 ModelType = TypeVar("ModelType")
 
@@ -29,7 +29,7 @@ class BaseCRUDManager(Generic[ModelType]):
                 logger.exception("Ошибка при работе с базой данных")
                 raise
 
-    async def exists_by_field(self, field: str, value: str | int) -> bool | ModelType:
+    async def exists_by_field(self, field: str, value: str | int) -> bool:
         async with self._get_session() as session:
             session = cast(
                 AsyncSession, session
@@ -49,14 +49,11 @@ class BaseCRUDManager(Generic[ModelType]):
             return instance
 
     async def get_one(self, field: str, value: str | int) -> ModelType | None:
-        result = await self.exists_by_field(field, value)
-        if result:
-            async with self._get_session() as session:
-                query = select(self.model).where(getattr(self.model, field) == value)
-                result = await session.execute(query)
-                return result.scalar_one_or_none()
-
-        return result
+        async with self._get_session() as session:
+            session = cast(AsyncSession, session)
+            query = select(self.model).where(getattr(self.model, field) == value)
+            result = await session.execute(query)
+            return result.scalar_one_or_none()
 
     async def delete(self, field: str, value: str | int) -> None:
         async with self._get_session() as session:

@@ -1,8 +1,8 @@
 import json
 import re
 
-from app.core import logger
-from app.core.database import User
+from core import logger
+from core.database import User
 
 FIELD_MAPPING: dict[str, str] = {
     "second_name": "last_name",

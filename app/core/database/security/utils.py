@@ -2,7 +2,7 @@ import hashlib
 import hmac
 import secrets
 
-from app.core import settings
+from core import settings
 
 
 async def generate_api_key_and_hash() -> tuple[str, str]:
