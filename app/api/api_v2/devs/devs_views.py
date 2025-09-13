@@ -44,7 +44,7 @@ async def decode_token(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=he.detail,
-        )
+        ) from he
 
 
 @router.post(

@@ -13,11 +13,11 @@ from .schemas import ProjectFilter
 async def validate_uuid_str(project_uuid: str) -> UUID:
     try:
         return UUID(project_uuid)
-    except ValueError:
+    except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Некорректный формат UUID",
-        )
+        ) from e
 
 
 async def get_user_projects_by_tg_id(
@@ -47,7 +47,7 @@ async def get_user_projects_by_tg_id(
             detail={
                 "error": str(e),
             },
-        )
+        ) from e
 
 
 async def get_user_projects_by_user_id(
@@ -61,7 +61,7 @@ async def get_user_projects_by_user_id(
 
 
 async def get_project_by_uuid(
-    project_uuid: UUID = Depends(validate_uuid_str),
+    project_uuid: Annotated[UUID, Depends(validate_uuid_str)],
 ) -> ProjectResponseSchema:
     if project := await crud_manager.project.get_project_by_id(
         project_uuid=project_uuid,
@@ -75,8 +75,8 @@ async def get_project_by_uuid(
 
 
 async def delete_project_by_uuid(
-    project_uuid: UUID = Depends(validate_uuid_str),
-    user_id: str = Depends(token_utils.strict_validate_access_token),
+    project_uuid: Annotated[UUID, Depends(validate_uuid_str)],
+    user_id: Annotated[str, Depends(token_utils.strict_validate_access_token)],
 ) -> bool:
     user = await crud_manager.user.get_one(
         field="id",

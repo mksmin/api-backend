@@ -53,13 +53,13 @@ async def read_and_parse_csv(
 
             await crud_manager.user.create(data=user)  # type: ignore[arg-type]
 
-    except pd.errors.EmptyDataError:
+    except pd.errors.EmptyDataError as ed:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="CSV file is empty or invalid",
-        )
-    except pd.errors.ParserError:
+        ) from ed
+    except pd.errors.ParserError as pe:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Error parsing CSV file",
-        )
+        ) from pe

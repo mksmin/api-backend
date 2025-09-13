@@ -66,7 +66,7 @@ class UserManager(BaseCRUDManager[User]):
         except ValidationError as e:
             error_message = format_validation_error(e)
             logger.error(f"Validation errors: {error_message}")
-            raise ValueError(f"Ошибки валидации: {error_message}")
+            raise ValueError(f"Ошибки валидации: {error_message}") from e
 
 
 class ProjectManager(BaseCRUDManager[Project]):

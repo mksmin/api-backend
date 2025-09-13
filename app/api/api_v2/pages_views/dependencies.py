@@ -1,7 +1,6 @@
 import asyncio
 import json
-import logging
-from typing import Any
+from typing import Annotated, Any
 
 from fastapi import Depends, HTTPException, status
 from fastapi.requests import Request
@@ -67,7 +66,10 @@ async def return_user_data(
 
 async def return_data_for_user_profile_template(
     request: Request,
-    user_data: UserDataReadSchema | None = Depends(return_user_data),
+    user_data: Annotated[
+        UserDataReadSchema | None,
+        Depends(return_user_data),
+    ],
 ) -> dict[str, Any]:
     return {
         "request": request,
@@ -78,7 +80,10 @@ async def return_data_for_user_profile_template(
 
 async def get_dict_with_user_affirmations(
     request: Request,
-    user_data: UserDataReadSchema | None = Depends(return_user_data),
+    user_data: Annotated[
+        UserDataReadSchema | None,
+        Depends(return_user_data),
+    ],
 ) -> dict[str, Any]:
     if not user_data:
         return {
@@ -111,8 +116,8 @@ async def get_dict_with_user_affirmations(
                 "time_send": "--",
             },
         }
-    except asyncio.TimeoutError:
+    except asyncio.TimeoutError as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Service unavailable",
-        )
+        ) from e

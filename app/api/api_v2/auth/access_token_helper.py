@@ -106,12 +106,12 @@ async def decode_jwt(
             "expires_at": expires_at,
         }
 
-    except ExpiredSignatureError:
+    except ExpiredSignatureError as ex_e:
         raise HTTPException(
             status_code=401,
             detail="Token expired",
             headers={"WWW-Authenticate": "Bearer"},
-        )
+        ) from ex_e
 
     except InvalidTokenError as e:
         logger.exception("Invalid token: %s", e)
@@ -119,7 +119,7 @@ async def decode_jwt(
             status_code=401,
             detail="Invalid token",
             headers={"WWW-Authenticate": "Bearer"},
-        )
+        ) from e
 
 
 async def parse_access_token(

@@ -85,4 +85,4 @@ class BaseCRUDManager(Generic[ModelType]):
 
             except SQLAlchemyError as e:
                 await session.rollback()
-                raise RuntimeError(f"Ошибка при удалении объекта: {e!s}")
+                raise RuntimeError(f"Ошибка при удалении объекта: {e!s}") from e
