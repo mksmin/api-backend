@@ -1,9 +1,9 @@
 from pathlib import Path
 
-from fastapi import Depends, APIRouter, status
+from fastapi import APIRouter, Depends, status
 from fastapi.responses import FileResponse
 
-from api.api_v2.dependencies import file_dependency, PUBLIC_DIR, SRC_DIR
+from api.api_v2.dependencies import PUBLIC_DIR, SRC_DIR, file_dependency
 from core import settings
 
 router = APIRouter()

@@ -1,15 +1,14 @@
 import traceback
 from typing import Any
 
-from dateutil import parser
-
 import asyncpg  # type: ignore[import-untyped]
-from sqlalchemy import MetaData, Table, select, func
-
+from dateutil import parser
+from sqlalchemy import MetaData, Table, func, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.config import logger
+
 from .config import connector
 
 

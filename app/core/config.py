@@ -1,13 +1,13 @@
 import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
-from urllib.parse import unquote, quote
+from urllib.parse import quote, unquote
 
 from pydantic import (
     BaseModel,
+    Field,
     PostgresDsn,
     computed_field,
-    Field,
     field_validator,
 )
 from pydantic_settings import BaseSettings, SettingsConfigDict

@@ -8,11 +8,10 @@ from core import settings
 
 from .dependencies import (
     TEMPLATES,
-    return_data_for_user_profile_template,
     get_dict_with_user_affirmations,
+    return_data_for_user_profile_template,
+    rmq_router,
 )
-
-from .dependencies import rmq_router
 
 router = APIRouter(
     tags=["Page views"],

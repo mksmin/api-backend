@@ -1,6 +1,11 @@
 from typing import Any
 
-from fastapi import APIRouter, Header, Body, Request
+from fastapi import (
+    APIRouter,
+    Body,
+    Header,
+    Request,
+)
 from fastapi.responses import JSONResponse, RedirectResponse
 from starlette import status
 

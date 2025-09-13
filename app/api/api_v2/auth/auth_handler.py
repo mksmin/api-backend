@@ -1,21 +1,18 @@
-# import libraries
-import json
-import hmac
 import hashlib
-from typing import Any, Coroutine, Callable
-
-# import from libraries
-from fastapi import Depends, Request, HTTPException
-from fastapi.templating import Jinja2Templates
+import hmac
+import json
 from pathlib import Path
-from urllib.parse import parse_qsl, unquote, parse_qs
+from typing import Any, Callable, Coroutine
+from urllib.parse import parse_qs, parse_qsl, unquote
 
+from fastapi import Depends, HTTPException, Request
+from fastapi.templating import Jinja2Templates
 from starlette.requests import Request
 from starlette.responses import HTMLResponse
 
-# import from modules
-from core import settings, logger
+from core import logger, settings
 from core.crud import crud_manager
+
 from .access_token_helper import BOT_CONFIG
 
 BASE_DIR = Path.cwd().parent  # project working directory api_atomlab/app

@@ -4,5 +4,5 @@ __all__ = (
     "APIKeyManager",
 )
 
-from .base import BaseCRUDManager, ModelType
 from .api_key import APIKeyManager
+from .base import BaseCRUDManager, ModelType

@@ -93,7 +93,7 @@ target-version = "py310"
 # McCabe complexity (`C901`) by default.
 
 select = [
-#    "I", # isort (I)
+    "I", # isort (I)
 #    "FAST", # FastAPI (FAST)
 #    "YTT", # flake8-2020 (YTT)
 #    "ANN", # flake8-annotations (ANN)

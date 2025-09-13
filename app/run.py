@@ -4,27 +4,21 @@ This is the main entry point of the application. It is responsible for starting 
 
 import os
 import sys
-from typing import Any, Generator, AsyncGenerator
-
-# import libraries
-import uvicorn
-
-# import from libraries
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
 from pathlib import Path
+from typing import Any, AsyncGenerator, Generator
 
+import uvicorn
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
-# import from modules
-from core import logger, settings, db_helper
 from api import router as api_router
-from api.redirect import router as redirect_router
+from api.api_v2.auth import router as auth_router
 from api.api_v2.main_views import router as main_router
 from api.api_v2.pages_views import router as pages_router
-from api.api_v2.auth import router as auth_router
-
-from fastapi.middleware.cors import CORSMiddleware
+from api.redirect import router as redirect_router
+from core import db_helper, logger, settings
 
 PATH_DEV = Path(__file__).parent.parent.parent / "api-frontend"
 PATH_PROD = Path(__file__).parent.parent.parent / "frontend"

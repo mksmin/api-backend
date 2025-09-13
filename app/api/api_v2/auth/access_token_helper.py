@@ -1,16 +1,15 @@
 __all__ = ("BOT_CONFIG",)
 
+import secrets
+import uuid
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import jwt
-import secrets
-import uuid
-
-from datetime import datetime, timedelta, timezone
-from fastapi import HTTPException, Cookie, Depends, status
+from fastapi import Cookie, Depends, HTTPException, status
 from jwt import ExpiredSignatureError, InvalidTokenError
 
-from core import settings, logger
+from core import logger, settings
 
 BOT_CONFIG: dict[str, dict[str, str]] = {
     "bot1": {

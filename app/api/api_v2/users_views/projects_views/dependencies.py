@@ -3,10 +3,11 @@ from uuid import UUID
 
 from fastapi import Depends, HTTPException, status
 
+from api.api_v2.auth import token_utils
 from core.crud import crud_manager
 from core.database.schemas import ProjectResponseSchema
+
 from .schemas import ProjectFilter
-from api.api_v2.auth import token_utils
 
 
 async def validate_uuid_str(project_uuid: str) -> UUID:

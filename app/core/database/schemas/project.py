@@ -1,8 +1,14 @@
 from datetime import datetime
 from typing import Any
-
-from pydantic import BaseModel, ConfigDict, Field, field_validator, UUID4
 from uuid import UUID
+
+from pydantic import (
+    UUID4,
+    BaseModel,
+    ConfigDict,
+    Field,
+    field_validator,
+)
 
 from core import logger
 

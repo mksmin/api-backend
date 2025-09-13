@@ -1,21 +1,22 @@
 from fastapi import (
     APIRouter,
+    Depends,
     HTTPException,
     status,
-    Depends,
 )
 
 from api.api_v2.auth import token_utils
-from .dependencies import (
-    get_user_projects_by_tg_id,
-    get_project_by_uuid,
-    get_user_projects_by_user_id,
-    delete_project_by_uuid,
-)
 from core import settings
 from core.crud import crud_manager
 from core.database.schemas import ProjectResponseSchema
 from core.database.security import schemas as ak_schemas
+
+from .dependencies import (
+    delete_project_by_uuid,
+    get_project_by_uuid,
+    get_user_projects_by_tg_id,
+    get_user_projects_by_user_id,
+)
 
 router = APIRouter()
 

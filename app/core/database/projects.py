@@ -1,7 +1,16 @@
 import uuid
 
-from sqlalchemy import UUID, String, BigInteger, ForeignKey
-from sqlalchemy.orm import mapped_column, Mapped, relationship
+from sqlalchemy import (
+    UUID,
+    BigInteger,
+    ForeignKey,
+    String,
+)
+from sqlalchemy.orm import (
+    Mapped,
+    mapped_column,
+    relationship,
+)
 
 from core.database import Base
 from core.database.mixins import IntIdMixin, TimestampsMixin

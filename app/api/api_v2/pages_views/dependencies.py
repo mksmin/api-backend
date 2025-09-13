@@ -6,8 +6,8 @@ from typing import Any
 from fastapi import Depends, HTTPException, status
 from fastapi.requests import Request
 from fastapi.templating import Jinja2Templates
+from faststream.rabbit import RabbitBroker, RabbitMessage, fastapi
 from pydantic import BaseModel
-from faststream.rabbit import fastapi, RabbitBroker, RabbitMessage
 
 from api.api_v2.auth import token_utils
 from api.api_v2.dependencies import (
@@ -16,7 +16,6 @@ from api.api_v2.dependencies import (
 from core import settings
 from core.crud import crud_manager
 from core.database import User
-
 
 TEMPLATES = Jinja2Templates(directory=FRONTEND_DIR / "templates")
 rmq_router = fastapi.RabbitRouter(

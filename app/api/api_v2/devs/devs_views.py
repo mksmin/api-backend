@@ -1,3 +1,5 @@
+from typing import Annotated, Any
+
 from fastapi import (
     APIRouter,
     Cookie,
@@ -6,15 +8,14 @@ from fastapi import (
 )
 from fastapi.params import Depends
 from fastapi.responses import JSONResponse
-from typing import Annotated, Any
+
+from api.api_v2.auth import access_token_helper as token_utils
+from core import settings
 
 from .dependencies import (
     create_token_by_user_id,
     read_and_parse_csv,
 )
-
-from core import settings
-from api.api_v2.auth import access_token_helper as token_utils
 
 router = APIRouter()
 

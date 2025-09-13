@@ -1,18 +1,16 @@
-# import from lib
-from typing import Any
-
-from fastapi import APIRouter, Depends, Request, HTTPException, status
-from fastapi.responses import JSONResponse, HTMLResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
-
 from pathlib import Path
+from typing import Any
 from urllib.parse import parse_qsl
 
-# import from modules
-from . import auth_utils, token_utils
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.templating import Jinja2Templates
+
 from core import logger, settings
 from core.crud import crud_manager
 from core.database import User
+
+from . import auth_utils, token_utils
 
 router = APIRouter()
 

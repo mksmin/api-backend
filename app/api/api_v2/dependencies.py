@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Callable, Coroutine, Any
+from typing import Any, Callable, Coroutine
 
 from fastapi import HTTPException
 from starlette import status

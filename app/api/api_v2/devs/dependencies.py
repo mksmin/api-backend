@@ -1,10 +1,9 @@
 import logging
 from io import StringIO
-from typing import Any, Annotated, cast
+from typing import Annotated, Any, cast
 
 import pandas as pd
-from fastapi import UploadFile, HTTPException, File
-from fastapi import status
+from fastapi import File, HTTPException, UploadFile, status
 
 from api.api_v2.auth import access_token_helper as token_utils
 from core.crud import crud_manager

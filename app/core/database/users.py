@@ -1,23 +1,23 @@
 import uuid
-
 from datetime import datetime
+
+from sqlalchemy import (
+    BigInteger,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    inspect,
+)
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
     relationship,
 )
-from sqlalchemy import (
-    String,
-    DateTime,
-    BigInteger,
-    inspect,
-    ForeignKey,
-    Integer,
-)
-from sqlalchemy.dialects.postgresql import UUID
 
-from .mixins import IntIdMixin, TimestampsMixin
 from .base import Base
+from .mixins import IntIdMixin, TimestampsMixin
 
 
 class User(IntIdMixin, TimestampsMixin, Base):

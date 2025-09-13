@@ -1,20 +1,19 @@
 from functools import wraps
 from typing import (
-    Callable,
-    Tuple,
     Any,
-    Dict,
-    Coroutine,
-    ParamSpec,
-    TypeVar,
-    Concatenate,
     Awaitable,
+    Callable,
+    Concatenate,
+    Coroutine,
+    Dict,
+    ParamSpec,
+    Tuple,
+    TypeVar,
 )
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core import db_helper
-
 
 # Типы
 P = ParamSpec("P")
