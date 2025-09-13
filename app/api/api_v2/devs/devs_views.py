@@ -28,10 +28,9 @@ async def decode_token(
     token: Annotated[
         str | None,
         Cookie(
-            default=None,
             alias="access_token",
         ),
-    ],
+    ] = None,
 ) -> dict[str, Any]:
     if not token:
         raise HTTPException(

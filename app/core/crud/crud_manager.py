@@ -110,7 +110,8 @@ class ProjectManager(BaseCRUDManager[Project]):
     ) -> Project | None:
         if not project_id and not project_uuid:
             raise ValueError(
-                "Параметры project_id и project_uuid не могут быть пустыми. Должен быть передан хотя бы один.",
+                "Параметры project_id и project_uuid не могут быть пустыми. "
+                "Должен быть передан хотя бы один.",
             )
 
         async with self._get_session() as session:

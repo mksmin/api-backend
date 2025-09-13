@@ -36,8 +36,10 @@ def upgrade() -> None:
         "date_bid_ya",
         existing_type=postgresql.TIMESTAMP(timezone=True),
         nullable=True,
-        comment="Дата регистрации пользователя во внешнем сервисе (например, Yandex.Form)",
-        existing_comment="Дата регистрации пользователя во внешнем сервисе (Yandex.Form)",
+        comment="Дата регистрации пользователя во внешнем сервисе "
+        "(например, Yandex.Form)",
+        existing_comment="Дата регистрации пользователя во внешнем сервисе "
+        "(Yandex.Form)",
     )
     op.drop_index("ix_users_id_bid_ya", table_name="users")
 
@@ -51,7 +53,8 @@ def downgrade() -> None:
         existing_type=postgresql.TIMESTAMP(timezone=True),
         nullable=False,
         comment="Дата регистрации пользователя во внешнем сервисе (Yandex.Form)",
-        existing_comment="Дата регистрации пользователя во внешнем сервисе (например, Yandex.Form)",
+        existing_comment="Дата регистрации пользователя во внешнем сервисе "
+        "(например, Yandex.Form)",
     )
     op.alter_column(
         "users",
@@ -59,5 +62,6 @@ def downgrade() -> None:
         existing_type=sa.BIGINT(),
         nullable=False,
         comment="ID заявки из внешнего сервиса регистраций (Yandex.Form)",
-        existing_comment="ID заявки из внешнего сервиса регистраций (например, Yandex.Form)",
+        existing_comment="ID заявки из внешнего сервиса регистраций "
+        "(например, Yandex.Form)",
     )

@@ -94,12 +94,10 @@ def verify_telegram_widget(raw_query: str, bot_token: str) -> bool:
         if not received_hash:
             return False
 
-        # Формируем строку проверки: сортируем ключи и объединяем их в формате "ключ=значение",
+        # Формируем строку проверки: сортируем ключи
+        # и объединяем их в формате "ключ=значение",
         # разделяя строки символом перевода строки "\n"
-        data_check_arr = []
-        for key in sorted(data.keys()):
-            data_check_arr.append(f"{key}={data[key]}")
-        data_check_string = "\n".join(data_check_arr)
+        data_check_string = "\n".join(f"{key}={data[key]}" for key in sorted(data))
 
         # Вычисляем секретный ключ: SHA256-хэш от токена бота
         secret_key = hashlib.sha256(bot_token.encode()).digest()
@@ -231,7 +229,8 @@ async def verified_data_dependency(
         "client_type": client_type,
     }
 
-    # TODO: После успешной проверки зарегистрировать пользователя (решить где это делать)
+    # TODO: После успешной проверки зарегистрировать пользователя
+    # (решить где это делать)
     if dependency_func:
         raw_data = await request.body()
         raw_data_str = raw_data.decode()

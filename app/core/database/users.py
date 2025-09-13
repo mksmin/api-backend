@@ -38,7 +38,8 @@ class User(IntIdMixin, TimestampsMixin, Base):
         DateTime(timezone=True),
         nullable=True,
         default=datetime.utcnow,
-        comment="Дата регистрации пользователя во внешнем сервисе (например, Yandex.Form)",
+        comment="Дата регистрации пользователя во внешнем сервисе "
+        "(например, Yandex.Form)",
     )
 
     # ФИО

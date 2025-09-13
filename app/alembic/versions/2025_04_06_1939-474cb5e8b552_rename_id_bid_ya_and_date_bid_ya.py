@@ -29,7 +29,8 @@ def upgrade() -> None:
         new_column_name="external_id_bid",
         existing_type=sa.BigInteger(),
         existing_nullable=True,
-        existing_comment="ID заявки из внешнего сервиса регистраций (например, Yandex.Form)",  # если есть комментарий
+        existing_comment="ID заявки из внешнего сервиса регистраций "
+        "(например, Yandex.Form)",
     )
     op.alter_column(
         "users",
@@ -37,7 +38,8 @@ def upgrade() -> None:
         new_column_name="external_date_bid",
         existing_type=sa.DateTime(timezone=True),
         existing_nullable=True,
-        existing_comment="Дата регистрации пользователя во внешнем сервисе (например, Yandex.Form)",
+        existing_comment="Дата регистрации пользователя во внешнем сервисе "
+        "(например, Yandex.Form)",
     )
 
 
@@ -50,7 +52,8 @@ def downgrade() -> None:
         new_column_name="id_bid_ya",
         existing_type=sa.BigInteger(),
         existing_nullable=True,
-        existing_comment="ID заявки из внешнего сервиса регистраций (например, Yandex.Form)",  # если есть комментарий
+        existing_comment="ID заявки из внешнего сервиса регистраций "
+        "(например, Yandex.Form)",
     )
     op.alter_column(
         "users",
@@ -58,5 +61,6 @@ def downgrade() -> None:
         new_column_name="date_bid_ya",
         existing_type=sa.DateTime(timezone=True),
         existing_nullable=True,
-        existing_comment="Дата регистрации пользователя во внешнем сервисе (например, Yandex.Form)",
+        existing_comment="Дата регистрации пользователя во внешнем сервисе "
+        "(например, Yandex.Form)",
     )

@@ -9,7 +9,10 @@ async def generate_api_key_and_hash() -> tuple[str, str]:
     """
     Generate a random string and hmac hash for api key.
 
-    This function generates a random string using the secrets module and creates an hmac hash using the generated string and a secret key from the settings. The function returns a tuple containing the generated string and the hmac hash.
+    This function generates a random string using the secrets module
+    and creates a hmac hash using the generated string
+    and a secret key from the settings.
+    The function returns a tuple containing the generated string and the hmac hash.
 
     :return: A tuple containing the generated string and the hmac hash.
     """

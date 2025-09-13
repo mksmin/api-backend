@@ -1,5 +1,6 @@
 """
-This is the main entry point of the application. It is responsible for starting the application
+This is the main entry point of the application.
+It is responsible for starting the application
 """
 
 import os

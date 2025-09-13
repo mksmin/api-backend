@@ -148,7 +148,8 @@ class LoggerConfig(BaseModel):
         allowed_values = ["DEBUG", "INFO", "WARNING", "CRITICAL", "ERROR"]
         if value.upper() not in allowed_values:
             raise ValueError(
-                f"Уровень логирования должен быть одним из: {', '.join(allowed_values)}",
+                f"Уровень логирования должен быть одним из: "
+                f"{', '.join(allowed_values)}",
             )
         return value.upper()
 
@@ -179,4 +180,3 @@ class Settings(BaseSettings):
 
 settings = Settings()
 logger.setLevel(settings.log.level)
-logger.info(f"Set log level to {settings.log.level}")
