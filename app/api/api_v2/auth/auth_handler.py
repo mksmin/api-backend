@@ -106,7 +106,9 @@ def verify_telegram_widget(raw_query: str, bot_token: str) -> bool:
 
         # Вычисляем HMAC-SHA256 от data_check_string, используя secret_key
         hmac_hash = hmac.new(
-            secret_key, data_check_string.encode(), hashlib.sha256
+            secret_key,
+            data_check_string.encode(),
+            hashlib.sha256,
         ).hexdigest()
 
         # print(f"hmac_hash: {hmac_hash}")
@@ -132,7 +134,7 @@ async def verify_telegram_data_dep(
         logger.debug(
             f"verify_telegram_data_dep | "
             f"client_type: {client_type} | "
-            f"bot_name: {bot_name}"
+            f"bot_name: {bot_name}",
         )
 
         if not raw_data_str:
@@ -143,11 +145,13 @@ async def verify_telegram_data_dep(
             logger.info(f"Client_type: {client_type}")
             if client_type == "TelegramWidget":
                 verify_result = verify_telegram_widget(
-                    raw_data_str, settings.api.bot_token[bot_name]
+                    raw_data_str,
+                    settings.api.bot_token[bot_name],
                 )
             elif client_type == "TelegramMiniApp":
                 verify_result = verify_telegram_data(
-                    raw_data_str, settings.api.bot_token[bot_name]
+                    raw_data_str,
+                    settings.api.bot_token[bot_name],
                 )
             else:
                 logger.error(
@@ -210,7 +214,7 @@ async def verified_data_dependency(
         f"Verified data dependency | "
         f"request: {request.url.path} | "
         f"bot_name: {bot_name} | "
-        f"client_type: {client_type}"
+        f"client_type: {client_type}",
     )
 
     bot_data = BOT_CONFIG.get(bot_name, None)
@@ -218,7 +222,9 @@ async def verified_data_dependency(
         raise HTTPException(status_code=404, detail="Bot not Found")
 
     dependency_func: bool = await verify_telegram_data_dep(
-        request, bot_data["name"], client_type
+        request,
+        bot_data["name"],
+        client_type,
     )
     result: dict[str, str | bool] = {
         "is_authorized": dependency_func,
@@ -239,7 +245,8 @@ async def verified_data_dependency(
         else:
             logger.info("Зашел в блок TelegramMiniApp, чтобы спарсить данные")
             miniapp_pairs: list[tuple[str, str]] = parse_qsl(
-                raw_data_str, keep_blank_values=True
+                raw_data_str,
+                keep_blank_values=True,
             )
             data_dict = dict(miniapp_pairs)
             data = await extract_user_data(data_dict)

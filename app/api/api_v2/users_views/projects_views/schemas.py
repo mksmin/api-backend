@@ -14,7 +14,9 @@ class ProjectFilter(BaseModel):
     def from_query(
         cls,
         owner_id: int = Query(
-            ..., description="tg_id пользователя", alias="project_owner"
+            ...,
+            description="tg_id пользователя",
+            alias="project_owner",
         ),
         limit: int | None = Query(None, description="Лимит"),
         offset: int | None = Query(None, description="Смещение"),

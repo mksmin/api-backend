@@ -54,7 +54,8 @@ async def handle_telegram_init(
 async def auth_redirect() -> RedirectResponse:
     # Редирект на /auth/bot1 с нужным кодом
     return RedirectResponse(
-        url="/auth/bot1", status_code=status.HTTP_308_PERMANENT_REDIRECT
+        url="/auth/bot1",
+        status_code=status.HTTP_308_PERMANENT_REDIRECT,
     )
 
 
@@ -72,7 +73,7 @@ async def auth_user(
         f"Path: {request.url.path} | "
         f"Client type: {client_type} | "
         f"Bot: {bot_name} | "
-        f"Access: {access_validate}"
+        f"Access: {access_validate}",
     )
 
     bot_data = token_utils.BOT_CONFIG.get(bot_name, {})
@@ -106,7 +107,7 @@ async def auth_user(
 
     logger.info(
         f"Tokens generated | User: {user.id} | "
-        f"JWT expiry: {settings.access_token.lifetime_seconds}s"
+        f"JWT expiry: {settings.access_token.lifetime_seconds}s",
     )
 
     # Устанавливаю куки

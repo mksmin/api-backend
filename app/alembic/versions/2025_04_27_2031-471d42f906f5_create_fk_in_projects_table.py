@@ -41,7 +41,9 @@ def upgrade() -> None:
 def downgrade() -> None:
     """Downgrade schema."""
     op.drop_constraint(
-        op.f("fk_projects_prj_owner_users"), "projects", type_="foreignkey"
+        op.f("fk_projects_prj_owner_users"),
+        "projects",
+        type_="foreignkey",
     )
     op.alter_column(
         "projects",

@@ -62,7 +62,7 @@ file_handler.setFormatter(
     logging.Formatter(
         "[%(asctime)s] %(levelname)s: %(message)s (%(filename)s:%(lineno)d)",
         "%Y/%m/%d %H:%M:%S",
-    )
+    ),
 )
 
 logger.addHandler(console_handler)
@@ -147,7 +147,7 @@ class LoggerConfig(BaseModel):
         allowed_values = ["DEBUG", "INFO", "WARNING", "CRITICAL", "ERROR"]
         if value.upper() not in allowed_values:
             raise ValueError(
-                f"Уровень логирования должен быть одним из: {', '.join(allowed_values)}"
+                f"Уровень логирования должен быть одним из: {', '.join(allowed_values)}",
             )
         return value.upper()
 

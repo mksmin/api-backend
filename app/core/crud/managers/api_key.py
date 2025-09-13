@@ -3,9 +3,10 @@ from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from .base import BaseCRUDManager
 from core.database.security import utils as ut
 from core.database.security.models import APIKey
+
+from .base import BaseCRUDManager
 
 
 class APIKeyManager(BaseCRUDManager[APIKey]):
@@ -13,7 +14,10 @@ class APIKeyManager(BaseCRUDManager[APIKey]):
         super().__init__(session_factory, model=APIKey)
 
     async def create(  # type: ignore[override]
-        self, *, project_id: int, temporary: bool = True
+        self,
+        *,
+        project_id: int,
+        temporary: bool = True,
     ) -> tuple[str, APIKey]:
         raw_key, hashed_key = await ut.generate_api_key_and_hash()
 
@@ -26,7 +30,7 @@ class APIKeyManager(BaseCRUDManager[APIKey]):
             new_api_key.update(
                 {
                     "expires_at": datetime.datetime.now() + datetime.timedelta(days=45),
-                }
+                },
             )
 
         instance = await super().create(**new_api_key)

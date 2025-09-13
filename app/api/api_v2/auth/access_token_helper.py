@@ -54,13 +54,15 @@ async def sign_jwt_token(
         "sub": str(user_id),  # subject (идентификатор субъекта)
         "iat": int(now.timestamp()),  # issued at (время создания)
         "exp": int(
-            (now + expire_delta).timestamp()
+            (now + expire_delta).timestamp(),
         ),  # expiration time (время истечения)
         "jti": jti,  # JWT ID (идентификатор токена)
     }
 
     token = jwt.encode(
-        payload, settings.access_token.secret, algorithm=settings.access_token.algorithm
+        payload,
+        settings.access_token.secret,
+        algorithm=settings.access_token.algorithm,
     )
     return {
         "access_token": token,
@@ -94,7 +96,7 @@ async def decode_jwt(
         expires_at = int(decoded_token["exp"])
 
         logger.info(
-            f"Token expired at: {datetime.fromtimestamp(expires_at).strftime('%Y-%m-%d %H:%M:%S')}"
+            f"Token expired at: {datetime.fromtimestamp(expires_at).strftime('%Y-%m-%d %H:%M:%S')}",
         )
 
         return {

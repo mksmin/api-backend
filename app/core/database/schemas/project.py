@@ -36,7 +36,7 @@ class ProjectSchema(BaseModel):
         from_attributes=True,
         extra="ignore",
         json_schema_extra={
-            "example": {"project_uuid": "123e4567-e89b-12d3-a456-426614174000"}
+            "example": {"project_uuid": "123e4567-e89b-12d3-a456-426614174000"},
         },
     )
 
@@ -58,7 +58,9 @@ class ProjectRequestSchema(BaseModel):
         alias="prj_description",
     )
     owner_id: int = Field(
-        ..., alias="prj_owner", json_schema_extra={"example": 123456789}
+        ...,
+        alias="prj_owner",
+        json_schema_extra={"example": 123456789},
     )
     model_config = ConfigDict(
         extra="ignore",
@@ -67,7 +69,7 @@ class ProjectRequestSchema(BaseModel):
                 "prj_name": "Test project",
                 "prj_description": "Test project description",
                 "prj_owner": 123456,
-            }
+            },
         },
     )
 
@@ -90,7 +92,7 @@ class ProjectResponseSchema(BaseModel):
                 "prj_description": "Test project description",
                 "created_at": "2024-01-01T00:00:00",
                 "uuid": "123e4567-e89b-12d3-a456-426614174000",
-            }
+            },
         },
     )
 

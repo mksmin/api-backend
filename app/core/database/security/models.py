@@ -33,7 +33,10 @@ class APIKey(IntIdMixin, TimestampsMixin, Base):
     revoked: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     project_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("projects.id"), nullable=False, index=True
+        Integer,
+        ForeignKey("projects.id"),
+        nullable=False,
+        index=True,
     )
 
     project: Mapped["Project"] = relationship("Project", back_populates="api_keys")

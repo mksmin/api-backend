@@ -77,7 +77,7 @@ class ProjectManager(BaseCRUDManager[Project]):
         user = await user_manager.get_one("tg_id", int(data["prj_owner"]))
         if not user:
             raise ValueError(
-                f"Пользователь с id = {data['prj_owner']} не найден в базе данных"
+                f"Пользователь с id = {data['prj_owner']} не найден в базе данных",
             )
         data["prj_owner"] = user.id
 
@@ -109,7 +109,7 @@ class ProjectManager(BaseCRUDManager[Project]):
     ) -> Project | None:
         if not project_id and not project_uuid:
             raise ValueError(
-                "Параметры project_id и project_uuid не могут быть пустыми. Должен быть передан хотя бы один."
+                "Параметры project_id и project_uuid не могут быть пустыми. Должен быть передан хотя бы один.",
             )
 
         async with self._get_session() as session:
@@ -119,14 +119,14 @@ class ProjectManager(BaseCRUDManager[Project]):
                         self.model.deleted_at.is_(None),
                         self.model.id == project_id,
                         self.model.prj_owner == owner_id,
-                    )
+                    ),
                 )
             else:
                 query = select(self.model).where(
                     and_(
                         self.model.deleted_at.is_(None),
                         self.model.uuid == project_uuid,
-                    )
+                    ),
                 )
 
             result = await session.execute(query)

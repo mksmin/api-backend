@@ -64,7 +64,7 @@ async def get_project_by_uuid(
     project_uuid: UUID = Depends(validate_uuid_str),
 ) -> ProjectResponseSchema:
     if project := await crud_manager.project.get_project_by_id(
-        project_uuid=project_uuid
+        project_uuid=project_uuid,
     ):
         return ProjectResponseSchema.model_validate(project)
     else:

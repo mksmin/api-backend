@@ -22,7 +22,9 @@ ModelType = TypeVar("ModelType", bound=Base)
 
 class BaseCRUDManager(Generic[ModelType]):
     def __init__(
-        self, session_factory: async_sessionmaker[AsyncSession], model: Type[ModelType]
+        self,
+        session_factory: async_sessionmaker[AsyncSession],
+        model: Type[ModelType],
     ):
         self.session_factory = session_factory
         self.model = model
@@ -70,7 +72,7 @@ class BaseCRUDManager(Generic[ModelType]):
                     and_(
                         getattr(self.model, field) == value,
                         self.model.deleted_at.is_(None),  # type: ignore[attr-defined]
-                    )
+                    ),
                 )
                 .values(deleted_at=datetime.now())
             )

@@ -40,7 +40,9 @@ def upgrade() -> None:
 def downgrade() -> None:
     """Downgrade schema."""
     op.drop_constraint(
-        op.f("fk_api_keys_project_id_projects"), "api_keys", type_="foreignkey"
+        op.f("fk_api_keys_project_id_projects"),
+        "api_keys",
+        type_="foreignkey",
     )
     op.drop_index(op.f("ix_api_keys_project_id"), table_name="api_keys")
     op.drop_column("api_keys", "project_id")

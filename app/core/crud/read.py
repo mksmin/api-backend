@@ -35,7 +35,7 @@ async def get_registration_stat(
     try:
         async with session.bind.connect() as conn:  # type: ignore[union-attr]
             registration_table = await conn.run_sync(
-                lambda sync_conn: Table(name_db, metadata, autoload_with=sync_conn)
+                lambda sync_conn: Table(name_db, metadata, autoload_with=sync_conn),
             )
 
         # Детали по каждой компетенции
@@ -61,7 +61,7 @@ async def get_registration_stat(
     except Exception as e:
         error_traceback = traceback.format_exc()
         logger.warning(
-            f"Ошибка при получении данных из таблицы {name_db}: {error_traceback}"
+            f"Ошибка при получении данных из таблицы {name_db}: {error_traceback}",
         )
         return {
             "total_users": 0,

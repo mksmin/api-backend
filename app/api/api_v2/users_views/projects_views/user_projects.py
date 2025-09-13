@@ -87,7 +87,8 @@ async def generate_api_key(
     project = await crud_manager.project.get_project_by_id(project_uuid=data.project_id)
     if not project:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Project not found"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Project not found",
         )
 
     raw_key, instance = await crud_manager.api_keys.create(

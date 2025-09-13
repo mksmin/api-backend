@@ -17,8 +17,8 @@ async def get_static_html(
     file_path: Path = Depends(
         file_dependency(
             base_dir=SRC_DIR,
-        )
-    )
+        ),
+    ),
 ) -> FileResponse:
     """
     Returns a requested HTML file from the frontend source directory.
@@ -45,8 +45,8 @@ async def get_static_media(
         file_dependency(
             base_dir=PUBLIC_DIR,
             sub_dir="media",
-        )
-    )
+        ),
+    ),
 ) -> FileResponse:
     """
     Returns a requested media file (images, videos, etc.) from the public/media directory.
@@ -73,8 +73,8 @@ async def get_static_styles(
         file_dependency(
             base_dir=SRC_DIR,
             sub_dir="style",
-        )
-    )
+        ),
+    ),
 ) -> FileResponse:
     """
     Returns a requested CSS file from the frontend style directory.
@@ -101,8 +101,8 @@ async def get_static_scripts(
         file_dependency(
             base_dir=SRC_DIR,
             sub_dir="scripts",
-        )
-    )
+        ),
+    ),
 ) -> FileResponse:
     """
     Returns a requested JavaScript file from the frontend scripts directory.

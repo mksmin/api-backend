@@ -52,7 +52,9 @@ def upgrade() -> None:
             name=op.f("fk_role_permissions_role_id_roles"),
         ),
         sa.PrimaryKeyConstraint(
-            "role_id", "permission_id", name=op.f("pk_role_permissions")
+            "role_id",
+            "permission_id",
+            name=op.f("pk_role_permissions"),
         ),
     )
     op.create_table(
@@ -60,10 +62,14 @@ def upgrade() -> None:
         sa.Column("user_id", sa.Integer(), nullable=False),
         sa.Column("role_id", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
-            ["role_id"], ["roles.id"], name=op.f("fk_user_roles_role_id_roles")
+            ["role_id"],
+            ["roles.id"],
+            name=op.f("fk_user_roles_role_id_roles"),
         ),
         sa.ForeignKeyConstraint(
-            ["user_id"], ["users.id"], name=op.f("fk_user_roles_user_id_users")
+            ["user_id"],
+            ["users.id"],
+            name=op.f("fk_user_roles_user_id_users"),
         ),
         sa.PrimaryKeyConstraint("user_id", "role_id", name=op.f("pk_user_roles")),
     )

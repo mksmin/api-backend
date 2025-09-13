@@ -36,7 +36,8 @@ def upgrade() -> None:
         sa.UniqueConstraint("uuid", name=op.f("uq_projects_uuid")),
     )
     op.add_column(
-        "users", sa.Column("project_id", sa.Integer(), nullable=True)
+        "users",
+        sa.Column("project_id", sa.Integer(), nullable=True),
     )
     op.add_column(
         "users",
@@ -59,7 +60,9 @@ def upgrade() -> None:
 def downgrade() -> None:
     """Downgrade schema."""
     op.drop_constraint(
-        op.f("fk_users_project_id_projects"), "users", type_="foreignkey"
+        op.f("fk_users_project_id_projects"),
+        "users",
+        type_="foreignkey",
     )
     op.drop_column("users", "track")
     op.drop_column("users", "project_id")

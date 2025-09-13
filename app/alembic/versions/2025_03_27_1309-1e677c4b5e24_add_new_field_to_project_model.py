@@ -31,7 +31,8 @@ def upgrade() -> None:
         ),
     )
     op.add_column(
-        "projects", sa.Column("prj_name", sa.String(length=50), nullable=True)
+        "projects",
+        sa.Column("prj_name", sa.String(length=50), nullable=True),
     )
     op.add_column(
         "projects",

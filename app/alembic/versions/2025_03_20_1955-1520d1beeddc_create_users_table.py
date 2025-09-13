@@ -71,10 +71,16 @@ def upgrade() -> None:
     )
     op.create_index(op.f("ix_users_email"), "users", ["email"], unique=False)
     op.create_index(
-        op.f("ix_users_id_bid_ya"), "users", ["id_bid_ya"], unique=True
+        op.f("ix_users_id_bid_ya"),
+        "users",
+        ["id_bid_ya"],
+        unique=True,
     )
     op.create_index(
-        op.f("ix_users_last_name"), "users", ["last_name"], unique=False
+        op.f("ix_users_last_name"),
+        "users",
+        ["last_name"],
+        unique=False,
     )
     op.create_index(op.f("ix_users_mobile"), "users", ["mobile"], unique=False)
 
