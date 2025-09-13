@@ -5,9 +5,9 @@ from fastapi import (
     Body,
     Header,
     Request,
+    status,
 )
-from fastapi.responses import JSONResponse, RedirectResponse
-from starlette import status
+from fastapi.responses import RedirectResponse
 
 from core import settings
 

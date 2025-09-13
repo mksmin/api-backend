@@ -1,3 +1,5 @@
+__all__ = ("get_data_from_json",)
+
 from fastapi import APIRouter
 
 from api.api_v2.users_views import router as users_router

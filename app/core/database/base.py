@@ -2,9 +2,7 @@ from sqlalchemy import MetaData
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import (
     DeclarativeBase,
-    Mapped,
     declared_attr,
-    mapped_column,
 )
 
 from core import settings

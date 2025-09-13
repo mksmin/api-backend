@@ -5,7 +5,7 @@ It is responsible for starting the application
 
 import os
 import sys
-from collections.abc import AsyncGenerator, Generator
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any

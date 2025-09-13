@@ -1,20 +1,17 @@
-# import lib
-
 from collections.abc import Sequence
-from typing import Any, TypeVar, cast
+from typing import Any
 
 from pydantic import UUID4, ValidationError
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-# import from modules
 from core.config import logger
 from core.database import User
 from core.database.projects import Project
 from core.database.schemas import ProjectSchema, UserSchema
 
 from .. import db_helper
-from .managers import APIKeyManager, BaseCRUDManager, ModelType
+from .managers import APIKeyManager, BaseCRUDManager
 
 
 def format_validation_error(exc: ValidationError) -> str:

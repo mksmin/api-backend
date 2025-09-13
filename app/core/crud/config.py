@@ -1,7 +1,6 @@
-from collections.abc import Awaitable, Callable, Coroutine
+from collections.abc import Awaitable, Callable
 from functools import wraps
 from typing import (
-    Any,
     Concatenate,
     ParamSpec,
     TypeVar,

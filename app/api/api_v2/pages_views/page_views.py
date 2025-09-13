@@ -1,5 +1,4 @@
 from typing import Annotated, Any
-from urllib.request import Request
 
 from fastapi import APIRouter, Depends
 from starlette.responses import HTMLResponse

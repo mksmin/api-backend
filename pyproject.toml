@@ -132,7 +132,7 @@ select = [
     "PERF", # Perflint (PERF)
     "E", # pycodestyle Error (E)
     "W", # pycodestyle Warning (W)
-#    "F", # Pyflakes (F)
+    "F", # Pyflakes (F)
     "PGH", # pygrep-hooks (PGH)
     "PLC", # Pylint Convention (PLC)
     "PLE", # Pylint Error (PLE)

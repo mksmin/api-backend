@@ -1,6 +1,4 @@
 from datetime import datetime, timezone
-from email.policy import default
-from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel, Field

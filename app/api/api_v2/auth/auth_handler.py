@@ -4,12 +4,11 @@ import json
 from collections.abc import Callable, Coroutine
 from pathlib import Path
 from typing import Any
-from urllib.parse import parse_qs, parse_qsl, unquote
+from urllib.parse import parse_qs, parse_qsl
 
 from fastapi import Depends, HTTPException, Request
 from fastapi.templating import Jinja2Templates
 from starlette import status
-from starlette.requests import Request
 from starlette.responses import HTMLResponse
 
 from core import logger, settings
@@ -184,7 +183,7 @@ async def verify_telegram_data_dep(
         raise he
 
     except (UnicodeDecodeError, ValueError, KeyError) as e:
-        logger.exception(f"Verification error: %s", e)
+        logger.exception("Verification error: %s", e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error",
@@ -197,7 +196,7 @@ async def verify_client(request: Request) -> str:
     allowed_clients = ["TelegramMiniApp", "TelegramWidget"]
 
     if client_source not in allowed_clients:
-        logger.exception(f"Invalid client source: %s", client_source)
+        logger.exception("Invalid client source: %s", client_source)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid client",

@@ -1,12 +1,11 @@
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 from dateutil import parser
 from pydantic import (
     BaseModel,
     ConfigDict,
     model_validator,
-    root_validator,
 )
 
 from core import logger

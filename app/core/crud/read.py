@@ -1,8 +1,6 @@
 import traceback
 from typing import Any
 
-import asyncpg  # type: ignore[import-untyped]
-from dateutil import parser
 from sqlalchemy import MetaData, Table, func, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -58,10 +56,10 @@ async def get_registration_stat(
             "details": {row[0]: row[1] for row in result_detail.all()},
         }
 
-    except SQLAlchemyError as e:
+    except SQLAlchemyError:
         error_traceback = traceback.format_exc()
         logger.exception(
-            f"Ошибка при получении данных из таблицы %s: %s",
+            "Ошибка при получении данных из таблицы %s: %s",
             name_db,
             error_traceback,
         )

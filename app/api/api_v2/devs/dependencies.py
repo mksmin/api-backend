@@ -1,6 +1,6 @@
 import logging
 from io import StringIO
-from typing import Annotated, Any, cast
+from typing import Annotated, Any
 
 import pandas as pd
 from fastapi import File, HTTPException, UploadFile, status

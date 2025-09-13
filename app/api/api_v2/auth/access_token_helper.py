@@ -98,7 +98,7 @@ async def decode_jwt(
         log_message = datetime.fromtimestamp(expires_at, tz=timezone.utc).strftime(
             "%Y-%m-%d %H:%M:%S",
         )
-        logger.info(f"Token expired at: %s", log_message)
+        logger.info("Token expired at: %s", log_message)
 
         return {
             "success": True,

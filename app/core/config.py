@@ -2,7 +2,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from typing import ClassVar
-from urllib.parse import quote, unquote
+from urllib.parse import quote
 
 from pydantic import (
     BaseModel,

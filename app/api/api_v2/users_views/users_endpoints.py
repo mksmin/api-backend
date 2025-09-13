@@ -1,25 +1,11 @@
 # import lib
-import json
-from typing import Any
 
 # import from lib
 from fastapi import (
     APIRouter,
-    Body,
-    Header,
-    HTTPException,
-    status,
 )
-from fastapi.responses import JSONResponse
-from pydantic import ValidationError
-
-from api.api_v2.auth import token_utils
-from api.api_v2.json_helper import get_data_from_json
 
 # import from modules
-from core import logger, settings
-from core.crud import crud_manager, get_registration_stat
-from core.database.schemas import ProjectRequestSchema, ProjectResponseSchema
 
 router = APIRouter(
     tags=["Users"],

@@ -2,7 +2,6 @@ import json
 import re
 from typing import Any, cast
 
-from core import logger
 from core.database import User
 
 FIELD_MAPPING: dict[str, str] = {

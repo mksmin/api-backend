@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from fastapi.responses import FileResponse
 
 from api.api_v2.dependencies import PUBLIC_DIR
