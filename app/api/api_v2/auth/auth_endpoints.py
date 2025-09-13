@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Annotated, Any
+from typing import TYPE_CHECKING, Annotated, Any
 from urllib.parse import parse_qsl
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -8,7 +8,10 @@ from fastapi.templating import Jinja2Templates
 
 from core import logger, settings
 from core.crud import crud_manager
-from core.database import User
+
+if TYPE_CHECKING:
+    from core.database import User
+
 
 from . import auth_utils, token_utils
 
@@ -46,8 +49,7 @@ async def handle_telegram_init(
 
     bot_data = token_utils.BOT_CONFIG.get(bot_name, {})
     redirect_url = bot_data.get("redirect_url", "/profile")
-    response = RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
-    return response
+    return RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.post("/auth")

@@ -81,9 +81,9 @@ class BaseCRUDManager(Generic[ModelType]):
                     if await self.exists_by_field(field, value):
                         msg_error = f"Объект с {field} = {value} уже удален"
                         raise ValueError(msg_error)
-                    else:
-                        msg_error = f"Объект с {field} = {value} не найден"
-                        raise ValueError(msg_error)
+
+                    msg_error = f"Объект с {field} = {value} не найден"
+                    raise ValueError(msg_error)
 
             except SQLAlchemyError as e:
                 await session.rollback()

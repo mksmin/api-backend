@@ -132,7 +132,7 @@ class User(IntIdMixin, TimestampsMixin, Base):
         return columns
 
     def __repr__(self) -> str:
-        return f"<User(" f"id={self.id}" f")>"
+        return f"<User(id={self.id})>"
 
 
 class ExtraField(IntIdMixin, Base):

@@ -32,7 +32,6 @@ class APIKeyCreate(APIKeyBase):
     It inherits from the APIKeyBase class.
     """
 
-    pass
 
 
 class APIKeyUpdate(APIKeyBase):

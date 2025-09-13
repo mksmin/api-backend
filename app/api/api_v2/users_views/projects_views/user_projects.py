@@ -112,12 +112,10 @@ async def generate_api_key(
         temporary=data.temporary,
     )
 
-    response_instance = ak_schemas.APIKeyCreateResponse(
+    return ak_schemas.APIKeyCreateResponse(
         key=raw_key,
         key_prefix=instance.key_prefix,
         created_at=instance.created_at,
         project_id=project.uuid,
         expires_at=instance.expires_at,
     )
-
-    return response_instance

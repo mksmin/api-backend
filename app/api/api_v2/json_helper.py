@@ -48,7 +48,7 @@ def map_json_to_model(
 
 
 async def get_data_from_json(parameters: dict[str, Any]) -> dict[str, str]:
-    answers = cast(str, parameters.get("answers"))
+    answers = cast("str", parameters.get("answers"))
     answers_dict = json.loads(answers)
     data_answers = answers_dict["answer"]["data"]
 

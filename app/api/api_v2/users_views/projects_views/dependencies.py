@@ -67,11 +67,10 @@ async def get_project_by_uuid(
         project_uuid=project_uuid,
     ):
         return ProjectResponseSchema.model_validate(project)
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Проект с таким uuid не найден",
-        )
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Проект с таким uuid не найден",
+    )
 
 
 async def delete_project_by_uuid(

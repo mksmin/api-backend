@@ -1,6 +1,6 @@
 import asyncio
 import json
-from typing import Annotated, Any
+from typing import TYPE_CHECKING, Annotated, Any
 
 from fastapi import Depends, HTTPException, status
 from fastapi.requests import Request
@@ -14,7 +14,9 @@ from api.api_v2.dependencies import (
 )
 from core import settings
 from core.crud import crud_manager
-from core.database import User
+
+if TYPE_CHECKING:
+    from core.database import User
 
 TEMPLATES = Jinja2Templates(directory=FRONTEND_DIR / "templates")
 rmq_router = fastapi.RabbitRouter(
@@ -42,7 +44,7 @@ async def return_user_data(
     user_id: str = Depends(token_utils.soft_validate_access_token),
 ) -> UserDataReadSchema | None:
     if user_id is None:
-        return
+        return None
 
     user: User | None = await crud_manager.user.get_one(
         field="id",

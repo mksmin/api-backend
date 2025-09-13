@@ -111,20 +111,20 @@ select = [
     "DTZ", # flake8-datetimez (DTZ)
     "T10", # flake8-debugger (T10)
     "EM", # flake8-errmsg (EM)
-#    "ISC", # flake8-implicit-str-concat (ISC)
-#    "ICN", # flake8-import-conventions (ICN)
-#    "LOG", # flake8-logging (LOG)
-#    "G", # flake8-logging-format (G)
-#    "INP", # flake8-no-pep420 (INP)
-#    "PIE", # flake8-pie (PIE)
-#    "PYI", # flake8-pyi (PYI)
-#    "Q", # flake8-quotes (Q)
-#    "RSE", # flake8-raise (RSE)
-#    "RET", # flake8-return (RET)
-    #    "SLF", # flake8-self (SLF)
-#    "SIM", # flake8-simplify (SIM)
-#    "SLOT", # flake8-slots (SLOT)
-#    "TC", # flake8-type-checking (TC)
+    "ISC", # flake8-implicit-str-concat (ISC)
+    "ICN", # flake8-import-conventions (ICN)
+    "LOG", # flake8-logging (LOG)
+    "G", # flake8-logging-format (G)
+    "INP", # flake8-no-pep420 (INP)
+    "PIE", # flake8-pie (PIE)
+    "PYI", # flake8-pyi (PYI)
+    "Q", # flake8-quotes (Q)
+    "RSE", # flake8-raise (RSE)
+    "RET", # flake8-return (RET)
+    "SLF", # flake8-self (SLF)
+    "SIM", # flake8-simplify (SIM)
+    "SLOT", # flake8-slots (SLOT)
+    "TC", # flake8-type-checking (TC)
 #    "ARG", # flake8-unused-arguments (ARG)
     "PTH", # flake8-use-pathlib (PTH)
     "FLY", # flynt (FLY)
@@ -151,3 +151,8 @@ ignore = [
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
 unfixable = []
+
+[tool.ruff.lint.extend-per-file-ignores]
+"app/alembic/**" = [
+    "INP", # flake8-no-pep420 (INP)
+]

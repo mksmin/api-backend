@@ -107,8 +107,7 @@ class ProjectManager(BaseCRUDManager[Project]):
                 .where(self.model.prj_owner == owner_id)
             )
             result = await session.execute(query)
-            projects = result.scalars().all()
-            return projects
+            return result.scalars().all()
 
     async def get_project_by_id(
         self,

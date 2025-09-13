@@ -39,7 +39,7 @@ def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
         pairs = parse_qsl(raw_query, keep_blank_values=True)
         data_dict = dict(pairs)
 
-        input_hash = data_dict.get("hash", None)
+        input_hash = data_dict.get("hash")
         if not input_hash:
             return False
 
@@ -268,7 +268,7 @@ async def verified_data_dependency(
             data_dict = dict(miniapp_pairs)
             data = await extract_user_data(data_dict)
 
-        logger.debug(f"Verified data dependency | " f"data: {data}")
+        logger.debug(f"Verified data dependency | data: {data}")
         data["tg_id"] = data.pop("id")
         user = await crud_manager.user.create(data)
         logger.debug(f"Получен пользователь: {user}")
