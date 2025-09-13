@@ -15,26 +15,26 @@ from core import logger
 class UserSchema(BaseModel):
     uuid: str
 
-    external_id_bid: Optional[int] = None
-    external_date_bid: Optional[datetime] = None
-    first_name: Optional[str] = None
-    middle_name: Optional[str] = None
-    last_name: Optional[str] = None
+    external_id_bid: int | None = None
+    external_date_bid: datetime | None = None
+    first_name: str | None = None
+    middle_name: str | None = None
+    last_name: str | None = None
 
-    email: Optional[str] = None
-    mobile: Optional[str] = None
-    tg_id: Optional[int] = None
-    username: Optional[str] = None
+    email: str | None = None
+    mobile: str | None = None
+    tg_id: int | None = None
+    username: str | None = None
 
-    citizenship: Optional[str] = None
-    country: Optional[str] = None
-    city: Optional[str] = None
-    timezone: Optional[str] = None
-    study_place: Optional[str] = None
-    grade_level: Optional[str] = None
+    citizenship: str | None = None
+    country: str | None = None
+    city: str | None = None
+    timezone: str | None = None
+    study_place: str | None = None
+    grade_level: str | None = None
 
-    birth_date: Optional[datetime] = None
-    sex: Optional[str] = None
+    birth_date: datetime | None = None
+    sex: str | None = None
 
     @model_validator(mode="before")
     @classmethod

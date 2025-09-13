@@ -1,8 +1,9 @@
 import hashlib
 import hmac
 import json
+from collections.abc import Callable, Coroutine
 from pathlib import Path
-from typing import Any, Callable, Coroutine
+from typing import Any
 from urllib.parse import parse_qs, parse_qsl, unquote
 
 from fastapi import Depends, HTTPException, Request
@@ -55,7 +56,7 @@ def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
 
         # Генерация секретного ключа
         secret_key = hmac.new(
-            "WebAppData".encode(),
+            b"WebAppData",
             bot_token.encode(),
             hashlib.sha256,
         ).digest()

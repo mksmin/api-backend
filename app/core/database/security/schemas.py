@@ -20,7 +20,7 @@ class APIKeyBase(BaseModel):
     revoked: bool = Field(False, description="Отозван ли ключ")
     temporary: bool = Field(False, description="Временный ключ?")
     project_id: UUID = Field(..., description="Идентификатор проекта")
-    expires_at: Optional[datetime] = Field(None, description="Дата истечения ключа")
+    expires_at: datetime | None = Field(None, description="Дата истечения ключа")
 
 
 class APIKeyCreate(APIKeyBase):
@@ -112,7 +112,7 @@ class APIKeyCreateResponse(BaseModel):
         description="Дата создания ключа",
         examples=[datetime.now()],
     )
-    expires_at: Optional[datetime] = Field(None, description="Дата истечения ключа")
+    expires_at: datetime | None = Field(None, description="Дата истечения ключа")
     project_id: UUID = Field(..., description="Идентификатор проекта")
 
 
@@ -131,6 +131,6 @@ class APIKeyGetResponse(BaseModel):
         description="Дата создания ключа",
         examples=[datetime.now()],
     )
-    expires_at: Optional[datetime] = Field(None, description="Дата истечения ключа")
+    expires_at: datetime | None = Field(None, description="Дата истечения ключа")
     project_id: UUID = Field(..., description="Идентификатор проекта")
     revoked: bool = Field(False, description="Отозван ли ключ")

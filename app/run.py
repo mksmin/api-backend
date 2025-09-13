@@ -4,9 +4,10 @@ This is the main entry point of the application. It is responsible for starting 
 
 import os
 import sys
+from collections.abc import AsyncGenerator, Generator
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Any, AsyncGenerator, Generator
+from typing import Any
 
 import uvicorn
 from fastapi import FastAPI

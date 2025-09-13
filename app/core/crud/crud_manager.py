@@ -1,6 +1,7 @@
 # import lib
 
-from typing import Any, Sequence, TypeVar, cast
+from collections.abc import Sequence
+from typing import Any, TypeVar, cast
 
 from pydantic import UUID4, ValidationError
 from sqlalchemy import and_, select

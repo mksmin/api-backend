@@ -95,6 +95,7 @@ target-version = "py310"
 select = [
     "I", # isort (I)
     "COM", # flake8-commas (COM)
+    "UP", # pyupgrade (UP)
 #    "FAST", # FastAPI (FAST)
 #    "YTT", # flake8-2020 (YTT)
 #    "ANN", # flake8-annotations (ANN)
@@ -136,7 +137,6 @@ select = [
 #    "PLE", # Pylint Error (PLE)
 #    "PLR", # Pylint Refactor (PLR)
 #    "PLW", # Pylint Warning (PLW)
-#    "UP", # pyupgrade (UP)
 #    "FURB", # refurb (FURB)
 #    "RUF", # Ruff-specific rules (RUF)
 #    "TRY", # tryceratops (TRY)

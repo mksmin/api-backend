@@ -1,11 +1,10 @@
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import (
     TYPE_CHECKING,
     Any,
-    AsyncIterator,
     Generic,
-    Type,
     TypeVar,
     cast,
 )
@@ -24,7 +23,7 @@ class BaseCRUDManager(Generic[ModelType]):
     def __init__(
         self,
         session_factory: async_sessionmaker[AsyncSession],
-        model: Type[ModelType],
+        model: type[ModelType],
     ):
         self.session_factory = session_factory
         self.model = model
