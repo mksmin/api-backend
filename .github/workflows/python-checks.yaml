@@ -36,7 +36,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install --no-root --no-interaction --no-ansi
+          poetry sync --no-root --no-interaction --no-ansi
 
       - name: Run Black
         run: black --check --diff ./
