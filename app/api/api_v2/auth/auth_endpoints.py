@@ -40,7 +40,10 @@ async def handle_telegram_init(
         # Проверяем существование бота
         bot_config = token_utils.BOT_CONFIG.get(bot_name)
         if not bot_config:
-            raise HTTPException(404, detail="Bot not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Bot not found",
+            )
 
         return templates.TemplateResponse(
             "basebots.html",
@@ -144,13 +147,12 @@ async def refresh_csrf(
     # Проверяю JWT токен
     token = request.cookies.get("jwt_token")
     if not token:
-        raise HTTPException(401, "Unauthorized")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Unauthorized",
+        )
 
-    try:
-        await token_utils.decode_jwt(token)
-
-    except HTTPException as he:
-        raise he
+    await token_utils.decode_jwt(token)
 
     new_csrf_token = token_utils.sign_csrf_token()
 

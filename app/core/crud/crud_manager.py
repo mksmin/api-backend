@@ -156,7 +156,7 @@ class ProjectManager(BaseCRUDManager[Project]):
         except ValidationError as e:
             error_message = format_validation_error(e)
             logger.error(f"Validation errors: {error_message}")
-            raise e
+            raise
 
 
 class CRUDManager:

@@ -139,7 +139,7 @@ select = [
     "PLR", # Pylint Refactor (PLR)
     "PLW", # Pylint Warning (PLW)
     "FURB", # refurb (FURB)
-#    "TRY", # tryceratops (TRY)
+    "TRY", # tryceratops (TRY)
 ]
 
 ignore = [

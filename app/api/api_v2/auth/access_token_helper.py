@@ -100,14 +100,6 @@ async def decode_jwt(
         )
         logger.info("Token expired at: %s", log_message)
 
-        return {
-            "success": True,
-            "user_id": user_id,
-            "jti": jti,
-            "issued_at": issued_at,
-            "expires_at": expires_at,
-        }
-
     except ExpiredSignatureError as ex_e:
         raise HTTPException(
             status_code=401,
@@ -123,6 +115,15 @@ async def decode_jwt(
             headers={"WWW-Authenticate": "Bearer"},
         ) from e
 
+    else:
+        return {
+            "success": True,
+            "user_id": user_id,
+            "jti": jti,
+            "issued_at": issued_at,
+            "expires_at": expires_at,
+        }
+
 
 async def parse_access_token(
     access_token: str | None = Cookie(default=None, alias="access_token"),
@@ -136,11 +137,13 @@ async def parse_access_token(
         payload = await decode_jwt(access_token)
         user_id: int = payload["user_id"]
         logger.info(f"Check access token for user_id: {user_id}")
-        return user_id
 
     except (ExpiredSignatureError, InvalidTokenError) as e:
         logger.exception("Error while decoding token: %s", e)
         return None
+
+    else:
+        return user_id
 
 
 def sign_csrf_token() -> str:

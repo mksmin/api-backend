@@ -71,11 +71,13 @@ def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
         # Защита от атаки по времени
         result = hmac.compare_digest(generated_hash, input_hash)
         logger.debug(f"verify_telegram_data | result: {result}")
-        return result
 
     except (ValueError, KeyError, TypeError) as e:
         msg_error = f"Verification error: {e}"
         raise ValueError(msg_error) from e
+
+    else:
+        return result
 
 
 def verify_telegram_widget(raw_query: str, bot_token: str) -> bool:
@@ -137,7 +139,7 @@ async def verify_telegram_data_dep(
 
         if not raw_data_str:
             logger.exception('"raw_data_str" is empty')
-            raise HTTPException(
+            raise HTTPException(  # noqa: TRY301
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Missing data",
             )
@@ -163,24 +165,22 @@ async def verify_telegram_data_dep(
                     detail="Invalid client type",
                 )
 
+            if not verify_result:
+                logger.error('"raw_data_str" is not valid', exc_info=True)
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid data",
+                )
+
         except ValueError as e:
             logger.exception('"raw_data_str" is not valid')
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=str(e),
+                detail="Invalid data",
             ) from e
 
-        if not verify_result:
-            logger.error('"raw_data_str" is not valid', exc_info=True)
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid data",
-            )
-
-        return True
-
-    except HTTPException as he:
-        raise he
+    except HTTPException:
+        raise
 
     except (UnicodeDecodeError, ValueError, KeyError) as e:
         logger.exception("Verification error: %s", e)
@@ -188,6 +188,9 @@ async def verify_telegram_data_dep(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error",
         ) from e
+
+    else:
+        return True
 
 
 async def verify_client(request: Request) -> str:

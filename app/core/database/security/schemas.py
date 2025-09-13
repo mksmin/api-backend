@@ -31,7 +31,6 @@ class APIKeyCreate(APIKeyBase):
     """
 
 
-
 class APIKeyUpdate(APIKeyBase):
     """
     Model for updating API keys.
