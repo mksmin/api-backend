@@ -58,10 +58,12 @@ async def get_registration_stat(
             "details": {row[0]: row[1] for row in result_detail.all()},
         }
 
-    except Exception as e:
+    except SQLAlchemyError as e:
         error_traceback = traceback.format_exc()
-        logger.warning(
-            f"Ошибка при получении данных из таблицы {name_db}: {error_traceback}",
+        logger.exception(
+            f"Ошибка при получении данных из таблицы %s: %s",
+            name_db,
+            error_traceback,
         )
         return {
             "total_users": 0,

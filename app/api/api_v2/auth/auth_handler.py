@@ -8,6 +8,7 @@ from urllib.parse import parse_qs, parse_qsl, unquote
 
 from fastapi import Depends, HTTPException, Request
 from fastapi.templating import Jinja2Templates
+from starlette import status
 from starlette.requests import Request
 from starlette.responses import HTMLResponse
 
@@ -73,8 +74,8 @@ def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
         logger.debug(f"verify_telegram_data | result: {result}")
         return result
 
-    except Exception as e:
-        raise ValueError(f"Verification error: {e}")
+    except (ValueError, KeyError, TypeError) as e:
+        raise ValueError(f"Verification error: {e}") from e
 
 
 def verify_telegram_widget(raw_query: str, bot_token: str) -> bool:
@@ -109,13 +110,11 @@ def verify_telegram_widget(raw_query: str, bot_token: str) -> bool:
             hashlib.sha256,
         ).hexdigest()
 
-        # print(f"hmac_hash: {hmac_hash}")
-        # print(f"received_hash: {received_hash}")
-
         # Сравниваем вычисленный хэш с полученным (безопасное сравнение)
         return hmac.compare_digest(hmac_hash, received_hash)
-    except Exception as e:
-        raise ValueError(f"Widget verification error: {e}")
+
+    except (ValueError, KeyError, TypeError) as e:
+        raise ValueError(f"Widget verification error: {e}") from e
 
 
 # Общая зависимость верификации данных от Telegram
@@ -136,8 +135,11 @@ async def verify_telegram_data_dep(
         )
 
         if not raw_data_str:
-            logger.error('"raw_data_str" is empty', exc_info=True)
-            raise HTTPException(status_code=400, detail="Missing data")
+            logger.exception('"raw_data_str" is empty')
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Missing data",
+            )
 
         try:
             logger.info(f"Client_type: {client_type}")
@@ -152,28 +154,39 @@ async def verify_telegram_data_dep(
                     settings.api.bot_token[bot_name],
                 )
             else:
-                logger.error(
+                logger.exception(
                     '"client_type" is not "TelegramMiniApp" or "TelegramWidget"',
-                    exc_info=True,
                 )
-                raise HTTPException(status_code=400, detail="Invalid client type")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid client type",
+                )
 
         except ValueError as e:
-            logger.error('"raw_data_str" is not valid', exc_info=True)
-            raise HTTPException(status_code=401, detail=str(e))
+            logger.exception('"raw_data_str" is not valid')
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=str(e),
+            ) from e
 
         if not verify_result:
             logger.error('"raw_data_str" is not valid', exc_info=True)
-            raise HTTPException(status_code=401, detail="Invalid data")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid data",
+            )
 
         return True
 
     except HTTPException as he:
         raise he
 
-    except Exception as e:
-        logger.error(f"Verification error: {e!s}", exc_info=True)
-        raise HTTPException(status_code=500, detail="Internal server error")
+    except (UnicodeDecodeError, ValueError, KeyError) as e:
+        logger.exception(f"Verification error: %s", e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error",
+        ) from e
 
 
 async def verify_client(request: Request) -> str:
@@ -182,11 +195,11 @@ async def verify_client(request: Request) -> str:
     allowed_clients = ["TelegramMiniApp", "TelegramWidget"]
 
     if client_source not in allowed_clients:
-        logger.error(
-            f"Invalid client source: {client_source}",
-            exc_info=True,
+        logger.exception(f"Invalid client source: %s", client_source)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid client",
         )
-        raise HTTPException(400, "Invalid client")
 
     return client_source
 
@@ -217,7 +230,10 @@ async def verified_data_dependency(
 
     bot_data = BOT_CONFIG.get(bot_name, None)
     if not bot_data:
-        raise HTTPException(status_code=404, detail="Bot not Found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Bot not Found",
+        )
 
     dependency_func: bool = await verify_telegram_data_dep(
         request,

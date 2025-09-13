@@ -65,10 +65,15 @@ class UserSchema(BaseModel):
         return process_result
 
     @classmethod
-    def parse_datetime(cls, value: Any) -> datetime:
+    def parse_datetime(
+        cls,
+        value: Any,  # noqa: ANN401
+    ) -> datetime:
         try:
             return parser.parse(value) if isinstance(value, str) else value
-        except Exception as e:
-            raise ValueError(f"Invalid datetime format for value: {value}: {e!s}")
+        except Exception as e:  # noqa: BLE001
+            raise ValueError(
+                f"Invalid datetime format for value: {value}: {e!s}",
+            )
 
     model_config = ConfigDict(from_attributes=True, extra="ignore")

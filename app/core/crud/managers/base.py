@@ -24,7 +24,7 @@ class BaseCRUDManager(Generic[ModelType]):
         self,
         session_factory: async_sessionmaker[AsyncSession],
         model: type[ModelType],
-    ):
+    ) -> None:
         self.session_factory = session_factory
         self.model = model
 

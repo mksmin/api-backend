@@ -92,7 +92,7 @@ class RabbitMQConfig(BaseModel):
     host: str = "localhost"
     port: int = 5672
     username: str = "user"
-    password: str = "wpwd"
+    password: str = "wpwd"  # noqa: S105
     vhostname: str = "vhost"
 
     @computed_field  # type: ignore[prop-decorator]
@@ -156,7 +156,7 @@ class LoggerConfig(BaseModel):
 
 class AccessToken(BaseModel):
     lifetime_seconds: int = 3600
-    secret: str = "default_secret"
+    secret: str = "default_secret"  # noqa: S105
     algorithm: str = "HS256"
 
 

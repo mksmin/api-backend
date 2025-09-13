@@ -93,13 +93,11 @@ if __name__ == "__main__":
             "workers": 1,
         }
         if not sys.platform.startswith("win") or os.getenv("FORCE_UNIX_SOCKET"):
-            run_args["uds"] = "/tmp/uvicorn.sock"
+            run_args["uds"] = "/tmp/uvicorn.sock"  # noqa: S108
 
         uvicorn.run(**run_args)
 
     except KeyboardInterrupt:
         logger.warning("Exit from app has occurred with KeyboardInterrupt")
-    except Exception as e:
-        logger.exception("Exception has occurred: %s", e)
     else:
         logger.info("Application stopped")

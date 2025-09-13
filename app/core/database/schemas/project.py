@@ -21,7 +21,10 @@ class ProjectSchema(BaseModel):
 
     @field_validator("uuid", mode="before")
     @classmethod
-    def prevalidate(cls, value: Any) -> UUID:
+    def prevalidate(
+        cls,
+        value: Any,  # noqa: ANN401
+    ) -> UUID:
         """Валидация UUID и преобразование строки"""
         try:
             if isinstance(value, UUID):

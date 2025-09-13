@@ -10,7 +10,10 @@ from .base import BaseCRUDManager
 
 
 class APIKeyManager(BaseCRUDManager[APIKey]):
-    def __init__(self, session_factory: async_sessionmaker[AsyncSession]):
+    def __init__(
+        self,
+        session_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
         super().__init__(session_factory, model=APIKey)
 
     async def create(  # type: ignore[override]

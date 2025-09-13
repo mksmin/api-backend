@@ -27,7 +27,10 @@ def format_validation_error(exc: ValidationError) -> str:
 
 
 class UserManager(BaseCRUDManager[User]):
-    def __init__(self, session_factory: async_sessionmaker[AsyncSession]):
+    def __init__(
+        self,
+        session_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
         super().__init__(session_factory, model=User)
 
     async def get_one(
@@ -67,7 +70,10 @@ class UserManager(BaseCRUDManager[User]):
 
 
 class ProjectManager(BaseCRUDManager[Project]):
-    def __init__(self, session_factory: async_sessionmaker[AsyncSession]):
+    def __init__(
+        self,
+        session_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
         super().__init__(session_factory, model=Project)
 
     async def create(  # type: ignore[override]
@@ -158,7 +164,7 @@ class CRUDManager:
     def __init__(
         self,
         session_factory: async_sessionmaker[AsyncSession],
-    ):
+    ) -> None:
         self.user: UserManager = UserManager(session_factory)
         self.project: ProjectManager = ProjectManager(session_factory)
         self.api_keys: APIKeyManager = APIKeyManager(session_factory)
