@@ -1,7 +1,7 @@
 __all__ = (
+    "APIKeyManager",
     "BaseCRUDManager",
     "ModelType",
-    "APIKeyManager",
 )
 
 from .api_key import APIKeyManager

@@ -20,7 +20,7 @@ router = APIRouter(
 async def generate_api_key(
     data: sch.APIKeyCreate,
 ) -> sch.APIKeyFull:
-    raw_key, hashed_key = await ut.generate_api_key_and_hash()
+    raw_key, _ = await ut.generate_api_key_and_hash()
     db_response = {
         "id": 1,
         "created_at": datetime.now(),
@@ -38,7 +38,7 @@ async def generate_api_key(
     response_model=sch.APIKeyOut,
 )
 async def get_api_key() -> sch.APIKeyOut:
-    raw_key, hashed_key = await ut.generate_api_key_and_hash()
+    raw_key, _ = await ut.generate_api_key_and_hash()
     db_response = {
         "id": 1,
         "created_at": datetime.now(),

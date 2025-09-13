@@ -99,6 +99,7 @@ select = [
     "N", # pep8-naming (N)
     "T20", # flake8-print (T20)
     "FAST", # FastAPI (FAST)
+    "RUF", # Ruff-specific rules (RUF)
 #    "YTT", # flake8-2020 (YTT)
 #    "ANN", # flake8-annotations (ANN)
 #    "ASYNC", # flake8-async (ASYNC)
@@ -138,8 +139,13 @@ select = [
 #    "PLR", # Pylint Refactor (PLR)
 #    "PLW", # Pylint Warning (PLW)
 #    "FURB", # refurb (FURB)
-#    "RUF", # Ruff-specific rules (RUF)
 #    "TRY", # tryceratops (TRY)
+]
+
+ignore = [
+    "RUF001", # String contains ambiguous {}. Did you mean {}?
+    "RUF002", # Docstring contains ambiguous {}. Did you mean {}?
+    "RUF003", # Comment contains ambiguous {}. Did you mean {}?
 ]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.

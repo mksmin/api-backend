@@ -174,7 +174,7 @@ async def verify_telegram_data_dep(
         raise he
 
     except Exception as e:
-        logger.error(f"Verification error: {str(e)}", exc_info=True)
+        logger.error(f"Verification error: {e!s}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error")
 
 

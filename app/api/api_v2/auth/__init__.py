@@ -1,9 +1,9 @@
 __all__ = (
-    "auth_utils",
-    "token_utils",
-    "auth_router",
     "api_key_router",
+    "auth_router",
+    "auth_utils",
     "router",
+    "token_utils",
 )
 
 from fastapi import APIRouter

@@ -1,8 +1,8 @@
 __all__ = (
-    "UserSchema",
-    "ProjectSchema",
     "ProjectRequestSchema",
     "ProjectResponseSchema",
+    "ProjectSchema",
+    "UserSchema",
 )
 
 from .project import ProjectRequestSchema, ProjectResponseSchema, ProjectSchema

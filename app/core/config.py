@@ -1,6 +1,7 @@
 import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
+from typing import ClassVar
 from urllib.parse import quote, unquote
 
 from pydantic import (
@@ -24,7 +25,7 @@ class CustomFormatter(logging.Formatter):
     reset = "\x1b[0m"
     format_str = "[%(asctime)s] %(levelname)s: %(message)s (%(filename)s:%(lineno)d)"
 
-    FORMATS = {
+    FORMATS: ClassVar[dict[int, str]] = {
         logging.DEBUG: grey + format_str + reset,
         logging.INFO: green + format_str + reset,
         logging.WARNING: yellow + format_str + reset,

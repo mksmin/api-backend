@@ -22,14 +22,14 @@ class ProjectSchema(BaseModel):
     @field_validator("uuid", mode="before")
     @classmethod
     def prevalidate(cls, value: Any) -> UUID:
-        """Валидация UUID с преобразованием строки"""
+        """Валидация UUID и преобразование строки"""
         try:
             if isinstance(value, UUID):
                 return value
             return UUID(str(value))
 
         except (ValueError, AttributeError, TypeError) as e:
-            logger.error(f"Invalid UUID: {str(e)}")
+            logger.error(f"Invalid UUID: {e!s}")
             raise ValueError("Invalid UUID format") from e
 
     model_config = ConfigDict(

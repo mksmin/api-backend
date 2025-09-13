@@ -1,8 +1,8 @@
 __all__ = (
     "connector",
-    "get_registration_stat",
     "crud_manager",
     "format_validation_error",
+    "get_registration_stat",
 )
 
 from .config import connector

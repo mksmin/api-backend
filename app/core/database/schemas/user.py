@@ -59,7 +59,7 @@ class UserSchema(BaseModel):
                 else:
                     process_result[key] = str(value)
             except Exception as e:
-                logger.error(f"Error processing key: {key}, value: {value}: {str(e)}")
+                logger.error(f"Error processing key: {key}, value: {value}: {e!s}")
                 raise
 
         return process_result
@@ -69,6 +69,6 @@ class UserSchema(BaseModel):
         try:
             return parser.parse(value) if isinstance(value, str) else value
         except Exception as e:
-            raise ValueError(f"Invalid datetime format for value: {value}: {str(e)}")
+            raise ValueError(f"Invalid datetime format for value: {value}: {e!s}")
 
     model_config = ConfigDict(from_attributes=True, extra="ignore")
