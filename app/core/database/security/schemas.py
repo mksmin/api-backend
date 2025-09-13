@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from email.policy import default
 from typing import Optional
 from uuid import UUID
@@ -65,7 +65,7 @@ class APIKeyOut(APIKeyBase):
     created_at: datetime = Field(
         default=...,
         description="Дата создания ключа",
-        examples=[datetime.now()],
+        examples=[datetime.now(timezone.utc)],
     )
     project_id: UUID = Field(..., description="Идентификатор проекта")
 
@@ -119,7 +119,7 @@ class APIKeyCreateResponse(BaseModel):
     created_at: datetime = Field(
         ...,
         description="Дата создания ключа",
-        examples=[datetime.now()],
+        examples=[datetime.now(timezone.utc)],
     )
     expires_at: datetime | None = Field(None, description="Дата истечения ключа")
     project_id: UUID = Field(..., description="Идентификатор проекта")
@@ -139,7 +139,7 @@ class APIKeyGetResponse(BaseModel):
     created_at: datetime = Field(
         ...,
         description="Дата создания ключа",
-        examples=[datetime.now()],
+        examples=[datetime.now(timezone.utc)],
     )
     expires_at: datetime | None = Field(None, description="Дата истечения ключа")
     project_id: UUID = Field(..., description="Идентификатор проекта")

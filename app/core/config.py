@@ -147,10 +147,11 @@ class LoggerConfig(BaseModel):
     def validate_mode(cls, value: str) -> str:
         allowed_values = ["DEBUG", "INFO", "WARNING", "CRITICAL", "ERROR"]
         if value.upper() not in allowed_values:
-            raise ValueError(
+            msg_error = (
                 f"Уровень логирования должен быть одним из: "
-                f"{', '.join(allowed_values)}",
+                f"{', '.join(allowed_values)}"
             )
+            raise ValueError(msg_error)
         return value.upper()
 
 

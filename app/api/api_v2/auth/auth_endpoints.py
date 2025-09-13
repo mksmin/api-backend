@@ -64,7 +64,8 @@ async def auth_user(
     request: Request,
     bot_name: str,
     data_validate: Annotated[
-        dict[str, Any], Depends(auth_utils.verified_data_dependency),
+        dict[str, Any],
+        Depends(auth_utils.verified_data_dependency),
     ],
 ) -> RedirectResponse:
     client_type: str = data_validate["client_type"]

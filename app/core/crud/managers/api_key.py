@@ -32,7 +32,8 @@ class APIKeyManager(BaseCRUDManager[APIKey]):
         if temporary:
             new_api_key.update(
                 {
-                    "expires_at": datetime.datetime.now() + datetime.timedelta(days=45),
+                    "expires_at": datetime.datetime.now(datetime.timezone.utc)
+                    + datetime.timedelta(days=45),
                 },
             )
 

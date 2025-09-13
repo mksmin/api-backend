@@ -1,5 +1,5 @@
 # import from libs
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi import APIRouter
 
@@ -23,7 +23,7 @@ async def generate_api_key(
     raw_key, _ = await ut.generate_api_key_and_hash()
     db_response = {
         "id": 1,
-        "created_at": datetime.now(),
+        "created_at": datetime.now(timezone.utc),
     }
 
     return sch.APIKeyFull(
@@ -41,7 +41,7 @@ async def get_api_key() -> sch.APIKeyOut:
     raw_key, _ = await ut.generate_api_key_and_hash()
     db_response = {
         "id": 1,
-        "created_at": datetime.now(),
+        "created_at": datetime.now(timezone.utc),
     }
     return sch.APIKeyOut(
         **db_response,

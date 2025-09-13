@@ -75,7 +75,8 @@ def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
         return result
 
     except (ValueError, KeyError, TypeError) as e:
-        raise ValueError(f"Verification error: {e}") from e
+        msg_error = f"Verification error: {e}"
+        raise ValueError(msg_error) from e
 
 
 def verify_telegram_widget(raw_query: str, bot_token: str) -> bool:
@@ -114,7 +115,8 @@ def verify_telegram_widget(raw_query: str, bot_token: str) -> bool:
         return hmac.compare_digest(hmac_hash, received_hash)
 
     except (ValueError, KeyError, TypeError) as e:
-        raise ValueError(f"Widget verification error: {e}") from e
+        msg_error = f"Widget verification error: {e}"
+        raise ValueError(msg_error) from e
 
 
 # Общая зависимость верификации данных от Telegram

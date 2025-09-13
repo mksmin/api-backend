@@ -32,8 +32,9 @@ class ProjectSchema(BaseModel):
             return UUID(str(value))
 
         except (ValueError, AttributeError, TypeError) as e:
-            logger.error(f"Invalid UUID: {e!s}")
-            raise ValueError("Invalid UUID format") from e
+            msg_error = "Invalid UUID format"
+            logger.exception("%s: %s", msg_error, e)
+            raise ValueError(msg_error) from e
 
     model_config = ConfigDict(
         from_attributes=True,

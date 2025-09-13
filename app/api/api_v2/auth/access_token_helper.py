@@ -95,7 +95,9 @@ async def decode_jwt(
         issued_at = int(decoded_token["iat"])
         expires_at = int(decoded_token["exp"])
 
-        log_message = datetime.fromtimestamp(expires_at).strftime("%Y-%m-%d %H:%M:%S")
+        log_message = datetime.fromtimestamp(expires_at, tz=timezone.utc).strftime(
+            "%Y-%m-%d %H:%M:%S",
+        )
         logger.info(f"Token expired at: %s", log_message)
 
         return {

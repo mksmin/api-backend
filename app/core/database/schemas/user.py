@@ -72,8 +72,7 @@ class UserSchema(BaseModel):
         try:
             return parser.parse(value) if isinstance(value, str) else value
         except Exception as e:
-            raise ValueError(
-                f"Invalid datetime format for value: {value}: {e!s}",
-            ) from e
+            msg_error = f"Invalid datetime format for value: {value}: {e!s}"
+            raise ValueError(msg_error) from e
 
     model_config = ConfigDict(from_attributes=True, extra="ignore")

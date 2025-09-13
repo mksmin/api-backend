@@ -49,7 +49,8 @@ async def return_user_data(
         value=user_id,
     )
     if not user:
-        raise ValueError("User not found")
+        msg_error = "User not found"
+        raise ValueError(msg_error)
 
     return UserDataReadSchema(
         id=user.id,

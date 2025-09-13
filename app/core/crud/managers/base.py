@@ -1,6 +1,6 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -73,16 +73,19 @@ class BaseCRUDManager(Generic[ModelType]):
                         self.model.deleted_at.is_(None),  # type: ignore[attr-defined]
                     ),
                 )
-                .values(deleted_at=datetime.now())
+                .values(deleted_at=datetime.now(timezone.utc))
             )
             try:
                 result = await session.execute(query)
                 if result.rowcount == 0:
                     if await self.exists_by_field(field, value):
-                        raise ValueError(f"Объект с {field} = {value} уже удален")
+                        msg_error = f"Объект с {field} = {value} уже удален"
+                        raise ValueError(msg_error)
                     else:
-                        raise ValueError(f"Объект с {field} = {value} не найден")
+                        msg_error = f"Объект с {field} = {value} не найден"
+                        raise ValueError(msg_error)
 
             except SQLAlchemyError as e:
                 await session.rollback()
-                raise RuntimeError(f"Ошибка при удалении объекта: {e!s}") from e
+                msg_error = f"Ошибка при удалении объекта: {e!s}"
+                raise RuntimeError(msg_error) from e

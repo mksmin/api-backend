@@ -65,8 +65,9 @@ class UserManager(BaseCRUDManager[User]):
 
         except ValidationError as e:
             error_message = format_validation_error(e)
-            logger.error(f"Validation errors: {error_message}")
-            raise ValueError(f"Ошибки валидации: {error_message}") from e
+            except_msg = "Ошибка валидации:" + error_message
+            logger.exception("Validation errors: %s", error_message)
+            raise ValueError(except_msg) from e
 
 
 class ProjectManager(BaseCRUDManager[Project]):
@@ -83,9 +84,10 @@ class ProjectManager(BaseCRUDManager[Project]):
         user_manager = UserManager(db_helper.session_factory)
         user = await user_manager.get_one("tg_id", int(data["prj_owner"]))
         if not user:
-            raise ValueError(
-                f"Пользователь с id = {data['prj_owner']} не найден в базе данных",
+            msg_error = (
+                f"Пользователь с id = {data['prj_owner']} не найден в базе данных"
             )
+            raise ValueError(msg_error)
         data["prj_owner"] = user.id
 
         return await super().create(**data)
@@ -115,10 +117,11 @@ class ProjectManager(BaseCRUDManager[Project]):
         project_uuid: UUID4 | None = None,
     ) -> Project | None:
         if not project_id and not project_uuid:
-            raise ValueError(
+            msg_error = (
                 "Параметры project_id и project_uuid не могут быть пустыми. "
-                "Должен быть передан хотя бы один.",
+                "Должен быть передан хотя бы один."
             )
+            raise ValueError(msg_error)
 
         async with self._get_session() as session:
             if not project_uuid:
