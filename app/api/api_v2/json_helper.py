@@ -55,11 +55,11 @@ async def get_data_from_json(parameters: dict[str, Any]) -> dict[str, str]:
     result = {}
     for key, value in data_answers.items():
         if isinstance(value["value"], list):
-            value = value["value"][0]["text"]
+            extracted_value = value["value"][0]["text"]
         else:
-            value = value["value"]
+            extracted_value = value["value"]
 
-        result[key] = value
+        result[key] = extracted_value
 
     result["DateBid"] = answers_dict.get("created")  # Дата заявки в форме Яндекса
     result["IdBid"] = answers_dict.get("id")  # ID заявки на из формы Яндекса

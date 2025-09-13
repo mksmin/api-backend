@@ -12,7 +12,7 @@ from core import settings
 
 
 class DatabaseHelper:
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         url: str,
         echo: bool = False,
