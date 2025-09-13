@@ -1,8 +1,27 @@
 from datetime import datetime
-from sqlalchemy import String, Column, Boolean, DateTime, ForeignKey, Integer
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from typing import TYPE_CHECKING
 
-from core.database import Base, IntIdMixin, TimestampsMixin
+from sqlalchemy import (
+    Boolean,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+)
+from sqlalchemy.orm import (
+    Mapped,
+    mapped_column,
+    relationship,
+)
+
+from core.database import (
+    Base,
+    IntIdMixin,
+    TimestampsMixin,
+)
+
+if TYPE_CHECKING:
+    from core.database.projects import Project
 
 
 class APIKey(IntIdMixin, TimestampsMixin, Base):
@@ -13,7 +32,10 @@ class APIKey(IntIdMixin, TimestampsMixin, Base):
     revoked: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     project_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("projects.id"), nullable=False, index=True
+        Integer,
+        ForeignKey("projects.id"),
+        nullable=False,
+        index=True,
     )
 
     project: Mapped["Project"] = relationship("Project", back_populates="api_keys")

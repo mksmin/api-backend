@@ -1,10 +1,9 @@
 import logging
 from io import StringIO
-from typing import Any, Annotated
+from typing import Annotated, Any
 
 import pandas as pd
-from fastapi import UploadFile, HTTPException, File
-from fastapi import status
+from fastapi import File, HTTPException, UploadFile, status
 
 from api.api_v2.auth import access_token_helper as token_utils
 from core.crud import crud_manager
@@ -52,11 +51,15 @@ async def read_and_parse_csv(
             user.pop("created_at", None)
             user.pop("copmetention", None)
 
-            await crud_manager.user.create(data=user)
+            await crud_manager.user.create(data=user)  # type: ignore[arg-type]
 
-    except Exception as e:
-        log.warning("Error reading CSV file: %s", e)
+    except pd.errors.EmptyDataError as ed:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Error reading CSV file",
-        )
+            detail="CSV file is empty or invalid",
+        ) from ed
+    except pd.errors.ParserError as pe:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Error parsing CSV file",
+        ) from pe

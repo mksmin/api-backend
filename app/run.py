@@ -1,29 +1,26 @@
 """
-This is the main entry point of the application. It is responsible for starting the application
+This is the main entry point of the application.
+It is responsible for starting the application
 """
 
 import os
 import sys
-
-# import libraries
-import uvicorn
-
-# import from libraries
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
 from pathlib import Path
+from typing import Any
 
+import uvicorn
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
-# import from modules
-from core import logger, settings, db_helper
 from api import router as api_router
-from api.redirect import router as redirect_router
+from api.api_v2.auth import router as auth_router
 from api.api_v2.main_views import router as main_router
 from api.api_v2.pages_views import router as pages_router
-from api.api_v2.auth import router as auth_router
-
-from fastapi.middleware.cors import CORSMiddleware
+from api.redirect import router as redirect_router
+from core import db_helper, logger, settings
 
 PATH_DEV = Path(__file__).parent.parent.parent / "api-frontend"
 PATH_PROD = Path(__file__).parent.parent.parent / "frontend"
@@ -31,7 +28,9 @@ PATH_STATIC = PATH_DEV if settings.run.dev_mode else PATH_PROD
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(
+    app: FastAPI,  # noqa: ARG001
+) -> AsyncGenerator[None, None]:
     """
     WIP
 
@@ -85,7 +84,7 @@ for router in routers_for_include:
 
 if __name__ == "__main__":
     try:
-        run_args = {
+        run_args: dict[str, Any] = {
             "app": "run:main_app",
             "host": settings.run.host,
             "port": settings.run.port,
@@ -96,13 +95,11 @@ if __name__ == "__main__":
             "workers": 1,
         }
         if not sys.platform.startswith("win") or os.getenv("FORCE_UNIX_SOCKET"):
-            run_args["uds"] = "/tmp/uvicorn.sock"
+            run_args["uds"] = "/tmp/uvicorn.sock"  # noqa: S108
 
         uvicorn.run(**run_args)
 
     except KeyboardInterrupt:
         logger.warning("Exit from app has occurred with KeyboardInterrupt")
-    except Exception as e:
-        logger.exception("Exception has occurred: %s", e)
     else:
         logger.info("Application stopped")

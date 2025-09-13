@@ -1,13 +1,12 @@
 import asyncio
 import json
-import logging
-from typing import Any
+from typing import TYPE_CHECKING, Annotated, Any
 
 from fastapi import Depends, HTTPException, status
 from fastapi.requests import Request
 from fastapi.templating import Jinja2Templates
+from faststream.rabbit import RabbitBroker, RabbitMessage, fastapi
 from pydantic import BaseModel
-from faststream.rabbit import fastapi, RabbitBroker, RabbitMessage
 
 from api.api_v2.auth import token_utils
 from api.api_v2.dependencies import (
@@ -15,8 +14,9 @@ from api.api_v2.dependencies import (
 )
 from core import settings
 from core.crud import crud_manager
-from core.database import User
 
+if TYPE_CHECKING:
+    from core.database import User
 
 TEMPLATES = Jinja2Templates(directory=FRONTEND_DIR / "templates")
 rmq_router = fastapi.RabbitRouter(
@@ -44,12 +44,16 @@ async def return_user_data(
     user_id: str = Depends(token_utils.soft_validate_access_token),
 ) -> UserDataReadSchema | None:
     if user_id is None:
-        return
+        return None
 
-    user: User = await crud_manager.user.get_one(
+    user: User | None = await crud_manager.user.get_one(
         field="id",
         value=user_id,
     )
+    if not user:
+        msg_error = "User not found"
+        raise ValueError(msg_error)
+
     return UserDataReadSchema(
         id=user.id,
         tg_id=user.tg_id,
@@ -65,7 +69,10 @@ async def return_user_data(
 
 async def return_data_for_user_profile_template(
     request: Request,
-    user_data: UserDataReadSchema | None = Depends(return_user_data),
+    user_data: Annotated[
+        UserDataReadSchema | None,
+        Depends(return_user_data),
+    ],
 ) -> dict[str, Any]:
     return {
         "request": request,
@@ -76,7 +83,10 @@ async def return_data_for_user_profile_template(
 
 async def get_dict_with_user_affirmations(
     request: Request,
-    user_data: UserDataReadSchema | None = Depends(return_user_data),
+    user_data: Annotated[
+        UserDataReadSchema | None,
+        Depends(return_user_data),
+    ],
 ) -> dict[str, Any]:
     if not user_data:
         return {
@@ -85,7 +95,7 @@ async def get_dict_with_user_affirmations(
         }
     broker = get_broker()
     try:
-        rabbit_request = {
+        rabbit_request: dict[str, Any] = {
             "command": "get_paginated_tasks",
             "payload": {
                 "user_tg": user_data.tg_id,
@@ -109,8 +119,8 @@ async def get_dict_with_user_affirmations(
                 "time_send": "--",
             },
         }
-    except asyncio.TimeoutError:
+    except asyncio.TimeoutError as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Service unavailable",
-        )
+        ) from e

@@ -1,18 +1,17 @@
-# import lib
+from collections.abc import Sequence
+from typing import Any
 
-from pydantic import ValidationError, UUID4
-from sqlalchemy import select, and_
+from pydantic import UUID4, ValidationError
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-from typing import TypeVar, cast, Sequence
 
-# import from modules
 from core.config import logger
 from core.database import User
 from core.database.projects import Project
-from core.database.schemas import UserSchema, ProjectSchema
-from .managers import BaseCRUDManager, ModelType, APIKeyManager
+from core.database.schemas import ProjectSchema, UserSchema
 
 from .. import db_helper
+from .managers import APIKeyManager, BaseCRUDManager
 
 
 def format_validation_error(exc: ValidationError) -> str:
@@ -25,103 +24,116 @@ def format_validation_error(exc: ValidationError) -> str:
 
 
 class UserManager(BaseCRUDManager[User]):
-    def __init__(self, session_factory: async_sessionmaker[AsyncSession]):
+    def __init__(
+        self,
+        session_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
         super().__init__(session_factory, model=User)
 
-    async def get_one(self, value: str | int, field: str = "tg_id") -> ModelType | None:
+    async def get_one(
+        self,
+        field: str = "tg_id",
+        value: str | int = ...,  # type: ignore[assignment]
+    ) -> User | None:
         logger.info(f"Start searching user with ({field}: {value})")
         result = await super().get_one(field, value)
         logger.info(f"Result: {result}")
         return result
 
-    async def create(self, data: dict) -> User:
+    async def create(  # type: ignore[override]
+        self,
+        data: dict[str, Any],
+    ) -> User:
         data["uuid"] = db_helper.generate_uuid()
         result = await self._validate_user_data(data)
         exists = await self.exists_by_field("tg_id", int(data["tg_id"]))
         if exists:
-            return await super().get_one("tg_id", int(data["tg_id"]))
+            return await super().get_one("tg_id", int(data["tg_id"]))  # type: ignore[return-value]
 
         return await super().create(**result)
 
     @staticmethod
-    async def _validate_user_data(data: dict):
+    async def _validate_user_data(
+        data: dict[str, Any],
+    ) -> dict[str, Any]:
         try:
             user_schema = UserSchema(**data)
             return user_schema.model_dump()
 
         except ValidationError as e:
             error_message = format_validation_error(e)
-            logger.error(f"Validation errors: {error_message}")
-            raise ValueError(f"Ошибки валидации: {error_message}")
+            except_msg = "Ошибка валидации:" + error_message
+            logger.exception("Validation errors: %s", error_message)
+            raise ValueError(except_msg) from e
 
 
 class ProjectManager(BaseCRUDManager[Project]):
-    def __init__(self, session_factory: async_sessionmaker[AsyncSession]):
+    def __init__(
+        self,
+        session_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
         super().__init__(session_factory, model=Project)
 
-    async def create(self, data: dict) -> Project:
+    async def create(  # type: ignore[override]
+        self,
+        data: dict[str, Any],
+    ) -> Project:
         user_manager = UserManager(db_helper.session_factory)
         user = await user_manager.get_one("tg_id", int(data["prj_owner"]))
         if not user:
-            raise ValueError(
+            msg_error = (
                 f"Пользователь с id = {data['prj_owner']} не найден в базе данных"
             )
+            raise ValueError(msg_error)
         data["prj_owner"] = user.id
 
         return await super().create(**data)
 
     async def delete(
         self,
-        value: int,
-        field: str = "id",
+        field: str,
+        value: int,  # type: ignore[override]
     ) -> None:
         await super().delete(field, value)
 
     async def get_all(self, owner_id: int) -> Sequence[Project]:
         async with self._get_session() as session:
-            session = cast(
-                AsyncSession,
-                session,
-            )
             query = (
                 select(self.model)
                 .where(self.model.deleted_at.is_(None))
                 .where(self.model.prj_owner == owner_id)
             )
             result = await session.execute(query)
-            projects = result.scalars().all()
-            return projects
+            return result.scalars().all()
 
     async def get_project_by_id(
         self,
         owner_id: int | None = None,
         project_id: int | None = None,
-        project_uuid: UUID4 = None,
+        project_uuid: UUID4 | None = None,
     ) -> Project | None:
         if not project_id and not project_uuid:
-            raise ValueError(
-                "Параметры project_id и project_uuid не могут быть пустыми. Должен быть передан хотя бы один."
+            msg_error = (
+                "Параметры project_id и project_uuid не могут быть пустыми. "
+                "Должен быть передан хотя бы один."
             )
+            raise ValueError(msg_error)
 
         async with self._get_session() as session:
-            session = cast(
-                AsyncSession,
-                session,
-            )
             if not project_uuid:
                 query = select(self.model).where(
                     and_(
                         self.model.deleted_at.is_(None),
                         self.model.id == project_id,
                         self.model.prj_owner == owner_id,
-                    )
+                    ),
                 )
             else:
                 query = select(self.model).where(
                     and_(
                         self.model.deleted_at.is_(None),
                         self.model.uuid == project_uuid,
-                    )
+                    ),
                 )
 
             result = await session.execute(query)
@@ -134,7 +146,9 @@ class ProjectManager(BaseCRUDManager[Project]):
             return project
 
     @staticmethod
-    async def _validate_project_data(data: dict):
+    async def _validate_project_data(
+        data: dict[str, Any],
+    ) -> dict[str, Any]:
         try:
             project_schema = ProjectSchema(**data)
             return project_schema.model_dump()
@@ -142,11 +156,14 @@ class ProjectManager(BaseCRUDManager[Project]):
         except ValidationError as e:
             error_message = format_validation_error(e)
             logger.error(f"Validation errors: {error_message}")
-            raise e
+            raise
 
 
 class CRUDManager:
-    def __init__(self, session_factory: async_sessionmaker):
+    def __init__(
+        self,
+        session_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
         self.user: UserManager = UserManager(session_factory)
         self.project: ProjectManager = ProjectManager(session_factory)
         self.api_keys: APIKeyManager = APIKeyManager(session_factory)

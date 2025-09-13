@@ -6,17 +6,17 @@ Create Date: 2025-04-25 18:03:48.640651
 
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
 
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "a6c41502fc9e"
-down_revision: Union[str, None] = "a1f1d1d48ba6"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = "a1f1d1d48ba6"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
@@ -52,7 +52,9 @@ def upgrade() -> None:
             name=op.f("fk_role_permissions_role_id_roles"),
         ),
         sa.PrimaryKeyConstraint(
-            "role_id", "permission_id", name=op.f("pk_role_permissions")
+            "role_id",
+            "permission_id",
+            name=op.f("pk_role_permissions"),
         ),
     )
     op.create_table(
@@ -60,10 +62,14 @@ def upgrade() -> None:
         sa.Column("user_id", sa.Integer(), nullable=False),
         sa.Column("role_id", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
-            ["role_id"], ["roles.id"], name=op.f("fk_user_roles_role_id_roles")
+            ["role_id"],
+            ["roles.id"],
+            name=op.f("fk_user_roles_role_id_roles"),
         ),
         sa.ForeignKeyConstraint(
-            ["user_id"], ["users.id"], name=op.f("fk_user_roles_user_id_users")
+            ["user_id"],
+            ["users.id"],
+            name=op.f("fk_user_roles_user_id_users"),
         ),
         sa.PrimaryKeyConstraint("user_id", "role_id", name=op.f("pk_user_roles")),
     )

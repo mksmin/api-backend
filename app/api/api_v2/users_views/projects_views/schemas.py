@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from fastapi import Query
 from pydantic import BaseModel
 
@@ -14,11 +12,13 @@ class ProjectFilter(BaseModel):
     def from_query(
         cls,
         owner_id: int = Query(
-            ..., description="tg_id пользователя", alias="project_owner"
+            ...,
+            description="tg_id пользователя",
+            alias="project_owner",
         ),
         limit: int | None = Query(None, description="Лимит"),
         offset: int | None = Query(None, description="Смещение"),
-    ):
+    ) -> "ProjectFilter":
 
         return cls(
             owner_id=owner_id,

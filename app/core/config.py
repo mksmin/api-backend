@@ -1,13 +1,14 @@
 import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
-from urllib.parse import unquote, quote
+from typing import ClassVar
+from urllib.parse import quote
 
 from pydantic import (
     BaseModel,
+    Field,
     PostgresDsn,
     computed_field,
-    Field,
     field_validator,
 )
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -22,17 +23,20 @@ class CustomFormatter(logging.Formatter):
     bold_red = "\x1b[31;1m"
     green = "\x1b[32;20m"
     reset = "\x1b[0m"
-    format = "[%(asctime)s] %(levelname)s: %(message)s (%(filename)s:%(lineno)d)"
+    format_str = "[%(asctime)s] %(levelname)s: %(message)s (%(filename)s:%(lineno)d)"
 
-    FORMATS = {
-        logging.DEBUG: grey + format + reset,
-        logging.INFO: green + format + reset,
-        logging.WARNING: yellow + format + reset,
-        logging.ERROR: red + format + reset,
-        logging.CRITICAL: bold_red + format + reset,
+    FORMATS: ClassVar[dict[int, str]] = {
+        logging.DEBUG: grey + format_str + reset,
+        logging.INFO: green + format_str + reset,
+        logging.WARNING: yellow + format_str + reset,
+        logging.ERROR: red + format_str + reset,
+        logging.CRITICAL: bold_red + format_str + reset,
     }
 
-    def format(self, record):
+    def format(
+        self,
+        record: logging.LogRecord,
+    ) -> str:
         log_fmt = self.FORMATS.get(record.levelno)
         formatter = logging.Formatter(log_fmt, "%Y/%m/%d %H:%M:%S")
         return formatter.format(record)
@@ -59,7 +63,7 @@ file_handler.setFormatter(
     logging.Formatter(
         "[%(asctime)s] %(levelname)s: %(message)s (%(filename)s:%(lineno)d)",
         "%Y/%m/%d %H:%M:%S",
-    )
+    ),
 )
 
 logger.addHandler(console_handler)
@@ -81,17 +85,17 @@ class ApiV2Prefix(BaseModel):
 class ApiPrefix(BaseModel):
     prefix: str = "/api"
     v2: ApiV2Prefix = ApiV2Prefix()
-    bot_token: dict = {"bot_name": "1234567890:DefaultBotToken"}
+    bot_token: dict[str, str] = {"bot_name": "1234567890:DefaultBotToken"}
 
 
 class RabbitMQConfig(BaseModel):
     host: str = "localhost"
     port: int = 5672
     username: str = "user"
-    password: str = "wpwd"
+    password: str = "wpwd"  # noqa: S105
     vhostname: str = "vhost"
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def url(self) -> str:
         safe_username = quote(self.username, safe="")
@@ -140,18 +144,20 @@ class LoggerConfig(BaseModel):
 
     @field_validator("mode")
     @classmethod
-    def validate_mode(cls, value: str):
+    def validate_mode(cls, value: str) -> str:
         allowed_values = ["DEBUG", "INFO", "WARNING", "CRITICAL", "ERROR"]
         if value.upper() not in allowed_values:
-            raise ValueError(
-                f"Уровень логирования должен быть одним из: {', '.join(allowed_values)}"
+            msg_error = (
+                f"Уровень логирования должен быть одним из: "
+                f"{', '.join(allowed_values)}"
             )
+            raise ValueError(msg_error)
         return value.upper()
 
 
 class AccessToken(BaseModel):
     lifetime_seconds: int = 3600
-    secret: str = "default_secret"
+    secret: str = "default_secret"  # noqa: S105
     algorithm: str = "HS256"
 
 
@@ -175,4 +181,3 @@ class Settings(BaseSettings):
 
 settings = Settings()
 logger.setLevel(settings.log.level)
-logger.info(f"Set log level to {settings.log.level}")

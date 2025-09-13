@@ -1,22 +1,26 @@
-# import libraries
-import json
-import hmac
 import hashlib
-
-
-# import from libraries
-from fastapi import Depends, Request, HTTPException
-from fastapi.templating import Jinja2Templates
+import hmac
+import json
+from collections.abc import Callable, Coroutine
 from pathlib import Path
-from urllib.parse import parse_qsl, unquote, parse_qs
+from typing import Any
+from urllib.parse import parse_qs, parse_qsl
 
-# import from modules
-from core import settings, logger, db_helper, crud_manager
+from fastapi import Depends, HTTPException, Request
+from fastapi.templating import Jinja2Templates
+from starlette import status
+from starlette.responses import HTMLResponse
+
+from core import logger, settings
+from core.crud import crud_manager
+
 from .access_token_helper import BOT_CONFIG
 
 BASE_DIR = Path.cwd().parent  # project working directory api_atomlab/app
 FRONTEND_DIR = (
-    (BASE_DIR / "api-atom-front") if settings.run.dev_mode else (BASE_DIR.parent / "frontend")
+    (BASE_DIR / "api-atom-front")
+    if settings.run.dev_mode
+    else (BASE_DIR.parent / "frontend")
 )
 HTML_DIR = FRONTEND_DIR / "src"
 STATIC_DIR = FRONTEND_DIR / "public"
@@ -34,7 +38,7 @@ def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
         pairs = parse_qsl(raw_query, keep_blank_values=True)
         data_dict = dict(pairs)
 
-        input_hash = data_dict.get("hash", None)
+        input_hash = data_dict.get("hash")
         if not input_hash:
             return False
 
@@ -52,7 +56,7 @@ def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
 
         # Генерация секретного ключа
         secret_key = hmac.new(
-            "WebAppData".encode(),
+            b"WebAppData",
             bot_token.encode(),
             hashlib.sha256,
         ).digest()
@@ -67,10 +71,13 @@ def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
         # Защита от атаки по времени
         result = hmac.compare_digest(generated_hash, input_hash)
         logger.debug(f"verify_telegram_data | result: {result}")
-        return result
 
-    except Exception as e:
-        raise ValueError(f"Verification error: {e}")
+    except (ValueError, KeyError, TypeError) as e:
+        msg_error = f"Verification error: {e}"
+        raise ValueError(msg_error) from e
+
+    else:
+        return result
 
 
 def verify_telegram_widget(raw_query: str, bot_token: str) -> bool:
@@ -88,36 +95,36 @@ def verify_telegram_widget(raw_query: str, bot_token: str) -> bool:
         received_hash = data.pop("hash", None)
 
         if not received_hash:
-            print("Параметр hash не найден в данных.")
             return False
 
-        # Формируем строку проверки: сортируем ключи и объединяем их в формате "ключ=значение",
+        # Формируем строку проверки: сортируем ключи
+        # и объединяем их в формате "ключ=значение",
         # разделяя строки символом перевода строки "\n"
-        data_check_arr = []
-        for key in sorted(data.keys()):
-            data_check_arr.append(f"{key}={data[key]}")
-        data_check_string = "\n".join(data_check_arr)
+        data_check_string = "\n".join(f"{key}={data[key]}" for key in sorted(data))
 
         # Вычисляем секретный ключ: SHA256-хэш от токена бота
         secret_key = hashlib.sha256(bot_token.encode()).digest()
 
         # Вычисляем HMAC-SHA256 от data_check_string, используя secret_key
         hmac_hash = hmac.new(
-            secret_key, data_check_string.encode(), hashlib.sha256
+            secret_key,
+            data_check_string.encode(),
+            hashlib.sha256,
         ).hexdigest()
-
-        # print(f"hmac_hash: {hmac_hash}")
-        # print(f"received_hash: {received_hash}")
 
         # Сравниваем вычисленный хэш с полученным (безопасное сравнение)
         return hmac.compare_digest(hmac_hash, received_hash)
-    except Exception as e:
-        raise ValueError(f"Widget verification error: {e}")
+
+    except (ValueError, KeyError, TypeError) as e:
+        msg_error = f"Widget verification error: {e}"
+        raise ValueError(msg_error) from e
 
 
 # Общая зависимость верификации данных от Telegram
 async def verify_telegram_data_dep(
-    request: Request, bot_name: str, client_type: str
+    request: Request,
+    bot_name: str,
+    client_type: str,
 ) -> bool:
     try:
         # Получаю данные тела запроса для валидации от телеграма
@@ -127,46 +134,63 @@ async def verify_telegram_data_dep(
         logger.debug(
             f"verify_telegram_data_dep | "
             f"client_type: {client_type} | "
-            f"bot_name: {bot_name}"
+            f"bot_name: {bot_name}",
         )
 
         if not raw_data_str:
-            logger.error('"raw_data_str" is empty', exc_info=True)
-            raise HTTPException(status_code=400, detail="Missing data")
+            logger.exception('"raw_data_str" is empty')
+            raise HTTPException(  # noqa: TRY301
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Missing data",
+            )
 
         try:
             logger.info(f"Client_type: {client_type}")
             if client_type == "TelegramWidget":
                 verify_result = verify_telegram_widget(
-                    raw_data_str, settings.api.bot_token[bot_name]
+                    raw_data_str,
+                    settings.api.bot_token[bot_name],
                 )
             elif client_type == "TelegramMiniApp":
                 verify_result = verify_telegram_data(
-                    raw_data_str, settings.api.bot_token[bot_name]
+                    raw_data_str,
+                    settings.api.bot_token[bot_name],
                 )
             else:
-                logger.error(
+                logger.exception(
                     '"client_type" is not "TelegramMiniApp" or "TelegramWidget"',
-                    exc_info=True,
                 )
-                raise HTTPException(status_code=400, detail="Invalid client type")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid client type",
+                )
+
+            if not verify_result:
+                logger.error('"raw_data_str" is not valid', exc_info=True)
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid data",
+                )
 
         except ValueError as e:
-            logger.error('"raw_data_str" is not valid', exc_info=True)
-            raise HTTPException(status_code=401, detail=str(e))
+            logger.exception('"raw_data_str" is not valid')
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid data",
+            ) from e
 
-        if not verify_result:
-            logger.error('"raw_data_str" is not valid', exc_info=True)
-            raise HTTPException(status_code=401, detail="Invalid data")
+    except HTTPException:
+        raise
 
+    except (UnicodeDecodeError, ValueError, KeyError) as e:
+        logger.exception("Verification error: %s", e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error",
+        ) from e
+
+    else:
         return True
-
-    except HTTPException as he:
-        raise he
-
-    except Exception as e:
-        logger.error(f"Verification error: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 async def verify_client(request: Request) -> str:
@@ -175,19 +199,23 @@ async def verify_client(request: Request) -> str:
     allowed_clients = ["TelegramMiniApp", "TelegramWidget"]
 
     if client_source not in allowed_clients:
-        logger.error(
-            f"Invalid client source: {client_source}",
-            exc_info=True,
+        logger.exception("Invalid client source: %s", client_source)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid client",
         )
-        raise HTTPException(400, "Invalid client")
 
     return client_source
 
 
-def get_verified_data(bot_name: str):
-    async def dependency(request: Request, client_type: str = Depends(verify_client)):
-        verified_data = await verify_telegram_data_dep(request, bot_name, client_type)
-        return verified_data
+def get_verified_data(
+    bot_name: str,
+) -> Callable[[Request, str], Coroutine[Any, Any, bool]]:
+    async def dependency(
+        request: Request,
+        client_type: str = Depends(verify_client),
+    ) -> bool:
+        return await verify_telegram_data_dep(request, bot_name, client_type)
 
     return dependency
 
@@ -196,40 +224,53 @@ async def verified_data_dependency(
     request: Request,
     bot_name: str,
     client_type: str = Depends(verify_client),
-) -> dict[bool, str]:
+) -> dict[str, str | bool]:
     logger.debug(
         f"Verified data dependency | "
         f"request: {request.url.path} | "
         f"bot_name: {bot_name} | "
-        f"client_type: {client_type}"
+        f"client_type: {client_type}",
     )
 
     bot_data = BOT_CONFIG.get(bot_name, None)
     if not bot_data:
-        raise HTTPException(status_code=404, detail="Bot not Found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Bot not Found",
+        )
 
     dependency_func: bool = await verify_telegram_data_dep(
-        request, bot_data["name"], client_type
+        request,
+        bot_data["name"],
+        client_type,
     )
-    result: dict = {
+    result: dict[str, str | bool] = {
         "is_authorized": dependency_func,
         "client_type": client_type,
     }
 
-    # TODO: После успешной проверки зарегистрировать пользователя (решить где это делать)
+    # TODO: После успешной проверки зарегистрировать пользователя
+    # (решить где это делать)
     if dependency_func:
         raw_data = await request.body()
         raw_data_str = raw_data.decode()
         if client_type == "TelegramWidget":
-            pairs = parse_qs(raw_data_str, keep_blank_values=True)
-            data = {k: v[0] for k, v in pairs.items() if k not in ("hash", "auth_date")}
+            windget_pairs = parse_qs(raw_data_str, keep_blank_values=True)
+            data = {
+                k: v[0]
+                for k, v in windget_pairs.items()
+                if k not in ("hash", "auth_date")
+            }
         else:
             logger.info("Зашел в блок TelegramMiniApp, чтобы спарсить данные")
-            pairs = parse_qsl(raw_data_str, keep_blank_values=True)
-            data_dict = dict(pairs)
+            miniapp_pairs: list[tuple[str, str]] = parse_qsl(
+                raw_data_str,
+                keep_blank_values=True,
+            )
+            data_dict = dict(miniapp_pairs)
             data = await extract_user_data(data_dict)
 
-        logger.debug(f"Verified data dependency | " f"data: {data}")
+        logger.debug(f"Verified data dependency | data: {data}")
         data["tg_id"] = data.pop("id")
         user = await crud_manager.user.create(data)
         logger.debug(f"Получен пользователь: {user}")
@@ -238,11 +279,16 @@ async def verified_data_dependency(
 
 
 # Общая функция для обработки профиля
-async def process_profile(template_name: str, data_dict_for_template):
+async def process_profile(
+    template_name: str,
+    data_dict_for_template: dict[str, Any],
+) -> HTMLResponse:
     return templates.TemplateResponse(template_name, data_dict_for_template)
 
 
-async def extract_user_data(data_dict: dict) -> dict:
+async def extract_user_data(
+    data_dict: dict[str, Any],
+) -> dict[str, Any]:
     user_data = json.loads(data_dict["user"])
     return {
         "id": user_data.get("id"),

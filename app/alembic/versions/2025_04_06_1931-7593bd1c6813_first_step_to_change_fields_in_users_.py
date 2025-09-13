@@ -6,17 +6,18 @@ Create Date: 2025-04-06 19:31:41.329155
 
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
 
-from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
+from alembic import op
+
 # revision identifiers, used by Alembic.
 revision: str = "7593bd1c6813"
-down_revision: Union[str, None] = "fdd633cd3736"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = "fdd633cd3736"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
@@ -34,8 +35,10 @@ def upgrade() -> None:
         "date_bid_ya",
         existing_type=postgresql.TIMESTAMP(timezone=True),
         nullable=True,
-        comment="Дата регистрации пользователя во внешнем сервисе (например, Yandex.Form)",
-        existing_comment="Дата регистрации пользователя во внешнем сервисе (Yandex.Form)",
+        comment="Дата регистрации пользователя во внешнем сервисе "
+        "(например, Yandex.Form)",
+        existing_comment="Дата регистрации пользователя во внешнем сервисе "
+        "(Yandex.Form)",
     )
     op.drop_index("ix_users_id_bid_ya", table_name="users")
 
@@ -49,7 +52,8 @@ def downgrade() -> None:
         existing_type=postgresql.TIMESTAMP(timezone=True),
         nullable=False,
         comment="Дата регистрации пользователя во внешнем сервисе (Yandex.Form)",
-        existing_comment="Дата регистрации пользователя во внешнем сервисе (например, Yandex.Form)",
+        existing_comment="Дата регистрации пользователя во внешнем сервисе "
+        "(например, Yandex.Form)",
     )
     op.alter_column(
         "users",
@@ -57,5 +61,6 @@ def downgrade() -> None:
         existing_type=sa.BIGINT(),
         nullable=False,
         comment="ID заявки из внешнего сервиса регистраций (Yandex.Form)",
-        existing_comment="ID заявки из внешнего сервиса регистраций (например, Yandex.Form)",
+        existing_comment="ID заявки из внешнего сервиса регистраций "
+        "(например, Yandex.Form)",
     )

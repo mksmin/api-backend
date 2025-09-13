@@ -2,9 +2,7 @@ __all__ = (
     "db_helper",
     "logger",
     "settings",
-    "crud_manager",
 )
 
-from .config import settings, logger
+from .config import logger, settings
 from .database.db_helper import db_helper
-from .crud import crud_manager

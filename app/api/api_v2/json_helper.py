@@ -1,7 +1,7 @@
 import json
 import re
+from typing import Any, cast
 
-from core import logger
 from core.database import User
 
 FIELD_MAPPING: dict[str, str] = {
@@ -36,7 +36,9 @@ def json_key_to_model_field(json_key: str) -> str:
     return FIELD_MAPPING.get(snake_case, snake_case)
 
 
-def map_json_to_model(json_data: dict) -> dict:
+def map_json_to_model(
+    json_data: dict[str, Any],
+) -> dict[str, Any]:
     return {
         json_key_to_model_field(k): v
         for k, v in json_data.items()
@@ -44,19 +46,19 @@ def map_json_to_model(json_data: dict) -> dict:
     }
 
 
-async def get_data_from_json(parameters: dict) -> dict[str, str]:
-    answers = parameters.get("answers")
+async def get_data_from_json(parameters: dict[str, Any]) -> dict[str, str]:
+    answers = cast("str", parameters.get("answers"))
     answers_dict = json.loads(answers)
     data_answers = answers_dict["answer"]["data"]
 
     result = {}
     for key, value in data_answers.items():
         if isinstance(value["value"], list):
-            value = value["value"][0]["text"]
+            extracted_value = value["value"][0]["text"]
         else:
-            value = value["value"]
+            extracted_value = value["value"]
 
-        result[key] = value
+        result[key] = extracted_value
 
     result["DateBid"] = answers_dict.get("created")  # Дата заявки в форме Яндекса
     result["IdBid"] = answers_dict.get("id")  # ID заявки на из формы Яндекса

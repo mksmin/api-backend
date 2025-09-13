@@ -6,17 +6,17 @@ Create Date: 2025-05-11 17:39:09.750427
 
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
 
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "8f396724a8f7"
-down_revision: Union[str, None] = "471d42f906f5"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = "471d42f906f5"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
@@ -49,7 +49,9 @@ def upgrade() -> None:
 def downgrade() -> None:
     """Downgrade schema."""
     op.drop_constraint(
-        op.f("fk_projects_parent_id_projects"), "projects", type_="foreignkey"
+        op.f("fk_projects_parent_id_projects"),
+        "projects",
+        type_="foreignkey",
     )
     op.alter_column(
         "projects",

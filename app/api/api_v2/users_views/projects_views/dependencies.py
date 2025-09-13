@@ -3,20 +3,21 @@ from uuid import UUID
 
 from fastapi import Depends, HTTPException, status
 
+from api.api_v2.auth import token_utils
 from core.crud import crud_manager
 from core.database.schemas import ProjectResponseSchema
+
 from .schemas import ProjectFilter
-from api.api_v2.auth import token_utils
 
 
 async def validate_uuid_str(project_uuid: str) -> UUID:
     try:
         return UUID(project_uuid)
-    except ValueError:
+    except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Некорректный формат UUID",
-        )
+        ) from e
 
 
 async def get_user_projects_by_tg_id(
@@ -26,7 +27,7 @@ async def get_user_projects_by_tg_id(
     ],
 ) -> dict[int, ProjectResponseSchema]:
     try:
-        user = await crud_manager.user.get_one(prj_filter.owner_id)
+        user = await crud_manager.user.get_one(value=prj_filter.owner_id)
         if user is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -46,7 +47,7 @@ async def get_user_projects_by_tg_id(
             detail={
                 "error": str(e),
             },
-        )
+        ) from e
 
 
 async def get_user_projects_by_user_id(
@@ -60,22 +61,21 @@ async def get_user_projects_by_user_id(
 
 
 async def get_project_by_uuid(
-    project_uuid: UUID = Depends(validate_uuid_str),
+    project_uuid: Annotated[UUID, Depends(validate_uuid_str)],
 ) -> ProjectResponseSchema:
     if project := await crud_manager.project.get_project_by_id(
-        project_uuid=project_uuid
+        project_uuid=project_uuid,
     ):
         return ProjectResponseSchema.model_validate(project)
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Проект с таким uuid не найден",
-        )
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Проект с таким uuid не найден",
+    )
 
 
 async def delete_project_by_uuid(
-    project_uuid: UUID = Depends(validate_uuid_str),
-    user_id: str = Depends(token_utils.strict_validate_access_token),
+    project_uuid: Annotated[UUID, Depends(validate_uuid_str)],
+    user_id: Annotated[str, Depends(token_utils.strict_validate_access_token)],
 ) -> bool:
     user = await crud_manager.user.get_one(
         field="id",
@@ -103,5 +103,5 @@ async def delete_project_by_uuid(
             detail="Недостаточно прав для удаления проекта",
         )
 
-    await crud_manager.project.delete(project.id)
+    await crud_manager.project.delete("id", project.id)
     return True

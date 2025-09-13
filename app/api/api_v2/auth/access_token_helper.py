@@ -1,14 +1,17 @@
-import jwt
+__all__ = ("BOT_CONFIG",)
+
 import secrets
 import uuid
-
 from datetime import datetime, timedelta, timezone
-from fastapi import HTTPException, Cookie, Depends, status
+from typing import Any
+
+import jwt
+from fastapi import Cookie, Depends, HTTPException, status
 from jwt import ExpiredSignatureError, InvalidTokenError
 
-from core import settings, logger
+from core import logger, settings
 
-BOT_CONFIG = {
+BOT_CONFIG: dict[str, dict[str, str]] = {
     "bot1": {
         "name": "atombot",
         "redirect_url": "/profile",
@@ -24,11 +27,18 @@ BOT_CONFIG = {
 }
 
 
-def token_response(token: str) -> dict:
-    return {"access_token": token, "token_type": "bearer"}
+def token_response(
+    token: str,
+) -> dict[str, str]:
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+    }
 
 
-async def sign_jwt_token(user_id: int) -> dict:
+async def sign_jwt_token(
+    user_id: int,
+) -> dict[str, str | int]:
     """
     Создаёт JWT access-токен для авторизации
     :param user_id: int
@@ -44,13 +54,15 @@ async def sign_jwt_token(user_id: int) -> dict:
         "sub": str(user_id),  # subject (идентификатор субъекта)
         "iat": int(now.timestamp()),  # issued at (время создания)
         "exp": int(
-            (now + expire_delta).timestamp()
+            (now + expire_delta).timestamp(),
         ),  # expiration time (время истечения)
         "jti": jti,  # JWT ID (идентификатор токена)
     }
 
     token = jwt.encode(
-        payload, settings.access_token.secret, algorithm=settings.access_token.algorithm
+        payload,
+        settings.access_token.secret,
+        algorithm=settings.access_token.algorithm,
     )
     return {
         "access_token": token,
@@ -60,7 +72,9 @@ async def sign_jwt_token(user_id: int) -> dict:
     }
 
 
-async def decode_jwt(token: str) -> dict:
+async def decode_jwt(
+    token: str,
+) -> dict[str, Any]:
     """
     Decodes a JWT token and returns a dictionary with the decoded token information.
 
@@ -81,10 +95,27 @@ async def decode_jwt(token: str) -> dict:
         issued_at = int(decoded_token["iat"])
         expires_at = int(decoded_token["exp"])
 
-        logger.info(
-            f"Token expired at: {datetime.fromtimestamp(expires_at).strftime('%Y-%m-%d %H:%M:%S')}"
+        log_message = datetime.fromtimestamp(expires_at, tz=timezone.utc).strftime(
+            "%Y-%m-%d %H:%M:%S",
         )
+        logger.info("Token expired at: %s", log_message)
 
+    except ExpiredSignatureError as ex_e:
+        raise HTTPException(
+            status_code=401,
+            detail="Token expired",
+            headers={"WWW-Authenticate": "Bearer"},
+        ) from ex_e
+
+    except InvalidTokenError as e:
+        logger.exception("Invalid token: %s", e)
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid token",
+            headers={"WWW-Authenticate": "Bearer"},
+        ) from e
+
+    else:
         return {
             "success": True,
             "user_id": user_id,
@@ -93,43 +124,29 @@ async def decode_jwt(token: str) -> dict:
             "expires_at": expires_at,
         }
 
-    except ExpiredSignatureError:
-        print(f"Token ExpiredSignatureError")
-        raise HTTPException(
-            status_code=401,
-            detail="Token expired",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    except InvalidTokenError as e:
-        logger.exception(f"Invalid token: {e}", exc_info=True)
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid token",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
 
 async def parse_access_token(
     access_token: str | None = Cookie(default=None, alias="access_token"),
-) -> str | None:
+) -> int | None:
     """Middleware for checking access token from cookies"""
 
     if not access_token:
-        return
+        return None
 
     try:
         payload = await decode_jwt(access_token)
-        user_id: str = payload.get("user_id")
+        user_id: int = payload["user_id"]
         logger.info(f"Check access token for user_id: {user_id}")
-        return user_id
 
     except (ExpiredSignatureError, InvalidTokenError) as e:
         logger.exception("Error while decoding token: %s", e)
-        return
+        return None
+
+    else:
+        return user_id
 
 
-async def sign_csrf_token():
+def sign_csrf_token() -> str:
     return secrets.token_urlsafe(32)
 
 

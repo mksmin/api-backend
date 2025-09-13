@@ -1,3 +1,5 @@
+from typing import Annotated, Any
+
 from fastapi import (
     APIRouter,
     Cookie,
@@ -6,15 +8,14 @@ from fastapi import (
 )
 from fastapi.params import Depends
 from fastapi.responses import JSONResponse
-from typing import Annotated, Any
+
+from api.api_v2.auth import access_token_helper as token_utils
+from core import settings
 
 from .dependencies import (
     create_token_by_user_id,
     read_and_parse_csv,
 )
-
-from core import settings
-from api.api_v2.auth import access_token_helper as token_utils
 
 router = APIRouter()
 
@@ -24,10 +25,12 @@ router = APIRouter()
     include_in_schema=settings.run.dev_mode,
 )
 async def decode_token(
-    token: str | None = Cookie(
-        default=None,
-        alias="access_token",
-    ),
+    token: Annotated[
+        str | None,
+        Cookie(
+            alias="access_token",
+        ),
+    ] = None,
 ) -> dict[str, Any]:
     if not token:
         raise HTTPException(
@@ -41,7 +44,7 @@ async def decode_token(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=he.detail,
-        )
+        ) from he
 
 
 @router.post(
@@ -49,6 +52,7 @@ async def decode_token(
     include_in_schema=settings.run.dev_mode,
 )
 async def create_token(
+    user_id: int,  # noqa: ARG001
     jwt_token: Annotated[
         dict[str, Any],
         Depends(create_token_by_user_id),

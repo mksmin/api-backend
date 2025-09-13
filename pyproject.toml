@@ -8,12 +8,12 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.10"
-fastapi = "^0.115.11"
+fastapi = {extras = ["standard"], version = "^0.116.1"}
 sqlalchemy = {extras = ["asyncio"], version = "^2.0.39"}
 asyncpg = "^0.30.0"
 pydantic = {extras = ["email"], version = "^2.10.6"}
 alembic = "^1.15.1"
-pydantic-settings = "^2.8.1"
+pydantic-settings = {extras = ["yaml"], version = "^2.10.1"}
 uvicorn = {extras = ["standard"], version = "^0.34.0"}
 python-decouple = "^3.8"
 pyjwt = "^2.10.1"
@@ -30,3 +30,129 @@ pytest = "^8.3.5"
 pytest-asyncio = "^0.25.3"
 mypy = "^1.17.0"
 pandas-stubs = "^2.3.2.250827"
+types-python-dateutil = "^2.9.0.20250822"
+ruff = "^0.13.0"
+
+
+[tool.mypy]  # mypy settings
+strict = true
+plugins = [
+    "pydantic.mypy",
+]
+
+
+[tool.ruff] # ruff settings
+required-version = "~=0.13.0"
+src = [
+    "app",
+]
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".idea",
+    ".gigaide",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+    "logs",
+]
+
+# Same as Black.
+line-length = 88
+indent-width = 4
+
+# Assume Python 3.10
+target-version = "py310"
+
+[tool.ruff.lint]
+# Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`) codes by default.
+# Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
+# McCabe complexity (`C901`) by default.
+
+select = [
+    "I", # isort (I)
+    "COM", # flake8-commas (COM)
+    "UP", # pyupgrade (UP)
+    "N", # pep8-naming (N)
+    "T20", # flake8-print (T20)
+    "FAST", # FastAPI (FAST)
+    "RUF", # Ruff-specific rules (RUF)
+    "YTT", # flake8-2020 (YTT)
+    "ANN", # flake8-annotations (ANN)
+    "ASYNC", # flake8-async (ASYNC)
+    "S", # flake8-bandit (S)
+    "BLE", # flake8-blind-except (BLE)
+#    "FBT", # flake8-boolean-trap (FBT)
+    "B", # flake8-bugbear (B)
+    "C4", # flake8-comprehensions (C4)
+    "DTZ", # flake8-datetimez (DTZ)
+    "T10", # flake8-debugger (T10)
+    "EM", # flake8-errmsg (EM)
+    "ISC", # flake8-implicit-str-concat (ISC)
+    "ICN", # flake8-import-conventions (ICN)
+    "LOG", # flake8-logging (LOG)
+    "G", # flake8-logging-format (G)
+    "INP", # flake8-no-pep420 (INP)
+    "PIE", # flake8-pie (PIE)
+    "PYI", # flake8-pyi (PYI)
+    "Q", # flake8-quotes (Q)
+    "RSE", # flake8-raise (RSE)
+    "RET", # flake8-return (RET)
+    "SLF", # flake8-self (SLF)
+    "SIM", # flake8-simplify (SIM)
+    "SLOT", # flake8-slots (SLOT)
+    "TC", # flake8-type-checking (TC)
+    "ARG", # flake8-unused-arguments (ARG)
+    "PTH", # flake8-use-pathlib (PTH)
+    "FLY", # flynt (FLY)
+    "C90", # mccabe (C90)
+    "PERF", # Perflint (PERF)
+    "E", # pycodestyle Error (E)
+    "W", # pycodestyle Warning (W)
+    "F", # Pyflakes (F)
+    "PGH", # pygrep-hooks (PGH)
+    "PLC", # Pylint Convention (PLC)
+    "PLE", # Pylint Error (PLE)
+    "PLR", # Pylint Refactor (PLR)
+    "PLW", # Pylint Warning (PLW)
+    "FURB", # refurb (FURB)
+    "TRY", # tryceratops (TRY)
+]
+
+ignore = [
+    "RUF001", # String contains ambiguous {}. Did you mean {}?
+    "RUF002", # Docstring contains ambiguous {}. Did you mean {}?
+    "RUF003", # Comment contains ambiguous {}. Did you mean {}?
+]
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.lint.extend-per-file-ignores]
+"app/alembic/**" = [
+    "INP", # flake8-no-pep420 (INP)
+]

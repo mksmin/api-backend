@@ -1,9 +1,12 @@
 from datetime import datetime
-from typing import Optional
+from typing import Any
 
 from dateutil import parser
-
-from pydantic import BaseModel, root_validator, ConfigDict, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    model_validator,
+)
 
 from core import logger
 
@@ -11,31 +14,34 @@ from core import logger
 class UserSchema(BaseModel):
     uuid: str
 
-    external_id_bid: Optional[int] = None
-    external_date_bid: Optional[datetime] = None
-    first_name: Optional[str] = None
-    middle_name: Optional[str] = None
-    last_name: Optional[str] = None
+    external_id_bid: int | None = None
+    external_date_bid: datetime | None = None
+    first_name: str | None = None
+    middle_name: str | None = None
+    last_name: str | None = None
 
-    email: Optional[str] = None
-    mobile: Optional[str] = None
-    tg_id: Optional[int] = None
-    username: Optional[str] = None
+    email: str | None = None
+    mobile: str | None = None
+    tg_id: int | None = None
+    username: str | None = None
 
-    citizenship: Optional[str] = None
-    country: Optional[str] = None
-    city: Optional[str] = None
-    timezone: Optional[str] = None
-    study_place: Optional[str] = None
-    grade_level: Optional[str] = None
+    citizenship: str | None = None
+    country: str | None = None
+    city: str | None = None
+    timezone: str | None = None
+    study_place: str | None = None
+    grade_level: str | None = None
 
-    birth_date: Optional[datetime] = None
-    sex: Optional[str] = None
+    birth_date: datetime | None = None
+    sex: str | None = None
 
     @model_validator(mode="before")
     @classmethod
-    def prevalidate(cls, values: dict[str, any]) -> dict[str, any]:
-        process_result = {}
+    def prevalidate(
+        cls,
+        values: dict[str, Any],
+    ) -> dict[str, Any]:
+        process_result: dict[str, Any] = {}
 
         for key, value in values.items():
 
@@ -52,16 +58,20 @@ class UserSchema(BaseModel):
                 else:
                     process_result[key] = str(value)
             except Exception as e:
-                logger.error(f"Error processing key: {key}, value: {value}: {str(e)}")
+                logger.error(f"Error processing key: {key}, value: {value}: {e!s}")
                 raise
 
         return process_result
 
     @classmethod
-    def parse_datetime(cls, value: any) -> datetime:
+    def parse_datetime(
+        cls,
+        value: Any,  # noqa: ANN401
+    ) -> datetime:
         try:
             return parser.parse(value) if isinstance(value, str) else value
         except Exception as e:
-            raise ValueError(f"Invalid datetime format for value: {value}: {str(e)}")
+            msg_error = f"Invalid datetime format for value: {value}: {e!s}"
+            raise ValueError(msg_error) from e
 
     model_config = ConfigDict(from_attributes=True, extra="ignore")

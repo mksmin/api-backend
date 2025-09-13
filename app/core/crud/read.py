@@ -1,18 +1,20 @@
 import traceback
-from dateutil import parser
+from typing import Any
 
-import asyncpg
-from sqlalchemy import MetaData, Table, select, func
-
+from sqlalchemy import MetaData, Table, func, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.config import logger
+
 from .config import connector
 
 
 @connector
-async def get_registration_stat(session: AsyncSession, name_db: str) -> dict:
+async def get_registration_stat(
+    session: AsyncSession,
+    name_db: str,
+) -> dict[str, Any]:
     """
     Вернет статистику регистрации пользователей в виде словаря:
     {
@@ -29,9 +31,9 @@ async def get_registration_stat(session: AsyncSession, name_db: str) -> dict:
     metadata = MetaData()
 
     try:
-        async with session.bind.connect() as conn:
+        async with session.bind.connect() as conn:  # type: ignore[union-attr]
             registration_table = await conn.run_sync(
-                lambda sync_conn: Table(name_db, metadata, autoload_with=sync_conn)
+                lambda sync_conn: Table(name_db, metadata, autoload_with=sync_conn),
             )
 
         # Детали по каждой компетенции
@@ -54,10 +56,12 @@ async def get_registration_stat(session: AsyncSession, name_db: str) -> dict:
             "details": {row[0]: row[1] for row in result_detail.all()},
         }
 
-    except Exception as e:
+    except SQLAlchemyError:
         error_traceback = traceback.format_exc()
-        logger.warning(
-            f"Ошибка при получении данных из таблицы {name_db}: {error_traceback}"
+        logger.exception(
+            "Ошибка при получении данных из таблицы %s: %s",
+            name_db,
+            error_traceback,
         )
         return {
             "total_users": 0,

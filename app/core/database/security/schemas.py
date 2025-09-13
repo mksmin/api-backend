@@ -1,7 +1,7 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import UUID
+
 from pydantic import BaseModel, Field
-from typing import Optional
 
 
 class ProjectUUID(BaseModel):
@@ -12,46 +12,56 @@ class APIKeyBase(BaseModel):
     """
     Base model for API keys.
 
-    This class represents the base model for API keys. It contains fields for the revoked status and the expiration time of the key.
+    This class represents the base model for API keys.
+    It contains fields for the revoked status and the expiration time of the key.
     """
 
     revoked: bool = Field(False, description="Отозван ли ключ")
     temporary: bool = Field(False, description="Временный ключ?")
     project_id: UUID = Field(..., description="Идентификатор проекта")
-    expires_at: Optional[datetime] = Field(None, description="Дата истечения ключа")
+    expires_at: datetime | None = Field(None, description="Дата истечения ключа")
 
 
 class APIKeyCreate(APIKeyBase):
     """
     Model for creating API keys.
 
-    This class represents the model for creating API keys. It inherits from the APIKeyBase class.
+    This class represents the model for creating API keys.
+    It inherits from the APIKeyBase class.
     """
-
-    pass
 
 
 class APIKeyUpdate(APIKeyBase):
     """
     Model for updating API keys.
 
-    This class represents the model for updating API keys. It inherits from the APIKeyBase class and contains a field for updating the revoked status of the key.
+    This class represents the model for updating API keys.
+    It inherits from the APIKeyBase class
+    and contains a field for updating the revoked status of the key.
     """
 
-    revoked: Optional[bool] = Field(None, description="Обновление статуса ключа")
+    revoked: bool = Field(False, description="Обновление статуса ключа")
 
 
 class APIKeyOut(APIKeyBase):
     """
     Model for outputting API keys.
 
-    This class represents the model for outputting API keys. It inherits from the APIKeyBase class and contains fields for the key identifier, key prefix, and creation time.
+    This class represents the model for outputting API keys.
+    It inherits from the APIKeyBase class and contains fields for the key identifier,
+    key prefix, and creation time.
     """
 
-    id: int = Field(..., description="Идентификатор ключа")
-    key_prefix: str = Field(..., description="Префикс ключа", example="123456")
+    id: int = Field(default=..., description="Идентификатор ключа")
+    key_prefix: str = Field(
+        default=...,
+        description="Префикс ключа",
+        examples=["123456"],
+    )
     created_at: datetime = Field(
-        ..., description="Дата создания ключа", example=datetime.now()
+        default=...,
+        description="Дата создания ключа",
+        examples=[datetime.now(timezone.utc)],
     )
     project_id: UUID = Field(..., description="Идентификатор проекта")
 
@@ -63,20 +73,22 @@ class APIKeyFull(APIKeyOut):
     """
     Model for full API keys.
 
-    This class represents the model for full API keys. It inherits from the APIKeyOut class and contains a field for the key itself.
+    This class represents the model for full API keys.
+    It inherits from the APIKeyOut class and contains a field for the key itself.
     """
 
     key: str = Field(
-        ...,
+        default=...,
         description="Ключ",
-        example="1234567890abcdef1234567890abcdef",
+        examples=["1234567890abcdef1234567890abcdef"],
         max_length=47,
     )
 
 
 class APIKeyCreateRequest(BaseModel):
     """
-    Модель для вью, который создает API ключи. Используется для валидации входных данных.
+    Модель для вью, который создает API ключи.
+    Используется для валидации входных данных.
     """
 
     temporary: bool = Field(False, description="Временный ключ")
@@ -85,32 +97,46 @@ class APIKeyCreateRequest(BaseModel):
 
 class APIKeyCreateResponse(BaseModel):
     """
-    Модель для вью, который создает API ключи. Используется для разовой отправки не хэшированного ключа.
+    Модель для вью, который создает API ключи.
+    Используется для разовой отправки не хэшированного ключа.
     """
 
     key: str = Field(
         ...,
         description="API Ключ",
-        example="1234567890abcdef1234567890abcdef",
+        examples=["1234567890abcdef1234567890abcdef"],
         max_length=47,
     )
-    key_prefix: str = Field(..., description="Префикс ключа", example="tks_123lka")
-    created_at: datetime = Field(
-        ..., description="Дата создания ключа", example=datetime.now()
+    key_prefix: str = Field(
+        ...,
+        description="Префикс ключа",
+        examples=["tks_123lka"],
     )
-    expires_at: Optional[datetime] = Field(None, description="Дата истечения ключа")
+    created_at: datetime = Field(
+        ...,
+        description="Дата создания ключа",
+        examples=[datetime.now(timezone.utc)],
+    )
+    expires_at: datetime | None = Field(None, description="Дата истечения ключа")
     project_id: UUID = Field(..., description="Идентификатор проекта")
 
 
 class APIKeyGetResponse(BaseModel):
     """
-    Модель для вью, который возвращает список API ключей проекта. Сырого ключа нет, только первые 11 символов.
+    Модель для вью, который возвращает список API ключей проекта.
+    Сырого ключа нет, только первые 11 символов.
     """
 
-    key_prefix: str = Field(..., description="Префикс ключа", example="tks_123lka")
-    created_at: datetime = Field(
-        ..., description="Дата создания ключа", example=datetime.now()
+    key_prefix: str = Field(
+        ...,
+        description="Префикс ключа",
+        examples=["tks_123lka"],
     )
-    expires_at: Optional[datetime] = Field(None, description="Дата истечения ключа")
+    created_at: datetime = Field(
+        ...,
+        description="Дата создания ключа",
+        examples=[datetime.now(timezone.utc)],
+    )
+    expires_at: datetime | None = Field(None, description="Дата истечения ключа")
     project_id: UUID = Field(..., description="Идентификатор проекта")
     revoked: bool = Field(False, description="Отозван ли ключ")

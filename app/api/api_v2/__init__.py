@@ -1,9 +1,12 @@
+__all__ = ("get_data_from_json",)
+
 from fastapi import APIRouter
 
-from core.config import settings
 from api.api_v2.users_views import router as users_router
-from .json_helper import get_data_from_json
+from core.config import settings
+
 from .devs import router as devs_router
+from .json_helper import get_data_from_json
 
 router = APIRouter(
     prefix=settings.api.v2.prefix,
