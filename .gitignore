@@ -1,6 +1,7 @@
 # my project files
 tmp_files
 .gigaide
+.secrets
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
