@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import FileResponse
@@ -14,11 +15,13 @@ router = APIRouter()
     include_in_schema=settings.run.dev_mode,
 )
 async def get_static_html(
-    file_path: Path = Depends(
-        file_dependency(
-            base_dir=SRC_DIR,
+    name_file: str,
+    file_path: Annotated[
+        Path,
+        Depends(
+            file_dependency(base_dir=SRC_DIR),
         ),
-    ),
+    ],
 ) -> FileResponse:
     """
     Returns a requested HTML file from the frontend source directory.
@@ -41,12 +44,16 @@ async def get_static_html(
     include_in_schema=settings.run.dev_mode,
 )
 async def get_static_media(
-    file_path: Path = Depends(
-        file_dependency(
-            base_dir=PUBLIC_DIR,
-            sub_dir="media",
+    name_file: str,
+    file_path: Annotated[
+        Path,
+        Depends(
+            file_dependency(
+                base_dir=PUBLIC_DIR,
+                sub_dir="media",
+            ),
         ),
-    ),
+    ],
 ) -> FileResponse:
     """
     Returns a requested media file (images, videos, etc.) from the public/media directory.
@@ -69,12 +76,16 @@ async def get_static_media(
     include_in_schema=settings.run.dev_mode,
 )
 async def get_static_styles(
-    file_path: Path = Depends(
-        file_dependency(
-            base_dir=SRC_DIR,
-            sub_dir="style",
+    name_file: str,
+    file_path: Annotated[
+        Path,
+        Depends(
+            file_dependency(
+                base_dir=SRC_DIR,
+                sub_dir="style",
+            ),
         ),
-    ),
+    ],
 ) -> FileResponse:
     """
     Returns a requested CSS file from the frontend style directory.
@@ -97,12 +108,16 @@ async def get_static_styles(
     include_in_schema=settings.run.dev_mode,
 )
 async def get_static_scripts(
-    file_path: Path = Depends(
-        file_dependency(
-            base_dir=SRC_DIR,
-            sub_dir="scripts",
+    name_file: str,
+    file_path: Annotated[
+        Path,
+        Depends(
+            file_dependency(
+                base_dir=SRC_DIR,
+                sub_dir="scripts",
+            ),
         ),
-    ),
+    ],
 ) -> FileResponse:
     """
     Returns a requested JavaScript file from the frontend scripts directory.

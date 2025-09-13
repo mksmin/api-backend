@@ -108,7 +108,6 @@ async def decode_jwt(
         }
 
     except ExpiredSignatureError:
-        print(f"Token ExpiredSignatureError")
         raise HTTPException(
             status_code=401,
             detail="Token expired",
@@ -116,7 +115,7 @@ async def decode_jwt(
         )
 
     except InvalidTokenError as e:
-        logger.exception(f"Invalid token: {e}", exc_info=True)
+        logger.exception("Invalid token: %s", e)
         raise HTTPException(
             status_code=401,
             detail="Invalid token",

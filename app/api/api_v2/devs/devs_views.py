@@ -25,10 +25,13 @@ router = APIRouter()
     include_in_schema=settings.run.dev_mode,
 )
 async def decode_token(
-    token: str | None = Cookie(
-        default=None,
-        alias="access_token",
-    ),
+    token: Annotated[
+        str | None,
+        Cookie(
+            default=None,
+            alias="access_token",
+        ),
+    ],
 ) -> dict[str, Any]:
     if not token:
         raise HTTPException(
@@ -50,6 +53,7 @@ async def decode_token(
     include_in_schema=settings.run.dev_mode,
 )
 async def create_token(
+    user_id: int,
     jwt_token: Annotated[
         dict[str, Any],
         Depends(create_token_by_user_id),

@@ -92,7 +92,6 @@ def verify_telegram_widget(raw_query: str, bot_token: str) -> bool:
         received_hash = data.pop("hash", None)
 
         if not received_hash:
-            print("Параметр hash не найден в данных.")
             return False
 
         # Формируем строку проверки: сортируем ключи и объединяем их в формате "ключ=значение",

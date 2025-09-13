@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any
+from typing import Annotated, Any
 from urllib.parse import parse_qsl
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -31,7 +31,7 @@ templates = Jinja2Templates(directory=FRONTEND_DIR / "templates")
 async def handle_telegram_init(
     request: Request,
     bot_name: str,
-    cookie_token: str = Depends(token_utils.soft_validate_access_token),
+    cookie_token: Annotated[str, Depends(token_utils.soft_validate_access_token)],
 ) -> RedirectResponse | HTMLResponse:
     if not cookie_token:
         # Проверяем существование бота
@@ -63,7 +63,9 @@ async def auth_redirect() -> RedirectResponse:
 async def auth_user(
     request: Request,
     bot_name: str,
-    data_validate: dict[str, Any] = Depends(auth_utils.verified_data_dependency),
+    data_validate: Annotated[
+        dict[str, Any], Depends(auth_utils.verified_data_dependency),
+    ],
 ) -> RedirectResponse:
     client_type: str = data_validate["client_type"]
     access_validate: bool = data_validate["is_authorized"]

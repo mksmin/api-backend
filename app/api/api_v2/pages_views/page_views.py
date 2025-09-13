@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Annotated, Any
 from urllib.request import Request
 
 from fastapi import APIRouter, Depends
@@ -23,7 +23,10 @@ router = APIRouter(
     include_in_schema=settings.run.dev_mode,
 )
 async def page_user_affirmations(
-    affirmations: dict[str, Any] = Depends(get_dict_with_user_affirmations),
+    affirmations: Annotated[
+        dict[str, Any],
+        Depends(get_dict_with_user_affirmations),
+    ],
 ) -> HTMLResponse:
     """Страница с пользовательскими аффирмациями"""
 
@@ -38,7 +41,10 @@ async def page_user_affirmations(
     include_in_schema=settings.run.dev_mode,
 )
 async def page_profile(
-    template_data: dict[str, Any] = Depends(return_data_for_user_profile_template),
+    template_data: Annotated[
+        dict[str, Any],
+        Depends(return_data_for_user_profile_template),
+    ],
 ) -> HTMLResponse:
     """Страница с профилем пользователя"""
     return TEMPLATES.TemplateResponse(

@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Annotated, Any
 
 from fastapi import (
     APIRouter,
@@ -27,7 +27,7 @@ path_mapping = {
     include_in_schema=settings.run.dev_mode,
 )
 async def get_statistics(
-    token: str = Header(),
+    token: Annotated[str, Header()],
 ) -> RedirectResponse:
     return RedirectResponse(
         url=f"{path_mapping['users']}statistics",
@@ -40,7 +40,7 @@ async def get_statistics(
     include_in_schema=settings.run.dev_mode,
 )
 async def registration(
-    data: dict[str, Any] = Body(),
+    data: Annotated[dict[str, Any], Body()],
 ) -> RedirectResponse:
     return RedirectResponse(
         url=f"{path_mapping['users']}registration",
@@ -99,7 +99,7 @@ async def create_project(
     include_in_schema=settings.run.dev_mode,
 )
 async def rabbit_task_create(
-    data: dict[str, Any] = Body(),
+    data: Annotated[dict[str, Any], Body()],
 ) -> RedirectResponse:
     return RedirectResponse(
         url=f"{path_mapping['users']}tasks",

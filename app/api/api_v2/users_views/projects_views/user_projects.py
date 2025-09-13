@@ -1,3 +1,6 @@
+from typing import Annotated
+from uuid import UUID
+
 from fastapi import (
     APIRouter,
     Depends,
@@ -16,6 +19,7 @@ from .dependencies import (
     get_project_by_uuid,
     get_user_projects_by_tg_id,
     get_user_projects_by_user_id,
+    validate_uuid_str,
 )
 
 router = APIRouter()
@@ -24,13 +28,12 @@ router = APIRouter()
 @router.get(
     "/",
     include_in_schema=settings.run.dev_mode,
-    response_model=dict[int, ProjectResponseSchema],
 )
 async def get_projects(
-    user_projects: dict[
-        int,
-        ProjectResponseSchema,
-    ] = Depends(get_user_projects_by_tg_id),
+    user_projects: Annotated[
+        dict[int, ProjectResponseSchema],
+        Depends(get_user_projects_by_tg_id),
+    ],
 ) -> dict[int, ProjectResponseSchema]:
     return user_projects
 
@@ -42,7 +45,10 @@ async def get_projects(
     status_code=status.HTTP_200_OK,
 )
 async def get_projects_owner(
-    projects: dict[int, ProjectResponseSchema] = Depends(get_user_projects_by_user_id),
+    projects: Annotated[
+        dict[int, ProjectResponseSchema],
+        Depends(get_user_projects_by_user_id),
+    ],
 ) -> dict[int, ProjectResponseSchema]:
     """
     Возвращает список проектов, принадлежащих указанному пользователю.
@@ -53,13 +59,15 @@ async def get_projects_owner(
 @router.get(
     "/{project_uuid}",
     include_in_schema=settings.run.dev_mode,
-    response_model=ProjectResponseSchema,
     dependencies=[
         Depends(token_utils.strict_validate_access_token),
     ],
 )
 async def get_project_by_id(
-    project: ProjectResponseSchema = Depends(get_project_by_uuid),
+    project: Annotated[
+        ProjectResponseSchema,
+        Depends(get_project_by_uuid),
+    ],
 ) -> ProjectResponseSchema:
     return project
 
@@ -72,17 +80,25 @@ async def get_project_by_id(
         Depends(delete_project_by_uuid),
     ],
 )
-async def delete_project() -> None:
+async def delete_project(
+    project_uuid: Annotated[UUID, Depends(validate_uuid_str)],
+) -> None:
     """
     Удаляет проект с указанным ID
     """
     return
 
 
-@router.post("/generate-key", response_model=ak_schemas.APIKeyCreateResponse)
+@router.post(
+    "/generate-key",
+    response_model=ak_schemas.APIKeyCreateResponse,
+)
 async def generate_api_key(
     data: ak_schemas.APIKeyCreateRequest,
-    user: str | bool = Depends(token_utils.strict_validate_access_token),
+    user: Annotated[
+        str | bool,
+        Depends(token_utils.strict_validate_access_token),
+    ],
 ) -> ak_schemas.APIKeyCreateResponse:
     project = await crud_manager.project.get_project_by_id(project_uuid=data.project_id)
     if not project:
