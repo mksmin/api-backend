@@ -3,6 +3,7 @@ from uuid import UUID
 
 from fastapi import (
     APIRouter,
+    Body,
     Depends,
     HTTPException,
     status,
@@ -81,7 +82,7 @@ async def get_project_by_id(
     ],
 )
 async def delete_project(
-    project_uuid: Annotated[UUID, Depends(validate_uuid_str)],
+    project_uuid: Annotated[UUID, Depends(validate_uuid_str)],  # noqa: ARG001
 ) -> None:
     """
     Удаляет проект с указанным ID
@@ -92,13 +93,12 @@ async def delete_project(
 @router.post(
     "/generate-key",
     response_model=ak_schemas.APIKeyCreateResponse,
+    dependencies=[
+        Depends(token_utils.strict_validate_access_token),
+    ],
 )
 async def generate_api_key(
     data: ak_schemas.APIKeyCreateRequest,
-    user: Annotated[
-        str | bool,
-        Depends(token_utils.strict_validate_access_token),
-    ],
 ) -> ak_schemas.APIKeyCreateResponse:
     project = await crud_manager.project.get_project_by_id(project_uuid=data.project_id)
     if not project:

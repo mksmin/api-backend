@@ -30,6 +30,7 @@ async def generate_api_key(
         **db_response,
         key=raw_key,
         key_prefix=raw_key[:11],
+        project_id=data.project_id,
     )
 
 

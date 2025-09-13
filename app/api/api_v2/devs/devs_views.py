@@ -52,7 +52,7 @@ async def decode_token(
     include_in_schema=settings.run.dev_mode,
 )
 async def create_token(
-    user_id: int,
+    user_id: int,  # noqa: ARG001
     jwt_token: Annotated[
         dict[str, Any],
         Depends(create_token_by_user_id),

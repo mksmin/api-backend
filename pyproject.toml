@@ -125,7 +125,7 @@ select = [
     "SIM", # flake8-simplify (SIM)
     "SLOT", # flake8-slots (SLOT)
     "TC", # flake8-type-checking (TC)
-#    "ARG", # flake8-unused-arguments (ARG)
+    "ARG", # flake8-unused-arguments (ARG)
     "PTH", # flake8-use-pathlib (PTH)
     "FLY", # flynt (FLY)
     "C90", # mccabe (C90)

@@ -15,7 +15,7 @@ router = APIRouter()
     include_in_schema=settings.run.dev_mode,
 )
 async def get_static_html(
-    name_file: str,
+    name_file: str,  # noqa: ARG001
     file_path: Annotated[
         Path,
         Depends(
@@ -44,7 +44,7 @@ async def get_static_html(
     include_in_schema=settings.run.dev_mode,
 )
 async def get_static_media(
-    name_file: str,
+    name_file: str,  # noqa: ARG001
     file_path: Annotated[
         Path,
         Depends(
@@ -77,7 +77,7 @@ async def get_static_media(
     include_in_schema=settings.run.dev_mode,
 )
 async def get_static_styles(
-    name_file: str,
+    name_file: str,  # noqa: ARG001
     file_path: Annotated[
         Path,
         Depends(
@@ -109,7 +109,7 @@ async def get_static_styles(
     include_in_schema=settings.run.dev_mode,
 )
 async def get_static_scripts(
-    name_file: str,
+    name_file: str,  # noqa: ARG001
     file_path: Annotated[
         Path,
         Depends(
