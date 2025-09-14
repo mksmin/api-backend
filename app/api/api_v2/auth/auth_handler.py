@@ -2,30 +2,22 @@ import hashlib
 import hmac
 import json
 from collections.abc import Callable, Coroutine
-from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, parse_qsl
 
-from fastapi import Depends, HTTPException, Request
-from fastapi.templating import Jinja2Templates
-from starlette import status
-from starlette.responses import HTMLResponse
+from fastapi import (
+    Depends,
+    HTTPException,
+    Request,
+    status,
+)
+from fastapi.responses import HTMLResponse
 
-from core import logger, settings
+from core.config import logger, settings
 from core.crud import crud_manager
+from paths_constants import templates
 
 from .access_token_helper import BOT_CONFIG
-
-BASE_DIR = Path.cwd().parent  # project working directory api_atomlab/app
-FRONTEND_DIR = (
-    (BASE_DIR / "api-atom-front")
-    if settings.run.dev_mode
-    else (BASE_DIR.parent / "frontend")
-)
-HTML_DIR = FRONTEND_DIR / "src"
-STATIC_DIR = FRONTEND_DIR / "public"
-templates = Jinja2Templates(directory=FRONTEND_DIR / "templates")
-not_found_404 = FRONTEND_DIR / "src/404.html"
 
 
 def verify_telegram_data(raw_query: str, bot_token: str) -> bool:

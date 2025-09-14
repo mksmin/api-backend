@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi.responses import FileResponse
 
-from api.api_v2.dependencies import SRC_DIR
+from paths_constants import HTML_DIR
 
 from .static_views import router as static_router
 from .system_views import router as system_router
@@ -24,7 +24,7 @@ async def index_page() -> FileResponse:
         This endpoint serves as the entry point for the frontend application.
         It constructs the file path as `HTML_DIR / "index.html"`.
     """
-    index_html = SRC_DIR / "index.html"
+    index_html = HTML_DIR / "index.html"
     return FileResponse(index_html)
 
 
