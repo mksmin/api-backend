@@ -3,7 +3,6 @@
 api-backend:
   access_token:
     lifetime_seconds: 3600
-    secret: default_secret
     algorithm: HS256
 
   api:

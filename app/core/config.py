@@ -75,10 +75,18 @@ logger.addHandler(console_handler)
 logger.addHandler(file_handler)
 
 
+class AccessTokenSecretsConfig(BaseModel):
+    secret: str
+
+
 class AccessToken(BaseModel):
     lifetime_seconds: int
-    secret: str
     algorithm: str
+    secrets: AccessTokenSecretsConfig
+
+    @property
+    def secret(self) -> str:
+        return self.secrets.secret
 
 
 class ApiV2Prefix(BaseModel):
@@ -141,18 +149,22 @@ class LoggerConfig(BaseModel):
         return value.upper()
 
 
+class RabbitSecretsConfig(BaseModel):
+    username: str
+    password: str
+
+
 class RabbitMQConfig(BaseModel):
     host: str
     port: int
-    username: str
-    password: str
     vhostname: str
+    secrets: RabbitSecretsConfig
 
     @computed_field  # type: ignore[prop-decorator]
     @property
     def url(self) -> str:
-        safe_username = quote(self.username, safe="")
-        safe_password = quote(self.password, safe="")
+        safe_username = quote(self.secrets.username, safe="")
+        safe_password = quote(self.secrets.password, safe="")
         safe_vhost = quote(self.vhostname, safe="")
 
         return f"amqp://{safe_username}:{safe_password}@{self.host}:{self.port}/{safe_vhost}"
@@ -165,7 +177,7 @@ class RunConfig(BaseModel):
 
 
 class SecretsConfig(BaseModel):
-    bot_token: dict[str, str]
+    bots_tokens: dict[str, str]
 
 
 class Settings(BaseSettings):
