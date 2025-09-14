@@ -1,7 +1,26 @@
+# Default example config
+
 api-backend:
+  access_token:
+    lifetime_seconds: 3600
+    secret: default_secret
+    algorithm: HS256
+
+  api:
+    prefix: "/api"
+    v2:
+      prefix: "/v2"
+      users: "/users"
+
+  log:
+    mode: info
+
+  rabbit:
+    host: localhost
+    port: 5672
+    vhostname: vhost
+
   run:
     host: 127.0.0.1
     port: 8000
     dev_mode: false
-  log:
-    mode: info
