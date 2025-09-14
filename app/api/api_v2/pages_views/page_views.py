@@ -1,12 +1,12 @@
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends
-from starlette.responses import HTMLResponse
+from fastapi.responses import HTMLResponse
 
-from core import settings
+from core.config import settings
+from paths_constants import templates
 
 from .dependencies import (
-    TEMPLATES,
     get_dict_with_user_affirmations,
     return_data_for_user_profile_template,
     rmq_router,
@@ -29,7 +29,7 @@ async def page_user_affirmations(
 ) -> HTMLResponse:
     """Страница с пользовательскими аффирмациями"""
 
-    return TEMPLATES.TemplateResponse(
+    return templates.TemplateResponse(
         "pages/affirmations.html",
         affirmations,
     )
@@ -46,7 +46,7 @@ async def page_profile(
     ],
 ) -> HTMLResponse:
     """Страница с профилем пользователя"""
-    return TEMPLATES.TemplateResponse(
+    return templates.TemplateResponse(
         "profiles/profile.html",
         template_data,
     )

@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 from fastapi.responses import FileResponse
 
-from api.api_v2.dependencies import PUBLIC_DIR
-from core import settings
+from core.config import settings
+from paths_constants import STATIC_DIR
 
 router = APIRouter()
 
@@ -19,7 +19,7 @@ async def favicon() -> FileResponse:
         FileResponse: Response object containing the `favicon.ico` file
                       located in the `STATIC_DIR` directory.
     """
-    return FileResponse(PUBLIC_DIR / "favicon.ico")
+    return FileResponse(STATIC_DIR / "favicon.ico")
 
 
 @router.get(
@@ -34,4 +34,4 @@ async def robots() -> FileResponse:
         FileResponse: The contents of the `robots.txt` file located in the
                       `STATIC_DIR` directory with HTTP 200 OK status.
     """
-    return FileResponse(PUBLIC_DIR / "robots.txt")
+    return FileResponse(STATIC_DIR / "robots.txt")

@@ -5,18 +5,6 @@ from typing import Any
 from fastapi import HTTPException
 from starlette import status
 
-from core import settings
-
-BASE_DIR = Path.cwd().resolve().parent  # project working directory ../app
-FRONTEND_DIR = (
-    (BASE_DIR / "api-frontend")
-    if settings.run.dev_mode
-    else (BASE_DIR.parent / "frontend")
-)
-SRC_DIR = FRONTEND_DIR / "src"
-PUBLIC_DIR = FRONTEND_DIR / "public"
-NOT_FOUND_PAGE_404 = FRONTEND_DIR / "src/404.html"
-
 
 def file_dependency(
     base_dir: Path,

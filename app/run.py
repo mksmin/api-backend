@@ -5,9 +5,6 @@ It is responsible for starting the application
 
 import os
 import sys
-from collections.abc import AsyncGenerator
-from contextlib import asynccontextmanager
-from pathlib import Path
 from typing import Any
 
 import uvicorn
@@ -20,29 +17,10 @@ from api.api_v2.auth import router as auth_router
 from api.api_v2.main_views import router as main_router
 from api.api_v2.pages_views import router as pages_router
 from api.redirect import router as redirect_router
-from core import db_helper, logger, settings
-
-PATH_DEV = Path(__file__).parent.parent.parent / "api-frontend"
-PATH_PROD = Path(__file__).parent.parent.parent / "frontend"
-PATH_STATIC = PATH_DEV if settings.run.dev_mode else PATH_PROD
-
-
-@asynccontextmanager
-async def lifespan(
-    app: FastAPI,  # noqa: ARG001
-) -> AsyncGenerator[None, None]:
-    """
-    WIP
-
-    This function executes the code before 'yield' before running FastAPI
-    and code after 'yield' after the FastAPI stops
-    :return: None
-    """
-    logger.info("Start FastAPI")
-    yield
-    logger.info("Stop FastAPI")
-    await db_helper.dispose()
-
+from app_lifespan import lifespan
+from core import logger
+from core.config import BASE_DIR, settings
+from paths_constants import FRONTEND_DIR_PATH
 
 main_app = FastAPI(
     lifespan=lifespan,
@@ -54,7 +32,10 @@ main_app = FastAPI(
 
 main_app.mount(
     "/static",
-    StaticFiles(directory=PATH_STATIC / "public", html=True),
+    StaticFiles(
+        directory=FRONTEND_DIR_PATH / "public",
+        html=True,
+    ),
 )
 
 
@@ -90,7 +71,7 @@ if __name__ == "__main__":
             "port": settings.run.port,
             "log_level": settings.run.log_level,
             "reload": False,
-            "log_config": str(Path(__file__).parent / "core/log_conf.json"),
+            "log_config": str(BASE_DIR / "core/log_conf.json"),
             "use_colors": True,
             "workers": 1,
         }

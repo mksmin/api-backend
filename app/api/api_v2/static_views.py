@@ -4,8 +4,9 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import FileResponse
 
-from api.api_v2.dependencies import PUBLIC_DIR, SRC_DIR, file_dependency
-from core import settings
+from api.api_v2.dependencies import file_dependency
+from core.config import settings
+from paths_constants import HTML_DIR, STATIC_DIR
 
 router = APIRouter()
 
@@ -19,7 +20,7 @@ async def get_static_html(
     file_path: Annotated[
         Path,
         Depends(
-            file_dependency(base_dir=SRC_DIR),
+            file_dependency(base_dir=HTML_DIR),
         ),
     ],
 ) -> FileResponse:
@@ -49,7 +50,7 @@ async def get_static_media(
         Path,
         Depends(
             file_dependency(
-                base_dir=PUBLIC_DIR,
+                base_dir=STATIC_DIR,
                 sub_dir="media",
             ),
         ),
@@ -82,7 +83,7 @@ async def get_static_styles(
         Path,
         Depends(
             file_dependency(
-                base_dir=SRC_DIR,
+                base_dir=HTML_DIR,
                 sub_dir="style",
             ),
         ),
@@ -114,7 +115,7 @@ async def get_static_scripts(
         Path,
         Depends(
             file_dependency(
-                base_dir=SRC_DIR,
+                base_dir=HTML_DIR,
                 sub_dir="scripts",
             ),
         ),

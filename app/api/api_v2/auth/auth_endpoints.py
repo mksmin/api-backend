@@ -1,29 +1,32 @@
-from pathlib import Path
 from typing import TYPE_CHECKING, Annotated, Any
 from urllib.parse import parse_qsl
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Request,
+    status,
+)
+from fastapi.responses import (
+    HTMLResponse,
+    JSONResponse,
+    RedirectResponse,
+)
 
-from core import logger, settings
+from core.config import logger, settings
 from core.crud import crud_manager
+from paths_constants import (
+    templates,
+)
+
+from . import auth_utils, token_utils
 
 if TYPE_CHECKING:
     from core.database import User
 
 
-from . import auth_utils, token_utils
-
 router = APIRouter()
-
-BASE_DIR = Path.cwd().parent  # project working directory api_atomlab/app
-FRONTEND_DIR = (
-    (BASE_DIR / "api-atom-front")
-    if settings.run.dev_mode
-    else (BASE_DIR.parent / "frontend")
-)
-templates = Jinja2Templates(directory=FRONTEND_DIR / "templates")
 
 
 @router.get(
