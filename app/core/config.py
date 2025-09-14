@@ -75,38 +75,20 @@ logger.addHandler(console_handler)
 logger.addHandler(file_handler)
 
 
-class RunConfig(BaseModel):
-    host: str = "127.0.0.1"
-    port: int = 8000
-    dev_mode: bool = False
+class AccessToken(BaseModel):
+    lifetime_seconds: int
+    secret: str
+    algorithm: str
 
 
 class ApiV2Prefix(BaseModel):
-    prefix: str = "/v2"
-    users: str = "/users"
+    prefix: str
+    users: str
 
 
 class ApiPrefix(BaseModel):
-    prefix: str = "/api"
-    v2: ApiV2Prefix = ApiV2Prefix()
-    bot_token: dict[str, str] = {"bot_name": "1234567890:DefaultBotToken"}
-
-
-class RabbitMQConfig(BaseModel):
-    host: str = "localhost"
-    port: int = 5672
-    username: str = "user"
-    password: str = "wpwd"  # noqa: S105
-    vhostname: str = "vhost"
-
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def url(self) -> str:
-        safe_username = quote(self.username, safe="")
-        safe_password = quote(self.password, safe="")
-        safe_vhost = quote(self.vhostname, safe="")
-
-        return f"amqp://{safe_username}:{safe_password}@{self.host}:{self.port}/{safe_vhost}"
+    prefix: str
+    v2: ApiV2Prefix
 
 
 class DatabaseConfig(BaseModel):
@@ -159,10 +141,31 @@ class LoggerConfig(BaseModel):
         return value.upper()
 
 
-class AccessToken(BaseModel):
-    lifetime_seconds: int = 3600
-    secret: str = "default_secret"  # noqa: S105
-    algorithm: str = "HS256"
+class RabbitMQConfig(BaseModel):
+    host: str
+    port: int
+    username: str
+    password: str
+    vhostname: str
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def url(self) -> str:
+        safe_username = quote(self.username, safe="")
+        safe_password = quote(self.password, safe="")
+        safe_vhost = quote(self.vhostname, safe="")
+
+        return f"amqp://{safe_username}:{safe_password}@{self.host}:{self.port}/{safe_vhost}"
+
+
+class RunConfig(BaseModel):
+    host: str
+    port: int
+    dev_mode: bool
+
+
+class SecretsConfig(BaseModel):
+    bot_token: dict[str, str]
 
 
 class Settings(BaseSettings):
@@ -212,12 +215,13 @@ class Settings(BaseSettings):
             YamlConfigSettingsSource(settings_cls),
         )
 
-    access_token: AccessToken = AccessToken()
-    api: ApiPrefix = ApiPrefix()
+    access_token: AccessToken
+    api: ApiPrefix
     db: DatabaseConfig
-    log: LoggerConfig = LoggerConfig()
-    rabbit: RabbitMQConfig = RabbitMQConfig()
-    run: RunConfig = RunConfig()
+    log: LoggerConfig
+    rabbit: RabbitMQConfig
+    run: RunConfig
+    secrets: SecretsConfig
 
 
 settings = Settings()
