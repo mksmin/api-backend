@@ -69,7 +69,7 @@ if __name__ == "__main__":
             "app": "run:main_app",
             "host": settings.run.host,
             "port": settings.run.port,
-            "log_level": settings.run.log_level,
+            "log_level": settings.log.mode.lower(),
             "reload": False,
             "log_config": str(BASE_DIR / "core/log_conf.json"),
             "use_colors": True,
