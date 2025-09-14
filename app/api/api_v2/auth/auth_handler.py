@@ -141,12 +141,12 @@ async def verify_telegram_data_dep(
             if client_type == "TelegramWidget":
                 verify_result = verify_telegram_widget(
                     raw_data_str,
-                    settings.api.bot_token[bot_name],
+                    settings.secrets.bots_tokens[bot_name],
                 )
             elif client_type == "TelegramMiniApp":
                 verify_result = verify_telegram_data(
                     raw_data_str,
-                    settings.api.bot_token[bot_name],
+                    settings.secrets.bots_tokens[bot_name],
                 )
             else:
                 logger.exception(

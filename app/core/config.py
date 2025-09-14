@@ -11,7 +11,12 @@ from pydantic import (
     computed_field,
     field_validator,
 )
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import (
+    BaseSettings,
+    PydanticBaseSettingsSource,
+    SettingsConfigDict,
+    YamlConfigSettingsSource,
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -70,39 +75,28 @@ logger.addHandler(console_handler)
 logger.addHandler(file_handler)
 
 
-class RunConfig(BaseModel):
-    host: str = "127.0.0.1"
-    port: int = 8000
-    log_level: str = "info"
-    dev_mode: bool = False
+class AccessTokenSecretsConfig(BaseModel):
+    secret: str
+
+
+class AccessToken(BaseModel):
+    lifetime_seconds: int
+    algorithm: str
+    secrets: AccessTokenSecretsConfig
+
+    @property
+    def secret(self) -> str:
+        return self.secrets.secret
 
 
 class ApiV2Prefix(BaseModel):
-    prefix: str = "/v2"
-    users: str = "/users"
+    prefix: str
+    users: str
 
 
 class ApiPrefix(BaseModel):
-    prefix: str = "/api"
-    v2: ApiV2Prefix = ApiV2Prefix()
-    bot_token: dict[str, str] = {"bot_name": "1234567890:DefaultBotToken"}
-
-
-class RabbitMQConfig(BaseModel):
-    host: str = "localhost"
-    port: int = 5672
-    username: str = "user"
-    password: str = "wpwd"  # noqa: S105
-    vhostname: str = "vhost"
-
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def url(self) -> str:
-        safe_username = quote(self.username, safe="")
-        safe_password = quote(self.password, safe="")
-        safe_vhost = quote(self.vhostname, safe="")
-
-        return f"amqp://{safe_username}:{safe_password}@{self.host}:{self.port}/{safe_vhost}"
+    prefix: str
+    v2: ApiV2Prefix
 
 
 class DatabaseConfig(BaseModel):
@@ -155,10 +149,35 @@ class LoggerConfig(BaseModel):
         return value.upper()
 
 
-class AccessToken(BaseModel):
-    lifetime_seconds: int = 3600
-    secret: str = "default_secret"  # noqa: S105
-    algorithm: str = "HS256"
+class RabbitSecretsConfig(BaseModel):
+    username: str
+    password: str
+
+
+class RabbitMQConfig(BaseModel):
+    host: str
+    port: int
+    vhostname: str
+    secrets: RabbitSecretsConfig
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def url(self) -> str:
+        safe_username = quote(self.secrets.username, safe="")
+        safe_password = quote(self.secrets.password, safe="")
+        safe_vhost = quote(self.vhostname, safe="")
+
+        return f"amqp://{safe_username}:{safe_password}@{self.host}:{self.port}/{safe_vhost}"
+
+
+class RunConfig(BaseModel):
+    host: str
+    port: int
+    dev_mode: bool
+
+
+class SecretsConfig(BaseModel):
+    bots_tokens: dict[str, str]
 
 
 class Settings(BaseSettings):
@@ -170,13 +189,51 @@ class Settings(BaseSettings):
         case_sensitive=False,
         env_nested_delimiter="__",
         env_prefix="API_CONFIG__",
+        yaml_file=(
+            BASE_DIR / "config.default.yaml",
+            BASE_DIR / "config.local.yaml",
+        ),
+        yaml_config_section="api-backend",
     )
-    access_token: AccessToken = AccessToken()
-    api: ApiPrefix = ApiPrefix()
+
+    @classmethod
+    def settings_customise_sources(
+        cls,
+        settings_cls: type[BaseSettings],
+        init_settings: PydanticBaseSettingsSource,
+        env_settings: PydanticBaseSettingsSource,
+        dotenv_settings: PydanticBaseSettingsSource,
+        file_secret_settings: PydanticBaseSettingsSource,
+    ) -> tuple[PydanticBaseSettingsSource, ...]:
+        """
+        Define the sources and their order for loading the settings values.
+
+        Args:
+            settings_cls: The Settings class.
+            init_settings: The `InitSettingsSource` instance.
+            env_settings: The `EnvSettingsSource` instance.
+            dotenv_settings: The `DotEnvSettingsSource` instance.
+            file_secret_settings: The `SecretsSettingsSource` instance.
+
+        Returns:
+            A tuple containing the sources and their order
+            for loading the settings values.
+        """
+        return (
+            init_settings,
+            env_settings,
+            dotenv_settings,
+            file_secret_settings,
+            YamlConfigSettingsSource(settings_cls),
+        )
+
+    access_token: AccessToken
+    api: ApiPrefix
     db: DatabaseConfig
-    log: LoggerConfig = LoggerConfig()
-    rabbit: RabbitMQConfig = RabbitMQConfig()
-    run: RunConfig = RunConfig()
+    log: LoggerConfig
+    rabbit: RabbitMQConfig
+    run: RunConfig
+    secrets: SecretsConfig
 
 
 settings = Settings()
