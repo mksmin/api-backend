@@ -27,15 +27,6 @@ BOT_CONFIG: dict[str, dict[str, str]] = {
 }
 
 
-def token_response(
-    token: str,
-) -> dict[str, str]:
-    return {
-        "access_token": token,
-        "token_type": "bearer",
-    }
-
-
 async def sign_jwt_token(
     user_id: int,
 ) -> dict[str, str | int]:
@@ -60,8 +51,8 @@ async def sign_jwt_token(
     }
 
     token = jwt.encode(
-        payload,
-        settings.access_token.secret,
+        payload=payload,
+        key=settings.access_token.secret,
         algorithm=settings.access_token.algorithm,
     )
     return {

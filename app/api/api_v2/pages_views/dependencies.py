@@ -3,6 +3,7 @@ import json
 from typing import TYPE_CHECKING, Annotated, Any
 
 from fastapi import Depends, HTTPException, status
+from fastapi.params import Query
 from fastapi.requests import Request
 from faststream.rabbit import RabbitBroker, RabbitMessage, fastapi
 from pydantic import BaseModel
@@ -82,6 +83,20 @@ async def get_dict_with_user_affirmations(
         UserDataReadSchema | None,
         Depends(return_user_data),
     ],
+    limit: Annotated[
+        int,
+        Query(
+            title="Limit",
+            description="Количество аффирмаций",
+        ),
+    ] = 5,
+    offset: Annotated[
+        int,
+        Query(
+            title="Offset",
+            description="Смещение",
+        ),
+    ] = 0,
 ) -> dict[str, Any]:
     if not user_data:
         return {
@@ -94,8 +109,8 @@ async def get_dict_with_user_affirmations(
             "command": "get_paginated_tasks",
             "payload": {
                 "user_tg": user_data.tg_id,
-                "offset": 0,
-                "limit": 100,
+                "limit": limit,
+                "offset": offset,
             },
         }
         result: RabbitMessage = await broker.request(
