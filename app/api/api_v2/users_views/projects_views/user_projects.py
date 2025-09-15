@@ -9,7 +9,7 @@ from fastapi import (
 )
 
 from api.api_v2.auth import token_utils
-from core import settings
+from core.config import settings
 from core.crud import crud_manager
 from core.database.schemas import ProjectResponseSchema
 from core.database.security import schemas as ak_schemas

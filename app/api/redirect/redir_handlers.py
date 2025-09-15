@@ -9,7 +9,7 @@ from fastapi import (
 )
 from fastapi.responses import RedirectResponse
 
-from core import settings
+from core.config import settings
 
 router = APIRouter(
     tags=["Redirects"],

@@ -8,7 +8,7 @@ from typing import (
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core import db_helper
+from core.database.db_helper import db_helper
 
 # Типы
 P = ParamSpec("P")

@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from core import settings
+from core.config import settings
 
 from .affirmations_views import router as user_affirmations_router
 from .projects_views import router as user_projects_router

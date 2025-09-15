@@ -5,7 +5,7 @@ from sqlalchemy.orm import (
     declared_attr,
 )
 
-from core import settings
+from core.config import settings
 from utils import camel_case_converter
 
 

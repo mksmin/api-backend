@@ -1,9 +1,12 @@
+import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from core import db_helper, logger
+from core.database.db_helper import db_helper
+
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager

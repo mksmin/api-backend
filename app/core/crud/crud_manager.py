@@ -7,10 +7,10 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from core.config import logger
 from core.database import User
+from core.database.db_helper import db_helper
 from core.database.projects import Project
 from core.database.schemas import ProjectSchema, UserSchema
 
-from .. import db_helper
 from .managers import APIKeyManager, BaseCRUDManager
 
 

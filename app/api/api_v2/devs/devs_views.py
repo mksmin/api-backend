@@ -10,7 +10,7 @@ from fastapi.params import Depends
 from fastapi.responses import JSONResponse
 
 from api.api_v2.auth import access_token_helper as token_utils
-from core import settings
+from core.config import settings
 
 from .dependencies import (
     create_token_by_user_id,

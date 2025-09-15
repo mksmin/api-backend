@@ -3,6 +3,7 @@ This is the main entry point of the application.
 It is responsible for starting the application
 """
 
+import logging
 import os
 import sys
 from typing import Any
@@ -18,10 +19,10 @@ from api.api_v2.main_views import router as main_router
 from api.api_v2.pages_views import router as pages_router
 from api.redirect import router as redirect_router
 from app_lifespan import lifespan
-from core import logger
 from core.config import BASE_DIR, settings
 from paths_constants import FRONTEND_DIR_PATH
 
+logger = logging.getLogger(__name__)
 main_app = FastAPI(
     lifespan=lifespan,
     docs_url=None if not settings.run.dev_mode else "/docs",

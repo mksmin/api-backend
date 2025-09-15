@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from typing import Any
 from uuid import UUID
@@ -10,7 +11,7 @@ from pydantic import (
     field_validator,
 )
 
-from core import logger
+logger = logging.getLogger(__name__)
 
 
 class ProjectSchema(BaseModel):
@@ -33,7 +34,7 @@ class ProjectSchema(BaseModel):
 
         except (ValueError, AttributeError, TypeError) as e:
             msg_error = "Invalid UUID format"
-            logger.exception("%s: %s", msg_error, e)
+            logger.exception("%s", msg_error)
             raise ValueError(msg_error) from e
 
     model_config = ConfigDict(

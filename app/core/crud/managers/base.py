@@ -1,3 +1,4 @@
+import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
@@ -11,9 +12,9 @@ from sqlalchemy import and_, select, update
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from core import logger
 from core.database.base import Base
 
+logger = logging.getLogger(__name__)
 ModelType = TypeVar("ModelType", bound=Base)
 
 
@@ -52,7 +53,11 @@ class BaseCRUDManager(Generic[ModelType]):
             session.add(instance)
             await session.flush()
             await session.refresh(instance)
-            logger.info(f"Created {self.model.__name__} with id: {instance.id}")  # type: ignore[attr-defined]
+            logger.info(
+                "Created %s with id: %d",
+                self.model.__name__,
+                instance.id,
+            )  # type: ignore[attr-defined]
             return instance
 
     async def get_one(self, field: str, value: str | int) -> ModelType | None:

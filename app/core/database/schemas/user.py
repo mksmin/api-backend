@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from typing import Any
 
@@ -8,7 +9,7 @@ from pydantic import (
     model_validator,
 )
 
-from core import logger
+logger = logging.getLogger(__name__)
 
 
 class UserSchema(BaseModel):
@@ -46,7 +47,7 @@ class UserSchema(BaseModel):
         for key, value in values.items():
 
             if key not in cls.model_fields:
-                logger.warning(f"Skipping key: {key}")
+                logger.warning("Skipping key: %s", key)
                 continue
             try:
                 if key in ("external_date_bid", "birth_date"):
@@ -57,8 +58,8 @@ class UserSchema(BaseModel):
                     process_result[key] = int(value)
                 else:
                     process_result[key] = str(value)
-            except Exception as e:
-                logger.error(f"Error processing key: {key}, value: {value}: {e!s}")
+            except Exception:
+                logger.exception("Error processing key: %s, value: %s", key, value)
                 raise
 
         return process_result

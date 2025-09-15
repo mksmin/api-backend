@@ -1,5 +1,6 @@
 __all__ = ("BOT_CONFIG",)
 
+import logging
 import secrets
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -9,7 +10,9 @@ import jwt
 from fastapi import Cookie, Depends, HTTPException, status
 from jwt import ExpiredSignatureError, InvalidTokenError
 
-from core import logger, settings
+from core.config import settings
+
+logger = logging.getLogger(__name__)
 
 BOT_CONFIG: dict[str, dict[str, str]] = {
     "bot1": {
@@ -99,7 +102,7 @@ async def decode_jwt(
         ) from ex_e
 
     except InvalidTokenError as e:
-        logger.exception("Invalid token: %s", e)
+        logger.exception("Invalid token")
         raise HTTPException(
             status_code=401,
             detail="Invalid token",
@@ -127,10 +130,10 @@ async def parse_access_token(
     try:
         payload = await decode_jwt(access_token)
         user_id: int = payload["user_id"]
-        logger.info(f"Check access token for user_id: {user_id}")
+        logger.info("Check access token for user_id: %s", user_id)
 
-    except (ExpiredSignatureError, InvalidTokenError) as e:
-        logger.exception("Error while decoding token: %s", e)
+    except (ExpiredSignatureError, InvalidTokenError):
+        logger.exception("Error while decoding token")
         return None
 
     else:
