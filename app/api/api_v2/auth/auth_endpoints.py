@@ -56,6 +56,15 @@ async def handle_telegram_init(
     return RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
 
 
+@router.post("/auth")
+async def auth_redirect() -> RedirectResponse:
+    # Редирект на /auth/bot1 с нужным кодом
+    return RedirectResponse(
+        url="/auth/bot1",
+        status_code=status.HTTP_308_PERMANENT_REDIRECT,
+    )
+
+
 @router.post("/auth/{bot_name}")
 async def auth_user(
     request: Request,
