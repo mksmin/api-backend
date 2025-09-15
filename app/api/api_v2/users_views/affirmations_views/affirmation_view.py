@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends
 
@@ -15,6 +15,9 @@ router = APIRouter()
     ],
 )
 def get_user_affirmations(
-    affirmations: dict[str, Any] = Depends(get_dict_with_user_affirmations),
+    affirmations: Annotated[
+        dict[str, Any],
+        Depends(get_dict_with_user_affirmations),
+    ],
 ) -> list[dict[str, Any]]:
     return affirmations["affirm"]
