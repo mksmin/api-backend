@@ -56,8 +56,8 @@ class BaseCRUDManager(Generic[ModelType]):
             logger.info(
                 "Created %s with id: %d",
                 self.model.__name__,
-                instance.id,
-            )  # type: ignore[attr-defined]
+                instance.id,  # type: ignore[attr-defined]
+            )
             return instance
 
     async def get_one(self, field: str, value: str | int) -> ModelType | None:
