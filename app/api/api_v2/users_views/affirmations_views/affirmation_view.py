@@ -20,8 +20,7 @@ def get_user_affirmations(
         Depends(get_dict_with_user_affirmations),
     ],
 ) -> list[dict[str, Any]]:
-    list_of_affirmations = cast(
-        list[dict[str, Any]],
+    return cast(
+        "list[dict[str, Any]]",
         affirmations.get("affirm", []),
     )
-    return list_of_affirmations
