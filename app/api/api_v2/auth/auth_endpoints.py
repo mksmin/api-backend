@@ -16,9 +16,7 @@ from fastapi.responses import (
 
 from core.config import logger, settings
 from core.crud import crud_manager
-from paths_constants import (
-    templates,
-)
+from paths_constants import templates
 
 from . import auth_utils, token_utils
 
@@ -56,15 +54,6 @@ async def handle_telegram_init(
     bot_data = token_utils.BOT_CONFIG.get(bot_name, {})
     redirect_url = bot_data.get("redirect_url", "/profile")
     return RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
-
-
-@router.post("/auth")
-async def auth_redirect() -> RedirectResponse:
-    # Редирект на /auth/bot1 с нужным кодом
-    return RedirectResponse(
-        url="/auth/bot1",
-        status_code=status.HTTP_308_PERMANENT_REDIRECT,
-    )
 
 
 @router.post("/auth/{bot_name}")
