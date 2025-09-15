@@ -78,12 +78,14 @@ async def auth_user(
 
     bot_data = token_utils.BOT_CONFIG.get(bot_name, {})
     redirect_url = bot_data.get("redirect_url", "/profile")
-    logger.debug(f"Redirect URL: {redirect_url}")
 
-    raw_data = await request.body()
-    raw_data_str = raw_data.decode()
-    pairs = parse_qsl(raw_data_str, keep_blank_values=True)
-    data_dict = dict(pairs)
+    raw_data = (await request.body()).decode()
+    data_dict = dict(
+        parse_qsl(
+            raw_data,
+            keep_blank_values=True,
+        ),
+    )
 
     logger.debug(f"Received data (id): {data_dict}")
 
@@ -92,16 +94,16 @@ async def auth_user(
     else:
         user_data = await auth_utils.extract_user_data(data_dict)
     user_data["tg_id"] = user_data.pop("id")
-    logger.debug(f"User data: {user_data}")
 
     user: User = await crud_manager.user.create(data=user_data)
-    logger.debug(f"User data saved: {user.id = }")
 
     # Формирую ответ
-    response = RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+    response = RedirectResponse(
+        url=redirect_url,
+        status_code=status.HTTP_303_SEE_OTHER,
+    )
 
     # Генерирую токены
-    logger.debug(f"Generating tokens for user {user.id}")
     jwt_token = await token_utils.sign_jwt_token(int(user.id))
     csrf_token = token_utils.sign_csrf_token()
 

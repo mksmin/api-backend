@@ -11,11 +11,9 @@ from fastapi import (
     Request,
     status,
 )
-from fastapi.responses import HTMLResponse
 
 from core.config import logger, settings
 from core.crud import crud_manager
-from paths_constants import templates
 
 from .access_token_helper import BOT_CONFIG
 
@@ -268,14 +266,6 @@ async def verified_data_dependency(
         logger.debug(f"Получен пользователь: {user}")
 
     return result
-
-
-# Общая функция для обработки профиля
-async def process_profile(
-    template_name: str,
-    data_dict_for_template: dict[str, Any],
-) -> HTMLResponse:
-    return templates.TemplateResponse(template_name, data_dict_for_template)
 
 
 async def extract_user_data(
