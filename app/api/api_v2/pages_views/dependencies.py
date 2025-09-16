@@ -89,7 +89,7 @@ async def get_dict_with_user_affirmations(
             title="Limit",
             description="Количество аффирмаций",
         ),
-    ] = 5,
+    ] = 15,
     offset: Annotated[
         int,
         Query(
