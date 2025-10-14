@@ -3,7 +3,6 @@ from typing import Annotated, Any
 from fastapi import (
     APIRouter,
     Body,
-    Header,
     Request,
     status,
 )
@@ -20,32 +19,6 @@ actual_version = "/api/v2/"
 path_mapping = {
     "users": actual_version + "users/",
 }
-
-
-@router.get(
-    "/statistics/",
-    include_in_schema=settings.run.dev_mode,
-)
-async def get_statistics(
-    token: Annotated[str, Header()],  # noqa: ARG001
-) -> RedirectResponse:
-    return RedirectResponse(
-        url=f"{path_mapping['users']}statistics",
-        status_code=status.HTTP_308_PERMANENT_REDIRECT,
-    )
-
-
-@router.post(
-    "/registration",
-    include_in_schema=settings.run.dev_mode,
-)
-async def registration(
-    data: Annotated[dict[str, Any], Body()],  # noqa: ARG001
-) -> RedirectResponse:
-    return RedirectResponse(
-        url=f"{path_mapping['users']}registration",
-        status_code=status.HTTP_308_PERMANENT_REDIRECT,
-    )
 
 
 @router.api_route(

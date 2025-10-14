@@ -8,8 +8,8 @@ if TYPE_CHECKING:
     from faststream.rabbit import RabbitMessage
 
 from api.api_v2.auth import token_utils
-from api.api_v2.pages_views.dependencies import get_broker
 from core.crud import crud_manager
+from rest.pages_views.dependencies import get_broker
 
 
 async def delete_user_affirmation(

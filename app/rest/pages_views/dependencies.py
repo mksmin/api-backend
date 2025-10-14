@@ -2,7 +2,7 @@ import asyncio
 import json
 from typing import TYPE_CHECKING, Annotated, Any
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends
 from fastapi.params import Query
 from fastapi.requests import Request
 from faststream.rabbit import RabbitBroker, RabbitMessage, fastapi
@@ -129,8 +129,9 @@ async def get_dict_with_user_affirmations(
                 "time_send": "--",
             },
         }
-    except asyncio.TimeoutError as e:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Service unavailable",
-        ) from e
+    except asyncio.TimeoutError:
+        return {
+            "request": request,
+            "user": user_data.model_dump(),
+            "affirm": [],
+        }

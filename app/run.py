@@ -15,12 +15,12 @@ from fastapi.staticfiles import StaticFiles
 
 from api import router as api_router
 from api.api_v2.auth import router as auth_router
-from api.api_v2.main_views import router as main_router
-from api.api_v2.pages_views import router as pages_router
-from api.redirect import router as redirect_router
 from app_lifespan import lifespan
 from core.config import BASE_DIR, settings
 from paths_constants import FRONTEND_DIR_PATH
+from rest.main_views import router as main_views_router
+from rest.pages_views import router as pages_router
+from rest.redirect import router as redirect_router
 
 logger = logging.getLogger(__name__)
 main_app = FastAPI(
@@ -57,7 +57,7 @@ routers_for_include = (
     auth_router,
     api_router,
     redirect_router,
-    main_router,
+    main_views_router,
     pages_router,
 )
 

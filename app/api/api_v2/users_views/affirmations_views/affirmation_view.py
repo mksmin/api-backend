@@ -4,7 +4,7 @@ from typing import Annotated, Any, cast
 from fastapi import APIRouter, Depends, status
 
 from api.api_v2.auth import token_utils
-from api.api_v2.pages_views.dependencies import get_dict_with_user_affirmations
+from rest.pages_views.dependencies import get_dict_with_user_affirmations
 
 from .dependencies import delete_user_affirmation
 

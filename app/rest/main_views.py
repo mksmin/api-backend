@@ -2,9 +2,8 @@ from fastapi import APIRouter
 from fastapi.responses import FileResponse
 
 from paths_constants import HTML_DIR
-
-from .static_views import router as static_router
-from .system_views import router as system_router
+from rest.static_views import router as static_router
+from rest.system_views import router as system_router
 
 router = APIRouter(
     tags=["Main Views"],
