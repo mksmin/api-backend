@@ -1,3 +1,4 @@
+import logging
 from collections.abc import Sequence
 from typing import Any
 
@@ -5,13 +6,14 @@ from pydantic import UUID4, ValidationError
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from core.config import logger
 from core.database import User
 from core.database.db_helper import db_helper
 from core.database.projects import Project
 from core.database.schemas import ProjectSchema, UserSchema
 
 from .managers import APIKeyManager, BaseCRUDManager
+
+log = logging.getLogger(__name__)
 
 
 def format_validation_error(exc: ValidationError) -> str:
@@ -35,9 +37,9 @@ class UserManager(BaseCRUDManager[User]):
         field: str = "tg_id",
         value: str | int = ...,  # type: ignore[assignment]
     ) -> User | None:
-        logger.info(f"Start searching user with ({field}: {value})")
+        log.info("Start searching user with (%s: %s)", field, value)
         result = await super().get_one(field, value)
-        logger.info(f"Result: {result}")
+        log.info("Result: %s", result)
         return result
 
     async def create(  # type: ignore[override]
@@ -63,7 +65,7 @@ class UserManager(BaseCRUDManager[User]):
         except ValidationError as e:
             error_message = format_validation_error(e)
             except_msg = "Ошибка валидации:" + error_message
-            logger.exception("Validation errors: %s", error_message)
+            log.exception("Validation errors: %s", error_message)
             raise ValueError(except_msg) from e
 
 
@@ -139,7 +141,7 @@ class ProjectManager(BaseCRUDManager[Project]):
             result = await session.execute(query)
             project: Project | None = result.scalar_one_or_none()
             if not project:
-                logger.info(
+                log.info(
                     "Проект с id=%s не найден",
                     str(project_uuid)[:8] if project_uuid else str(project_id),
                 )
@@ -155,7 +157,7 @@ class ProjectManager(BaseCRUDManager[Project]):
 
         except ValidationError as e:
             error_message = format_validation_error(e)
-            logger.error(f"Validation errors: {error_message}")
+            log.exception("Validation errors: %s", error_message)
             raise
 
 

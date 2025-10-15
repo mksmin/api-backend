@@ -1,6 +1,7 @@
 import hashlib
 import hmac
 import json
+import logging
 from collections.abc import Callable, Coroutine
 from typing import Any
 from urllib.parse import parse_qs, parse_qsl
@@ -12,10 +13,12 @@ from fastapi import (
     status,
 )
 
-from core.config import logger, settings
+from core.config import settings
 from core.crud import crud_manager
 
 from .access_token_helper import BOT_CONFIG
+
+log = logging.getLogger(__name__)
 
 
 def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
@@ -60,7 +63,7 @@ def verify_telegram_data(raw_query: str, bot_token: str) -> bool:
 
         # Защита от атаки по времени
         result = hmac.compare_digest(generated_hash, input_hash)
-        logger.debug(f"verify_telegram_data | result: {result}")
+        log.debug("verify_telegram_data | result: %s", result)
 
     except (ValueError, KeyError, TypeError) as e:
         msg_error = f"Verification error: {e}"
@@ -121,21 +124,21 @@ async def verify_telegram_data_dep(
         raw_data = await request.body()
         raw_data_str = raw_data.decode()
 
-        logger.debug(
-            f"verify_telegram_data_dep | "
-            f"client_type: {client_type} | "
-            f"bot_name: {bot_name}",
+        log.debug(
+            "verify_telegram_data_dep | client_type: %s | bot_name: %s",
+            client_type,
+            bot_name,
         )
 
         if not raw_data_str:
-            logger.exception('"raw_data_str" is empty')
+            log.exception('"raw_data_str" is empty')
             raise HTTPException(  # noqa: TRY301
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Missing data",
             )
 
         try:
-            logger.info(f"Client_type: {client_type}")
+            log.info("Client_type: %s", client_type)
             if client_type == "TelegramWidget":
                 verify_result = verify_telegram_widget(
                     raw_data_str,
@@ -147,7 +150,7 @@ async def verify_telegram_data_dep(
                     settings.secrets.bots_tokens[bot_name],
                 )
             else:
-                logger.exception(
+                log.exception(
                     '"client_type" is not "TelegramMiniApp" or "TelegramWidget"',
                 )
                 raise HTTPException(
@@ -156,14 +159,14 @@ async def verify_telegram_data_dep(
                 )
 
             if not verify_result:
-                logger.error('"raw_data_str" is not valid', exc_info=True)
+                log.error('"raw_data_str" is not valid')
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Invalid data",
                 )
 
         except ValueError as e:
-            logger.exception('"raw_data_str" is not valid')
+            log.exception('"raw_data_str" is not valid')
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid data",
@@ -173,7 +176,7 @@ async def verify_telegram_data_dep(
         raise
 
     except (UnicodeDecodeError, ValueError, KeyError) as e:
-        logger.exception("Verification error: %s", e)
+        log.exception("Verification error")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error",
@@ -189,7 +192,7 @@ async def verify_client(request: Request) -> str:
     allowed_clients = ["TelegramMiniApp", "TelegramWidget"]
 
     if client_source not in allowed_clients:
-        logger.exception("Invalid client source: %s", client_source)
+        log.exception("Invalid client source: %s", client_source)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid client",
@@ -215,11 +218,14 @@ async def verified_data_dependency(
     bot_name: str,
     client_type: str = Depends(verify_client),
 ) -> dict[str, str | bool]:
-    logger.debug(
-        f"Verified data dependency | "
-        f"request: {request.url.path} | "
-        f"bot_name: {bot_name} | "
-        f"client_type: {client_type}",
+    log.debug(
+        "Verified data dependency | "
+        "request: %s | "
+        "bot_name: %s | "
+        "client_type: %s",
+        request.url.path,
+        bot_name,
+        client_type,
     )
 
     bot_data = BOT_CONFIG.get(bot_name, None)
@@ -252,7 +258,7 @@ async def verified_data_dependency(
                 if k not in ("hash", "auth_date")
             }
         else:
-            logger.info("Зашел в блок TelegramMiniApp, чтобы спарсить данные")
+            log.info("Зашел в блок TelegramMiniApp, чтобы спарсить данные")
             miniapp_pairs: list[tuple[str, str]] = parse_qsl(
                 raw_data_str,
                 keep_blank_values=True,
@@ -260,10 +266,10 @@ async def verified_data_dependency(
             data_dict = dict(miniapp_pairs)
             data = await extract_user_data(data_dict)
 
-        logger.debug(f"Verified data dependency | data: {data}")
+        log.debug("Verified data dependency | data: %s", data)
         data["tg_id"] = data.pop("id")
         user = await crud_manager.user.create(data)
-        logger.debug(f"Получен пользователь: {user}")
+        log.debug("Получен пользователь: %s", user)
 
     return result
 

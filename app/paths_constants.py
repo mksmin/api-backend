@@ -8,8 +8,8 @@ FRONTEND_DIR_PATH = (
     else BASE_DIR.parent.parent / "frontend"
 )
 
-HTML_DIR = FRONTEND_DIR_PATH / "src"
-STATIC_DIR = FRONTEND_DIR_PATH / "public"
+HTML_DIR = FRONTEND_DIR_PATH / "public"
+STATIC_DIR = FRONTEND_DIR_PATH / "static"
 not_found_404 = HTML_DIR / "404.html"
 
 templates = Jinja2Templates(directory=FRONTEND_DIR_PATH / "templates")

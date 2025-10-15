@@ -1,5 +1,4 @@
 import logging
-from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from typing import ClassVar
 from urllib.parse import quote
@@ -47,32 +46,11 @@ class CustomFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-log_dir = Path("logs")
-log_dir.mkdir(parents=True, exist_ok=True)
-log_file = log_dir / "app.log"
-
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 # Консольноый логгер
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(CustomFormatter())
-
-# Файловый логгер
-file_handler = RotatingFileHandler(
-    filename=str(log_file),  # Явное преобразование в строку
-    maxBytes=5 * 1024 * 1024,  # 5 MB
-    backupCount=3,
-    encoding="utf-8",
-)
-file_handler.setFormatter(
-    logging.Formatter(
-        "[%(asctime)s] %(levelname)s: %(message)s (%(filename)s:%(lineno)d)",
-        "%Y/%m/%d %H:%M:%S",
-    ),
-)
-
-logger.addHandler(console_handler)
-logger.addHandler(file_handler)
 
 
 class AccessTokenSecretsConfig(BaseModel):
@@ -133,7 +111,7 @@ class LoggerConfig(BaseModel):
             "CRITICAL": logging.CRITICAL,
             "ERROR": logging.ERROR,
         }
-        logger.debug("mode: %s", self.mode)
+        log.debug("mode: %s", self.mode)
         return mapping.get(self.mode.upper(), logging.INFO)
 
     @field_validator("mode")
@@ -237,4 +215,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-logger.setLevel(settings.log.level)

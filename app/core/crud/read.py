@@ -1,3 +1,4 @@
+import logging
 import traceback
 from typing import Any
 
@@ -5,9 +6,9 @@ from sqlalchemy import MetaData, Table, func, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.config import logger
-
 from .config import connector
+
+log = logging.getLogger(__name__)
 
 
 @connector
@@ -58,7 +59,7 @@ async def get_registration_stat(
 
     except SQLAlchemyError:
         error_traceback = traceback.format_exc()
-        logger.exception(
+        log.exception(
             "Ошибка при получении данных из таблицы %s: %s",
             name_db,
             error_traceback,

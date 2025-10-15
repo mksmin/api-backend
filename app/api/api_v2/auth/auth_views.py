@@ -1,3 +1,4 @@
+import logging
 from typing import TYPE_CHECKING, Annotated, Any
 from urllib.parse import parse_qsl
 
@@ -14,7 +15,7 @@ from fastapi.responses import (
     RedirectResponse,
 )
 
-from core.config import logger, settings
+from core.config import settings
 from core.crud import crud_manager
 from paths_constants import templates
 
@@ -23,7 +24,7 @@ from . import auth_utils, token_utils
 if TYPE_CHECKING:
     from core.database import User
 
-
+log = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -77,12 +78,16 @@ async def auth_user(
     client_type: str = data_validate["client_type"]
     access_validate: bool = data_validate["is_authorized"]
 
-    logger.info(
+    log.info(
         "Auth request started | "
-        f"Path: {request.url.path} | "
-        f"Client type: {client_type} | "
-        f"Bot: {bot_name} | "
-        f"Access: {access_validate}",
+        "Path: %s | "
+        "Client type: %s | "
+        "Bot: %s | "
+        "Access: %s",
+        request.url.path,
+        client_type,
+        bot_name,
+        access_validate,
     )
 
     bot_data = token_utils.BOT_CONFIG.get(bot_name, {})
@@ -95,8 +100,6 @@ async def auth_user(
             keep_blank_values=True,
         ),
     )
-
-    logger.debug(f"Received data (id): {data_dict}")
 
     if client_type == "TelegramWidget":
         user_data = data_dict
@@ -116,9 +119,10 @@ async def auth_user(
     jwt_token = await token_utils.sign_jwt_token(int(user.id))
     csrf_token = token_utils.sign_csrf_token()
 
-    logger.info(
-        f"Tokens generated | User: {user.id} | "
-        f"JWT expiry: {settings.access_token.lifetime_seconds}s",
+    log.info(
+        "Tokens generated | User: %d | JWT expiry: %d",
+        user.id,
+        settings.access_token.lifetime_seconds,
     )
 
     # Устанавливаю куки

@@ -1,5 +1,6 @@
 import asyncio
 import json
+import logging
 from typing import TYPE_CHECKING, Annotated, Any
 
 from fastapi import Depends
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
 rmq_router = fastapi.RabbitRouter(
     settings.rabbit.url,
 )
+log = logging.getLogger(__name__)
 
 
 def get_broker() -> RabbitBroker:
@@ -130,8 +132,11 @@ async def get_dict_with_user_affirmations(
             },
         }
     except asyncio.TimeoutError:
+        log.exception(
+            "Timeout error while getting paginated tasks",
+        )
         return {
             "request": request,
             "user": user_data.model_dump(),
-            "affirm": [],
+            "error": "Сервис временно недоступен",
         }
