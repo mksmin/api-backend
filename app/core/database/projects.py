@@ -2,7 +2,6 @@ import uuid
 
 from sqlalchemy import (
     UUID,
-    BigInteger,
     ForeignKey,
     String,
 )
@@ -23,18 +22,14 @@ class Project(IntIdMixin, TimestampsMixin, Base):
         default=uuid.uuid4,
         unique=True,
     )
-    prj_name: Mapped[str] = mapped_column(String(50), nullable=True)
-    prj_description: Mapped[str] = mapped_column(String(200), nullable=True)
-    prj_owner = mapped_column(
-        BigInteger,
+    title: Mapped[str] = mapped_column(String(50))
+    description: Mapped[str | None] = mapped_column(String(200))
+    owner_id: Mapped[int] = mapped_column(
         ForeignKey("users.id"),
-        nullable=True,
         comment="id пользователя",
     )
-    parent_id: Mapped[int] = mapped_column(
-        BigInteger,
+    parent_id: Mapped[int | None] = mapped_column(
         ForeignKey("projects.id"),
-        nullable=True,
         comment="id родительского проекта",
     )
 

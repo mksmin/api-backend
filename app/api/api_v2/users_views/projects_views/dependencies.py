@@ -97,7 +97,7 @@ async def delete_project_by_uuid(
             detail="Проект с таким uuid не найден",
         )
 
-    if project.prj_owner != user.id:
+    if project.owner_id != user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Недостаточно прав для удаления проекта",

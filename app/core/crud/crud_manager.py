@@ -81,13 +81,13 @@ class ProjectManager(BaseCRUDManager[Project]):
         data: dict[str, Any],
     ) -> Project:
         user_manager = UserManager(db_helper.session_factory)
-        user = await user_manager.get_one("tg_id", int(data["prj_owner"]))
+        user = await user_manager.get_one("tg_id", int(data["owner_id"]))
         if not user:
             msg_error = (
                 f"Пользователь с id = {data['prj_owner']} не найден в базе данных"
             )
             raise ValueError(msg_error)
-        data["prj_owner"] = user.id
+        data["owner_id"] = user.id
 
         return await super().create(**data)
 
@@ -103,7 +103,7 @@ class ProjectManager(BaseCRUDManager[Project]):
             query = (
                 select(self.model)
                 .where(self.model.deleted_at.is_(None))
-                .where(self.model.prj_owner == owner_id)
+                .where(self.model.owner_id == owner_id)
             )
             result = await session.execute(query)
             return result.scalars().all()
@@ -127,7 +127,7 @@ class ProjectManager(BaseCRUDManager[Project]):
                     and_(
                         self.model.deleted_at.is_(None),
                         self.model.id == project_id,
-                        self.model.prj_owner == owner_id,
+                        self.model.owner_id == owner_id,
                     ),
                 )
             else:
