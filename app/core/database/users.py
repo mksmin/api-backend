@@ -1,9 +1,7 @@
 import uuid
-from datetime import datetime
 
 from sqlalchemy import (
     BigInteger,
-    DateTime,
     ForeignKey,
     Integer,
     String,
@@ -29,26 +27,7 @@ class User(IntIdMixin, TimestampsMixin, Base):
         unique=True,
     )
 
-    external_id_bid = mapped_column(
-        BigInteger,
-        nullable=True,
-        comment="ID заявки из внешнего сервиса регистраций (например, Yandex.Form)",
-    )
-    external_date_bid: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=True,
-        default=datetime.utcnow,
-        comment="Дата регистрации пользователя во внешнем сервисе "
-        "(например, Yandex.Form)",
-    )
-
-    # ФИО
     first_name: Mapped[str] = mapped_column(String(150), nullable=True, comment="Имя")
-    middle_name: Mapped[str] = mapped_column(
-        String(150),
-        nullable=True,
-        comment="Отчество",
-    )
     last_name: Mapped[str] = mapped_column(
         String(150),
         nullable=True,
@@ -56,58 +35,17 @@ class User(IntIdMixin, TimestampsMixin, Base):
         comment="Фамилия",
     )
 
-    # Контакты
-    email: Mapped[str] = mapped_column(
-        String(250),
-        nullable=True,
-        index=True,
-        comment="Email",
-    )
-    mobile: Mapped[str] = mapped_column(
-        String(60),
-        nullable=True,
-        index=True,
-        comment="Телефон",
-    )
     tg_id = mapped_column(
         BigInteger,
         nullable=True,
         index=True,
         comment="ID в Telegram",
     )
-    username: Mapped[str] = mapped_column(String(100), nullable=True, comment="Никнейм")
-
-    # Проживание и учеба
-    citizenship: Mapped[str] = mapped_column(
-        String(250),
-        nullable=True,
-        comment="Гражданство",
-    )
-    country: Mapped[str] = mapped_column(String(250), nullable=True, comment="Страна")
-    city: Mapped[str] = mapped_column(String(250), nullable=True, comment="Город")
-    timezone: Mapped[str] = mapped_column(
+    username: Mapped[str] = mapped_column(
         String(100),
         nullable=True,
-        comment="Часовой пояс",
+        comment="Никнейм",
     )
-    study_place: Mapped[str] = mapped_column(
-        String(500),
-        nullable=True,
-        comment="Учебное заведение",
-    )
-    grade_level: Mapped[str] = mapped_column(
-        String(100),
-        nullable=True,
-        comment="Номер класса/курса",
-    )
-
-    # Прочее
-    birth_date: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=True,
-        comment="Дата рождения",
-    )
-    sex: Mapped[str] = mapped_column(String(20), nullable=True, comment="Пол")
 
     extra_fields = relationship("UserExtraField", back_populates="user")
     roles = relationship("Role", secondary="user_roles", back_populates="users")
