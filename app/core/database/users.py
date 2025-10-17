@@ -23,19 +23,15 @@ class User(IntIdMixin, TimestampsMixin, Base):
         default=uuid.uuid4,
         unique=True,
     )
-
-    first_name: Mapped[str] = mapped_column(
+    first_name: Mapped[str | None] = mapped_column(
         String(150),
-        nullable=True,
         comment="Имя",
     )
-    last_name: Mapped[str] = mapped_column(
+    last_name: Mapped[str | None] = mapped_column(
         String(150),
-        nullable=True,
         index=True,
         comment="Фамилия",
     )
-
     tg_id = mapped_column(
         BigInteger,
         nullable=True,

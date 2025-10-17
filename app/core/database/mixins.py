@@ -10,12 +10,14 @@ class TimestampsMixin:
         server_default=func.now(),
         nullable=False,
     )
-    deleted_at: Mapped[datetime] = mapped_column(
+    deleted_at: Mapped[datetime | None] = mapped_column(
         default=None,
         server_default=None,
-        nullable=True,
     )
 
 
 class IntIdMixin:
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(
+        primary_key=True,
+        autoincrement=True,
+    )
