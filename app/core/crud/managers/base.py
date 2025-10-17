@@ -76,11 +76,11 @@ class BaseCRUDManager(Generic[ModelType]):
                         self.model.deleted_at.is_(None),  # type: ignore[attr-defined]
                     ),
                 )
-                .values(deleted_at=datetime.now(timezone.utc))
+                .values(deleted_at=datetime.now(timezone.utc).replace(tzinfo=None))
             )
             try:
                 result = await session.execute(query)
-                if result.rowcount == 0:
+                if result.rowcount == 0:  # type: ignore[attr-defined]
                     if await self.exists_by_field(field, value):
                         msg_error = f"Объект с {field} = {value} уже удален"
                         raise ValueError(msg_error)

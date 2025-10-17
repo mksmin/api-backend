@@ -16,9 +16,9 @@ logger = logging.getLogger(__name__)
 
 class ProjectSchema(BaseModel):
     uuid: UUID = Field(..., alias="project_uuid")
-    prj_name: str | None = None
-    prj_description: str | None = None
-    prj_owner: int
+    title: str
+    description: str | None = None
+    owner_id: int
 
     @field_validator("uuid", mode="before")
     @classmethod
@@ -51,29 +51,26 @@ class ProjectRequestSchema(BaseModel):
     Схема для создания проекта (клиент -> сервер)
     """
 
-    name: str | None = Field(
-        None,
+    title: str = Field(
+        ...,
         min_length=3,
         max_length=50,
-        alias="prj_name",
     )
     description: str | None = Field(
         None,
         max_length=200,
-        alias="prj_description",
     )
     owner_id: int = Field(
         ...,
-        alias="prj_owner",
         json_schema_extra={"example": 123456789},
     )
     model_config = ConfigDict(
         extra="ignore",
         json_schema_extra={
             "example": {
-                "prj_name": "Test project",
-                "prj_description": "Test project description",
-                "prj_owner": 123456,
+                "title": "Test project",
+                "description": "Test project description",
+                "owner_id": 123456,
             },
         },
     )
@@ -84,8 +81,8 @@ class ProjectResponseSchema(BaseModel):
     Схема для ответа от сервера (сервер -> клиент)
     """
 
-    name: str | None = Field(None, alias="prj_name")
-    description: str | None = Field(None, alias="prj_description")
+    title: str = Field(...)
+    description: str | None = Field(None)
     created_at: datetime
     uuid: UUID4 = Field(..., alias="uuid")
 
@@ -93,8 +90,8 @@ class ProjectResponseSchema(BaseModel):
         from_attributes=True,
         json_schema_extra={
             "example": {
-                "prj_name": "Test project",
-                "prj_description": "Test project description",
+                "title": "Test project",
+                "description": "Test project description",
                 "created_at": "2024-01-01T00:00:00",
                 "uuid": "123e4567-e89b-12d3-a456-426614174000",
             },
