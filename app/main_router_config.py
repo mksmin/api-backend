@@ -60,7 +60,6 @@ async def handle_404_exception(
     request: Request,  # noqa: ARG001
     exc: StarletteHTTPException,
 ) -> FileResponse:
-    log.error("test log")
     if exc.status_code == status.HTTP_404_NOT_FOUND:
         return FileResponse(path=not_found_404)
     raise exc
