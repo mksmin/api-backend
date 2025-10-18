@@ -1,5 +1,4 @@
 from typing import Annotated
-from uuid import UUID
 
 from fastapi import (
     APIRouter,
@@ -15,11 +14,8 @@ from core.database.schemas import ProjectResponseSchema
 from core.database.security import schemas as ak_schemas
 
 from .dependencies import (
-    delete_project_by_uuid,
-    get_project_by_uuid,
     get_user_projects_by_tg_id,
     get_user_projects_by_user_id,
-    validate_uuid_str,
 )
 
 router = APIRouter()
@@ -54,39 +50,6 @@ async def get_projects_owner(
     Возвращает список проектов, принадлежащих указанному пользователю.
     """
     return projects
-
-
-@router.get(
-    "/{project_uuid}",
-    include_in_schema=settings.run.dev_mode,
-    dependencies=[
-        Depends(token_utils.strict_validate_access_token),
-    ],
-)
-async def get_project_by_id(
-    project: Annotated[
-        ProjectResponseSchema,
-        Depends(get_project_by_uuid),
-    ],
-) -> ProjectResponseSchema:
-    return project
-
-
-@router.delete(
-    "/{project_id}",
-    summary="Delete project by UUID and user owner ID",
-    status_code=status.HTTP_204_NO_CONTENT,
-    dependencies=[
-        Depends(delete_project_by_uuid),
-    ],
-)
-async def delete_project(
-    project_uuid: Annotated[UUID, Depends(validate_uuid_str)],  # noqa: ARG001
-) -> None:
-    """
-    Удаляет проект с указанным ID
-    """
-    return
 
 
 @router.post(
