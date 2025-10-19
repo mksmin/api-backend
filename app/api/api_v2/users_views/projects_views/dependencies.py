@@ -4,9 +4,8 @@ from uuid import UUID
 from fastapi import Depends, HTTPException, status
 
 from api.api_v2.auth import token_utils
-from app_exceptions import UserNotFoundError
+from app_exceptions import ProjectNotFoundError, UserNotFoundError
 from core.crud import GetCRUDService, crud_manager
-from core.database.schemas import ProjectResponseSchema
 from schemas import ProjectReadSchema
 
 
@@ -38,50 +37,41 @@ async def get_user_projects(
 
 
 async def get_project_by_uuid(
-    project_uuid: Annotated[UUID, Depends(validate_uuid_str)],
-) -> ProjectResponseSchema:
-    if project := await crud_manager.project.get_project_by_id(
-        project_uuid=project_uuid,
-    ):
-        return ProjectResponseSchema.model_validate(project)
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="Проект с таким uuid не найден",
-    )
-
-
-async def delete_project_by_uuid(
-    project_uuid: Annotated[UUID, Depends(validate_uuid_str)],
+    project_uuid: str,
     user_id: Annotated[
         str,
         Depends(token_utils.strict_validate_access_token),
     ],
-) -> bool:
-    user = await crud_manager.user.get_one(
-        field="id",
-        value=user_id,
-    )
+    crud_service: GetCRUDService,
+) -> ProjectReadSchema:
+    project = await crud_service.project.get_by_uuid(user_id, project_uuid)
+    return ProjectReadSchema.model_validate(project)
 
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Возникла ошибка при получении пользователя",
+
+async def delete_project_by_uuid(
+    project_uuid: str,
+    user_id: Annotated[
+        str,
+        Depends(token_utils.strict_validate_access_token),
+    ],
+    crud_service: GetCRUDService,
+) -> bool:
+    try:
+        project = await crud_service.project.get_by_uuid(
+            user_id=user_id,
+            project_uuid=project_uuid,
         )
 
-    project = await crud_manager.project.get_project_by_id(
-        project_uuid=project_uuid,
-    )
-    if not project:
+        if project.owner_id != user_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Недостаточно прав для удаления проекта",
+            )
+    except ProjectNotFoundError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Проект с таким uuid не найден",
-        )
-
-    if project.owner_id != user.id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Недостаточно прав для удаления проекта",
-        )
-
-    await crud_manager.project.delete("id", project.id)
-    return True
+        ) from e
+    else:
+        await crud_manager.project.delete("id", project.id)
+        return True

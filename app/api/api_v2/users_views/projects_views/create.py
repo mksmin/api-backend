@@ -8,8 +8,11 @@ from fastapi import (
 )
 
 from api.api_v2.auth import token_utils
-from app_exceptions import InvalidUUIDError, UserNotFoundError
-from app_exceptions.exceptions import ProjectAlreadyExistsError
+from app_exceptions import (
+    InvalidUUIDError,
+    ProjectAlreadyExistsError,
+    UserNotFoundError,
+)
 from core.crud import GetCRUDService, crud_manager
 from core.database.security import schemas as ak_schemas
 from schemas import ProjectCreateSchema, ProjectReadSchema

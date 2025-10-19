@@ -2,7 +2,6 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
-from api.api_v2.auth import access_token_helper
 from api.api_v2.users_views.projects_views.dependencies import (
     get_project_by_uuid,
     get_user_projects,
@@ -17,9 +16,6 @@ router = APIRouter()
 @router.get(
     "/{project_uuid}",
     include_in_schema=settings.run.dev_mode,
-    dependencies=[
-        Depends(access_token_helper.strict_validate_access_token),
-    ],
 )
 async def get_project(
     project: Annotated[

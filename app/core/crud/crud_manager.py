@@ -1,27 +1,16 @@
 import logging
-from typing import Any
 
-from pydantic import UUID4, ValidationError
+from pydantic import UUID4
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from core.database import User
 from core.database.db_helper import db_helper
 from core.database.projects import Project
-from core.database.schemas import UserSchema
 
 from .managers import APIKeyManagerOld, BaseCRUDManagerOld
 
 log = logging.getLogger(__name__)
-
-
-def format_validation_error(exc: ValidationError) -> str:
-    errors = []
-    for error in exc.errors():
-        field = ".".join(map(str, error["loc"]))
-        msg = error["msg"]
-        errors.append(f"{field}: {msg}")
-    return "; ".join(errors)
 
 
 class UserManagerOld(BaseCRUDManagerOld[User]):
@@ -40,32 +29,6 @@ class UserManagerOld(BaseCRUDManagerOld[User]):
         result = await super().get_one(field, value)
         log.info("Result: %s", result)
         return result
-
-    async def create(  # type: ignore[override]
-        self,
-        data: dict[str, Any],
-    ) -> User:
-        data["uuid"] = db_helper.generate_uuid()
-        result = await self._validate_user_data(data)
-        exists = await self.exists_by_field("tg_id", int(data["tg_id"]))
-        if exists:
-            return await super().get_one("tg_id", int(data["tg_id"]))  # type: ignore[return-value]
-
-        return await super().create(**result)
-
-    @staticmethod
-    async def _validate_user_data(
-        data: dict[str, Any],
-    ) -> dict[str, Any]:
-        try:
-            user_schema = UserSchema(**data)
-            return user_schema.model_dump()
-
-        except ValidationError as e:
-            error_message = format_validation_error(e)
-            except_msg = "Ошибка валидации:" + error_message
-            log.exception("Validation errors: %s", error_message)
-            raise ValueError(except_msg) from e
 
 
 class ProjectManagerOld(BaseCRUDManagerOld[Project]):
