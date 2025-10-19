@@ -6,10 +6,10 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from core.database.security import utils as ut
 from core.database.security.models import APIKey
 
-from .base import BaseCRUDManager
+from .base import BaseCRUDManagerOld
 
 
-class APIKeyManager(BaseCRUDManager[APIKey]):
+class APIKeyManagerOld(BaseCRUDManagerOld[APIKey]):
     def __init__(
         self,
         session_factory: async_sessionmaker[AsyncSession],

@@ -21,6 +21,35 @@ ModelType = TypeVar("ModelType", bound=Base)
 class BaseCRUDManager(Generic[ModelType]):
     def __init__(
         self,
+        session: AsyncSession,
+        model: type[ModelType],
+    ) -> None:
+        self.session = session
+        self.model = model
+
+    async def get(
+        self,
+        obj_id: int,
+    ) -> ModelType | None:
+        return await self.session.get(self.model, obj_id)
+
+    async def create(
+        self,
+        obj: ModelType,
+    ) -> ModelType:
+        self.session.add(obj)
+        return obj
+
+    async def delete(
+        self,
+        obj_id: int,
+    ) -> None:
+        pass
+
+
+class BaseCRUDManagerOld(Generic[ModelType]):
+    def __init__(
+        self,
         session_factory: async_sessionmaker[AsyncSession],
         model: type[ModelType],
     ) -> None:

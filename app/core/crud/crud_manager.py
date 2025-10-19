@@ -11,7 +11,7 @@ from core.database.db_helper import db_helper
 from core.database.projects import Project
 from core.database.schemas import ProjectSchema, UserSchema
 
-from .managers import APIKeyManager, BaseCRUDManager
+from .managers import APIKeyManagerOld, BaseCRUDManagerOld
 
 log = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ def format_validation_error(exc: ValidationError) -> str:
     return "; ".join(errors)
 
 
-class UserManager(BaseCRUDManager[User]):
+class UserManagerOld(BaseCRUDManagerOld[User]):
     def __init__(
         self,
         session_factory: async_sessionmaker[AsyncSession],
@@ -69,7 +69,7 @@ class UserManager(BaseCRUDManager[User]):
             raise ValueError(except_msg) from e
 
 
-class ProjectManager(BaseCRUDManager[Project]):
+class ProjectManagerOld(BaseCRUDManagerOld[Project]):
     def __init__(
         self,
         session_factory: async_sessionmaker[AsyncSession],
@@ -80,7 +80,7 @@ class ProjectManager(BaseCRUDManager[Project]):
         self,
         data: dict[str, Any],
     ) -> Project:
-        user_manager = UserManager(db_helper.session_factory)
+        user_manager = UserManagerOld(db_helper.session_factory)
         user = await user_manager.get_one("tg_id", int(data["owner_tg_id"]))
         if not user:
             msg_error = (
@@ -166,9 +166,9 @@ class CRUDManager:
         self,
         session_factory: async_sessionmaker[AsyncSession],
     ) -> None:
-        self.user: UserManager = UserManager(session_factory)
-        self.project: ProjectManager = ProjectManager(session_factory)
-        self.api_keys: APIKeyManager = APIKeyManager(session_factory)
+        self.user: UserManagerOld = UserManagerOld(session_factory)
+        self.project: ProjectManagerOld = ProjectManagerOld(session_factory)
+        self.api_keys: APIKeyManagerOld = APIKeyManagerOld(session_factory)
 
 
 crud_manager = CRUDManager(db_helper.session_factory)
