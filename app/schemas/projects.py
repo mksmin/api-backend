@@ -51,12 +51,7 @@ class ProjectCreateSchema(ProjectBase):
     # owner_uuid: UUID
 
 
-class ProjectReadSchema(ProjectBase):
-    uuid: UUID
-    created_at: datetime
-    owner_uuid: UUID
-    parent_id: int | None = None
-
+class ProjectReadValidation(ProjectBase):
     @model_validator(
         mode="before",
     )
@@ -74,7 +69,15 @@ class ProjectReadSchema(ProjectBase):
         return v
 
 
-class ProjectSchema(ProjectBase):
+class ProjectReadSchema(ProjectReadValidation):
+    uuid: UUID
+    created_at: datetime
+    owner_uuid: UUID
+    parent_id: int | None = None
+
+
+class ProjectSchema(ProjectReadValidation):
+    id: int
     uuid: UUID
     created_at: datetime
     deleted_at: datetime | None = None
