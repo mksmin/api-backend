@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from uuid import UUID
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,6 +29,27 @@ class ProjectManager(BaseCRUDManager[Project]):
 
     async def delete(self) -> None:
         pass
+
+    async def _get_by(
+        self,
+        field: str,
+        value: int | UUID,
+    ) -> Project | None:
+        stmt = select(self.model).where(getattr(self.model, field) == value)
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
+
+    async def get_by_id(
+        self,
+        project_id: int,
+    ) -> Project | None:
+        return await self._get_by("id", project_id)
+
+    async def get_by_uuid(
+        self,
+        project_uuid: UUID,
+    ) -> Project | None:
+        return await self._get_by("uuid", project_uuid)
 
     async def get_all(
         self,
