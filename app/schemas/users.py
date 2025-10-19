@@ -40,4 +40,4 @@ class UserSchema(UserBase):
     id: int
     uuid: UUID
     created_at: datetime
-    deleted_at: datetime
+    deleted_at: datetime | None
