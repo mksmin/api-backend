@@ -2,7 +2,7 @@ from typing import Annotated
 from uuid import UUID
 
 from annotated_types import Len, MaxLen
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 
 DESCRIPTION_MAX_LENGTH = 200
 TITLE_MAX_LENGTH = 50
@@ -30,6 +30,11 @@ class ProjectBase(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+    @field_validator("title", mode="after")
+    @classmethod
+    def validate_title(cls, v: str) -> str:
+        return v.strip()
+
 
 class ProjectCreateModel(ProjectBase):
     owner_id: int
@@ -37,7 +42,11 @@ class ProjectCreateModel(ProjectBase):
 
 
 class ProjectCreateSchema(ProjectBase):
-    owner_uuid: UUID
+    """
+    Схема для создания проекта
+    """
+
+    # owner_uuid: UUID
 
 
 class ProjectReadSchema(ProjectBase):
