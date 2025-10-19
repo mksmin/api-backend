@@ -4,30 +4,24 @@ from typing import TYPE_CHECKING, Annotated, Any
 
 from fastapi import Depends, HTTPException, status
 
+from app_exceptions import UserNotFoundError
+
 if TYPE_CHECKING:
     from faststream.rabbit import RabbitMessage
 
 from api.api_v2.auth import token_utils
-from core.crud import crud_manager
+from core.crud import GetCRUDService
 from rest.pages_views.dependencies import get_broker
 
 
 async def delete_user_affirmation(
     affirmation_id: int,
     user_id: Annotated[str, Depends(token_utils.strict_validate_access_token)],
+    crud_service: GetCRUDService,
 ) -> bool:
     broker = get_broker()
     try:
-        user = await crud_manager.user.get_one(
-            field="id",
-            value=user_id,
-        )
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found",
-            )
-
+        user = await crud_service.user.get_by_id_or_uuid(user_id)
         rabbit_request: dict[str, Any] = {
             "command": "mark_as_done",
             "payload": {
@@ -48,7 +42,11 @@ async def delete_user_affirmation(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=result_of_removing["message"],
             )
-
+    except UserNotFoundError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        ) from e
     except asyncio.TimeoutError as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
