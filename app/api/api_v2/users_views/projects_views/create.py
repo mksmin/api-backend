@@ -1,5 +1,3 @@
-from typing import Annotated
-
 from fastapi import (
     APIRouter,
     Depends,
@@ -8,48 +6,26 @@ from fastapi import (
 )
 
 from api.api_v2.auth import token_utils
-from core.config import settings
 from core.crud import crud_manager
-from core.database.schemas import ProjectResponseSchema
+from core.database.schemas import ProjectRequestSchema, ProjectResponseSchema
 from core.database.security import schemas as ak_schemas
-
-from .dependencies import (
-    get_user_projects_by_tg_id,
-    get_user_projects_by_user_id,
-)
 
 router = APIRouter()
 
 
-@router.get(
+@router.post(
     "/",
-    include_in_schema=settings.run.dev_mode,
-)
-async def get_projects(
-    user_projects: Annotated[
-        dict[int, ProjectResponseSchema],
-        Depends(get_user_projects_by_tg_id),
+    dependencies=[
+        Depends(token_utils.strict_validate_access_token),
     ],
-) -> dict[int, ProjectResponseSchema]:
-    return user_projects
-
-
-@router.get(
-    "/owner",
-    summary="Get projects by owner",
-    include_in_schema=settings.run.dev_mode,
-    status_code=status.HTTP_200_OK,
 )
-async def get_projects_owner(
-    projects: Annotated[
-        dict[int, ProjectResponseSchema],
-        Depends(get_user_projects_by_user_id),
-    ],
-) -> dict[int, ProjectResponseSchema]:
-    """
-    Возвращает список проектов, принадлежащих указанному пользователю.
-    """
-    return projects
+async def create_project(
+    project_create: ProjectRequestSchema,
+) -> ProjectResponseSchema:
+    project = await crud_manager.project.create(
+        project_create.model_dump(),
+    )
+    return ProjectResponseSchema.model_validate(project)
 
 
 @router.post(

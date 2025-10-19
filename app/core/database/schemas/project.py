@@ -60,7 +60,7 @@ class ProjectRequestSchema(BaseModel):
         None,
         max_length=200,
     )
-    owner_id: int = Field(
+    owner_tg_id: int = Field(
         ...,
         json_schema_extra={"example": 123456789},
     )
@@ -70,7 +70,7 @@ class ProjectRequestSchema(BaseModel):
             "example": {
                 "title": "Test project",
                 "description": "Test project description",
-                "owner_id": 123456,
+                "owner_tg_id": 123456,
             },
         },
     )

@@ -81,14 +81,14 @@ class ProjectManager(BaseCRUDManager[Project]):
         data: dict[str, Any],
     ) -> Project:
         user_manager = UserManager(db_helper.session_factory)
-        user = await user_manager.get_one("tg_id", int(data["owner_id"]))
+        user = await user_manager.get_one("tg_id", int(data["owner_tg_id"]))
         if not user:
             msg_error = (
-                f"Пользователь с id = {data['prj_owner']} не найден в базе данных"
+                f"Пользователь с id = {data['owner_tg_id']} не найден в базе данных"
             )
             raise ValueError(msg_error)
         data["owner_id"] = user.id
-
+        data.pop("owner_tg_id")
         return await super().create(**data)
 
     async def delete(

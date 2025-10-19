@@ -1,10 +1,14 @@
 from fastapi import APIRouter
 
-from api.api_v2.users_views.projects_views.list_views import (
-    router as projects_list_views_router,
+from api.api_v2.users_views.projects_views.create import (
+    router as create_project_router,
 )
-
-from .user_projects import router as projects_router
+from api.api_v2.users_views.projects_views.delete import (
+    router as delete_project_router,
+)
+from api.api_v2.users_views.projects_views.read import (
+    router as get_project_router,
+)
 
 router = APIRouter(
     prefix="/projects",
@@ -12,8 +16,11 @@ router = APIRouter(
 )
 
 router.include_router(
-    projects_router,
+    create_project_router,
 )
 router.include_router(
-    projects_list_views_router,
+    get_project_router,
+)
+router.include_router(
+    delete_project_router,
 )
