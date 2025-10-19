@@ -52,5 +52,25 @@ class ProjectService:
 
         await self.session.commit()
 
-        project.owner_uuid = user.uuid
-        return ProjectReadSchema.model_validate(project)
+        return ProjectReadSchema.model_validate(
+            project,
+            context={"owner_uuid": user.uuid},
+        )
+
+    async def get_all(
+        self,
+        user_id: int,
+    ) -> list[ProjectReadSchema]:
+        user = await self.user_manager.get_by_id(user_id)
+        if not user:
+            raise UserNotFoundError
+
+        projects = await self.manager.get_all(user_id=user.id)
+
+        return [
+            ProjectReadSchema.model_validate(
+                projects,
+                context={"owner_uuid": user.uuid},
+            )
+            for projects in projects
+        ]

@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -27,8 +29,17 @@ class ProjectManager(BaseCRUDManager[Project]):
     async def delete(self) -> None:
         pass
 
-    async def get_all_projects(self) -> list[Project]:
-        pass
+    async def get_all(
+        self,
+        user_id: int,
+    ) -> Sequence[Project]:
+        query = (
+            select(self.model)
+            .where(self.model.deleted_at.is_(None))
+            .where(self.model.owner_id == user_id)
+        )
+        result = await self.session.execute(query)
+        return result.scalars().all()
 
     async def get_project_by_field(
         self,
