@@ -17,26 +17,29 @@ class UserManager(BaseCRUDManager[User]):
             model=User,
         )
 
+    async def _get_by(
+        self,
+        field: str,
+        value: int | UUID,
+    ) -> User | None:
+        stmt = select(self.model).where(getattr(self.model, field) == value)
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
+
     async def get_by_id(
         self,
         user_id: int,
     ) -> User | None:
-        stmt = select(self.model).where(self.model.id == user_id)
-        result = await self.session.execute(stmt)
-        return result.scalar_one_or_none()
+        return await self._get_by("id", user_id)
 
     async def get_by_uuid(
         self,
         user_uuid: UUID,
     ) -> User | None:
-        stmt = select(self.model).where(self.model.uuid == user_uuid)
-        result = await self.session.execute(stmt)
-        return result.scalar_one_or_none()
+        return await self._get_by("uuid", user_uuid)
 
     async def get_by_tg_id(
         self,
         user_tg_id: int,
     ) -> User | None:
-        stmt = select(self.model).where(self.model.tg_id == user_tg_id)
-        result = await self.session.execute(stmt)
-        return result.scalar_one_or_none()
+        return await self._get_by("tg_id", user_tg_id)
