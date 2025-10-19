@@ -1,1 +1,2 @@
-from core.crud.services.user import UserService as UserService
+from core.crud.services.projects import ProjectService as ProjectService
+from core.crud.services.users import UserService as UserService
