@@ -4,10 +4,10 @@ from uuid import UUID
 from fastapi import Depends, HTTPException, status
 
 from api.api_v2.auth import token_utils
-from core.crud import crud_manager
+from app_exceptions import UserNotFoundError
+from core.crud import GetCRUDService, crud_manager
 from core.database.schemas import ProjectResponseSchema
-
-from .schemas import ProjectFilter
+from schemas import ProjectReadSchema
 
 
 async def validate_uuid_str(project_uuid: str) -> UUID:
@@ -20,44 +20,21 @@ async def validate_uuid_str(project_uuid: str) -> UUID:
         ) from e
 
 
-async def get_user_projects_by_tg_id(
-    prj_filter: Annotated[
-        ProjectFilter,
-        Depends(ProjectFilter.from_query),
+async def get_user_projects(
+    crud_service: GetCRUDService,
+    user_id: Annotated[
+        str,
+        Depends(token_utils.strict_validate_access_token),
     ],
-) -> dict[int, ProjectResponseSchema]:
+) -> list[ProjectReadSchema]:
     try:
-        user = await crud_manager.user.get_one(value=prj_filter.owner_id)
-        if user is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found",
-            )
+        return await crud_service.project.get_all(int(user_id))
 
-        projects = await crud_manager.project.get_all(user.id)
-
-        return {
-            i: ProjectResponseSchema.model_validate(project)
-            for i, project in enumerate(projects)
-        }
-
-    except ValueError as e:
+    except UserNotFoundError as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail={
-                "error": str(e),
-            },
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
         ) from e
-
-
-async def get_user_projects_by_user_id(
-    user_id: str = Depends(token_utils.strict_validate_access_token),
-) -> dict[int, ProjectResponseSchema]:
-    projects = await crud_manager.project.get_all(int(user_id))
-    return {
-        i: ProjectResponseSchema.model_validate(project)
-        for i, project in enumerate(projects)
-    }
 
 
 async def get_project_by_uuid(
@@ -75,7 +52,10 @@ async def get_project_by_uuid(
 
 async def delete_project_by_uuid(
     project_uuid: Annotated[UUID, Depends(validate_uuid_str)],
-    user_id: Annotated[str, Depends(token_utils.strict_validate_access_token)],
+    user_id: Annotated[
+        str,
+        Depends(token_utils.strict_validate_access_token),
+    ],
 ) -> bool:
     user = await crud_manager.user.get_one(
         field="id",
