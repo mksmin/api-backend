@@ -2,13 +2,9 @@ import logging
 
 from fastapi import (
     FastAPI,
-    Request,
-    status,
 )
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from api import router as api_router
 from api.api_v2.auth import router as auth_router
@@ -16,7 +12,6 @@ from app_lifespan import lifespan
 from core.config import settings
 from paths_constants import (
     FRONTEND_DIR_PATH,
-    not_found_404,
 )
 from rest.main_views import router as main_views_router
 from rest.pages_views import router as pages_router
@@ -53,16 +48,6 @@ main_app.add_middleware(
     allow_headers=["X-Client-Source", "Content-Type"],
     expose_headers=["X-Request-ID"],
 )
-
-
-@main_app.exception_handler(StarletteHTTPException)
-async def handle_404_exception(
-    request: Request,  # noqa: ARG001
-    exc: StarletteHTTPException,
-) -> FileResponse:
-    if exc.status_code == status.HTTP_404_NOT_FOUND:
-        return FileResponse(path=not_found_404)
-    raise exc
 
 
 routers_for_include = (
