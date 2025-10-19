@@ -1,5 +1,4 @@
 import logging
-from collections.abc import Sequence
 from typing import Any
 
 from pydantic import UUID4, ValidationError
@@ -9,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from core.database import User
 from core.database.db_helper import db_helper
 from core.database.projects import Project
-from core.database.schemas import ProjectSchema, UserSchema
+from core.database.schemas import UserSchema
 
 from .managers import APIKeyManagerOld, BaseCRUDManagerOld
 
@@ -76,37 +75,12 @@ class ProjectManagerOld(BaseCRUDManagerOld[Project]):
     ) -> None:
         super().__init__(session_factory, model=Project)
 
-    async def create(  # type: ignore[override]
-        self,
-        data: dict[str, Any],
-    ) -> Project:
-        user_manager = UserManagerOld(db_helper.session_factory)
-        user = await user_manager.get_one("tg_id", int(data["owner_tg_id"]))
-        if not user:
-            msg_error = (
-                f"Пользователь с id = {data['owner_tg_id']} не найден в базе данных"
-            )
-            raise ValueError(msg_error)
-        data["owner_id"] = user.id
-        data.pop("owner_tg_id")
-        return await super().create(**data)
-
     async def delete(
         self,
         field: str,
         value: int,  # type: ignore[override]
     ) -> None:
         await super().delete(field, value)
-
-    async def get_all(self, owner_id: int) -> Sequence[Project]:
-        async with self._get_session() as session:
-            query = (
-                select(self.model)
-                .where(self.model.deleted_at.is_(None))
-                .where(self.model.owner_id == owner_id)
-            )
-            result = await session.execute(query)
-            return result.scalars().all()
 
     async def get_project_by_id(
         self,
@@ -146,19 +120,6 @@ class ProjectManagerOld(BaseCRUDManagerOld[Project]):
                     str(project_uuid)[:8] if project_uuid else str(project_id),
                 )
             return project
-
-    @staticmethod
-    async def _validate_project_data(
-        data: dict[str, Any],
-    ) -> dict[str, Any]:
-        try:
-            project_schema = ProjectSchema(**data)
-            return project_schema.model_dump()
-
-        except ValidationError as e:
-            error_message = format_validation_error(e)
-            log.exception("Validation errors: %s", error_message)
-            raise
 
 
 class CRUDManager:
