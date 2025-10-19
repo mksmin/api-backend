@@ -1,0 +1,2 @@
+from app_exceptions.exceptions import InvalidUUIDError as InvalidUUIDError
+from app_exceptions.exceptions import UserNotFoundError as UserNotFoundError
