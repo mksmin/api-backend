@@ -44,4 +44,7 @@ class UserService:
         tg_id: int,
     ) -> UserReadSchema | None:
         user = await self.manager.get_by_tg_id(tg_id)
-        return UserReadSchema.model_validate(user)
+        try:
+            return UserReadSchema.model_validate(user)
+        except ValidationError as e:
+            raise UserNotFoundError from e

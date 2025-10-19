@@ -33,14 +33,14 @@ class BaseCRUDManager(Generic[ModelType]):
     ) -> ModelType | None:
         return await self.session.get(self.model, obj_id)
 
-    async def create(
+    async def add(
         self,
         obj: ModelType,
     ) -> ModelType:
         self.session.add(obj)
         return obj
 
-    async def delete(
+    async def remove(
         self,
         obj_id: int,
     ) -> None:

@@ -1,9 +1,12 @@
-from schemas.user import (
-    UserCreateSchema as UserCreateSchema,
+__all__ = (
+    "UserCreateSchema",
+    "UserReadSchema",
+    "UserSchema",
 )
-from schemas.user import (
-    UserReadSchema as UserReadSchema,
-)
-from schemas.user import (
-    UserSchema as UserSchema,
+
+
+from schemas.users import (
+    UserCreateSchema,
+    UserReadSchema,
+    UserSchema,
 )

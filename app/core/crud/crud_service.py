@@ -1,3 +1,4 @@
+from collections.abc import AsyncGenerator
 from typing import Annotated
 
 from fastapi import Depends
@@ -20,7 +21,7 @@ async def get_crud_service(
         AsyncSession,
         Depends(db_helper.session_getter),
     ],
-) -> CRUDService:
+) -> AsyncGenerator[CRUDService, None]:
     yield CRUDService(session)
 
 
