@@ -51,9 +51,9 @@ class UserService:
     async def get_by_tg_id(
         self,
         tg_id: int,
-    ) -> UserReadSchema:
+    ) -> UserSchema:
         user = await self.manager.get_by_tg_id(tg_id)
         try:
-            return UserReadSchema.model_validate(user)
+            return UserSchema.model_validate(user)
         except ValidationError as e:
             raise UserNotFoundError from e
