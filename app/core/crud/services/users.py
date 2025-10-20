@@ -37,13 +37,12 @@ class UserService:
     async def get_by_id_or_uuid(
         self,
         user_id: int | str,
-    ) -> UserReadSchema | None:
+    ) -> UserReadSchema:
         if isinstance(user_id, str):
             user_uuid = validate_uuid_str(user_id)
             user = await self.manager.get_by_uuid(user_uuid)
         else:
             user = await self.manager.get_by_id(user_id)
-
         try:
             return UserReadSchema.model_validate(user)
         except ValidationError as e:
@@ -52,7 +51,7 @@ class UserService:
     async def get_by_tg_id(
         self,
         tg_id: int,
-    ) -> UserReadSchema | None:
+    ) -> UserReadSchema:
         user = await self.manager.get_by_tg_id(tg_id)
         try:
             return UserReadSchema.model_validate(user)

@@ -33,7 +33,10 @@ async def get_project_by_uuid(
     ],
     crud_service: GetCRUDService,
 ) -> ProjectReadSchema:
-    project = await crud_service.project.get_by_uuid(user_id, project_uuid)
+    project = await crud_service.project.get_by_uuid(
+        user_id=int(user_id),
+        project_uuid=project_uuid,
+    )
     return ProjectReadSchema.model_validate(project)
 
 
@@ -47,11 +50,11 @@ async def delete_project_by_uuid(
 ) -> bool:
     try:
         project = await crud_service.project.get_by_uuid(
-            user_id=user_id,
+            user_id=int(user_id),
             project_uuid=project_uuid,
         )
 
-        if project.owner_id != user_id:
+        if project.owner_id != int(user_id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Недостаточно прав для удаления проекта",

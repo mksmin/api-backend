@@ -70,7 +70,7 @@ async def generate_api_key(
 ) -> ak_schemas.APIKeyCreateResponse:
     try:
         project = await crud_service.project.get_by_uuid(
-            user_id=user_id,
+            user_id=int(user_id),
             project_uuid=data.project_uuid,
         )
     except ProjectNotFoundError as e:
