@@ -1,7 +1,8 @@
 from collections.abc import Sequence
+from datetime import datetime, timezone
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import and_, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.crud.managers import BaseCRUDManager
@@ -27,15 +28,37 @@ class ProjectManager(BaseCRUDManager[Project]):
         self.session.add(instance_create)
         return instance_create
 
-    async def delete(self) -> None:
-        pass
+    async def delete(
+        self,
+        project_uuid: UUID,
+        owner_id: int,
+    ) -> None:
+        stmt = (
+            update(self.model)
+            .where(
+                and_(
+                    self.model.uuid == project_uuid,
+                    self.model.deleted_at.is_(None),
+                    self.model.owner_id == owner_id,
+                ),
+            )
+            .values(
+                deleted_at=datetime.now(timezone.utc).replace(tzinfo=None),
+            )
+        )
+        await self.session.execute(stmt)
 
     async def _get_by(
         self,
         field: str,
         value: int | UUID,
     ) -> Project | None:
-        stmt = select(self.model).where(getattr(self.model, field) == value)
+        stmt = select(self.model).where(
+            and_(
+                getattr(self.model, field) == value,
+                self.model.deleted_at.is_(None),
+            ),
+        )
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
@@ -73,6 +96,7 @@ class ProjectManager(BaseCRUDManager[Project]):
         stmt = select(self.model).where(
             func.lower(model_field) == value.lower(),
             self.model.owner_id == owner_id,
+            self.model.deleted_at.is_(None),
         )
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()

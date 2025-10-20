@@ -11,10 +11,9 @@ from api.api_v2.auth import token_utils
 from app_exceptions import (
     InvalidUUIDError,
     ProjectAlreadyExistsError,
-    ProjectNotFoundError,
     UserNotFoundError,
 )
-from core.crud import GetCRUDService, crud_manager
+from core.crud import GetCRUDService
 from core.database.security import schemas as ak_schemas
 from schemas import ProjectCreateSchema, ProjectReadSchema
 
@@ -61,33 +60,36 @@ async def create_project(
     response_model=ak_schemas.APIKeyCreateResponse,
 )
 async def generate_api_key(
-    user_id: Annotated[
-        str,
-        Depends(token_utils.strict_validate_access_token),
-    ],
-    data: ak_schemas.APIKeyCreateRequest,
-    crud_service: GetCRUDService,
-) -> ak_schemas.APIKeyCreateResponse:
-    try:
-        project = await crud_service.project.get_by_uuid(
-            user_id=int(user_id),
-            project_uuid=data.project_uuid,
-        )
-    except ProjectNotFoundError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Project not found",
-        ) from e
+    # user_id: Annotated[
+    #     str,
+    #     Depends(token_utils.strict_validate_access_token),
+    # ],
+    # data: ak_schemas.APIKeyCreateRequest,
+    # crud_service: GetCRUDService,
+) -> dict[str, str]:
+    # try:
+    #     project = await crud_service.project.get_by_uuid(
+    #         user_id=int(user_id),
+    #         project_uuid=data.project_uuid,
+    #     )
+    # except ProjectNotFoundError as e:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_404_NOT_FOUND,
+    #         detail="Project not found",
+    #     ) from e
 
-    raw_key, instance = await crud_manager.api_keys.create(
-        project_id=project.id,
-        temporary=data.temporary,
-    )
-
-    return ak_schemas.APIKeyCreateResponse(
-        key=raw_key,
-        key_prefix=instance.key_prefix,
-        created_at=instance.created_at,
-        project_uuid=project.uuid,
-        expires_at=instance.expires_at,
-    )
+    return {
+        "error": "service not ready",
+    }
+    # raw_key, instance = await crud_manager.api_keys.create(
+    #     project_id=project.id,
+    #     temporary=data.temporary,
+    # )
+    #
+    # return ak_schemas.APIKeyCreateResponse(
+    #     key=raw_key,
+    #     key_prefix=instance.key_prefix,
+    #     created_at=instance.created_at,
+    #     project_uuid=project.uuid,
+    #     expires_at=instance.expires_at,
+    # )

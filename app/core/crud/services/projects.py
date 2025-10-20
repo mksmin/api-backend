@@ -61,6 +61,8 @@ class ProjectService:
         user_id: int,
         project_uuid: str,
     ) -> ProjectSchema:
+
+        # TODO: Добавить проверку, что у пользователь владеет проектом
         project_uuid_validated = validate_uuid_str(project_uuid)
         user = await self.user_manager.get_by_id(user_id)
         if not user:
@@ -94,3 +96,28 @@ class ProjectService:
             )
             for projects in projects
         ]
+
+    async def delete_project(
+        self,
+        user_id: int,
+        project_uuid: str,
+    ) -> None:
+        project_uuid_validated = validate_uuid_str(project_uuid)
+        user = await self.user_manager.get_by_id(user_id)
+        if not user:
+            raise UserNotFoundError
+
+        project = await self.manager.get_by_uuid(project_uuid_validated)
+        if not project:
+            message = "Project not found"
+            raise ProjectNotFoundError(message)
+
+        if project.owner_id != user.id:
+            message = "User doesn't have project with this uuid"
+            raise ProjectNotFoundError(message)
+
+        await self.manager.delete(
+            owner_id=user.id,
+            project_uuid=project_uuid_validated,
+        )
+        await self.session.commit()
