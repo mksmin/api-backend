@@ -35,6 +35,7 @@ class User(IntIdMixin, TimestampsMixin, Base):
         nullable=True,
         index=True,
         comment="ID в Telegram",
+        unique=True,
     )
     username: Mapped[str] = mapped_column(
         String(100),
