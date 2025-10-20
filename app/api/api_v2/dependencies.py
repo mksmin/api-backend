@@ -1,9 +1,12 @@
 from collections.abc import Callable, Coroutine
 from pathlib import Path
 from typing import Any
+from uuid import UUID
 
 from fastapi import HTTPException
 from starlette import status
+
+from app_exceptions import InvalidUUIDError
 
 
 def file_dependency(
@@ -22,3 +25,12 @@ def file_dependency(
         return file_path
 
     return _get_file
+
+
+def validate_uuid_str(
+    project_uuid: str,
+) -> UUID:
+    try:
+        return UUID(project_uuid)
+    except ValueError as e:
+        raise InvalidUUIDError from e

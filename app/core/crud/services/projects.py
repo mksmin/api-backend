@@ -1,10 +1,8 @@
-from uuid import UUID
-
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.api_v2.dependencies import validate_uuid_str
 from app_exceptions import (
-    InvalidUUIDError,
     ProjectAlreadyExistsError,
     ProjectNotFoundError,
     UserNotFoundError,
@@ -16,15 +14,6 @@ from schemas import (
     ProjectReadSchema,
     ProjectSchema,
 )
-
-
-def validate_uuid_str(
-    project_uuid: str,
-) -> UUID:
-    try:
-        return UUID(project_uuid)
-    except ValueError as e:
-        raise InvalidUUIDError from e
 
 
 class ProjectService:
@@ -72,12 +61,12 @@ class ProjectService:
         user_id: int,
         project_uuid: str,
     ) -> ProjectSchema:
-        project_uuid = validate_uuid_str(project_uuid)
+        project_uuid_validated = validate_uuid_str(project_uuid)
         user = await self.user_manager.get_by_id(user_id)
         if not user:
             raise UserNotFoundError
 
-        project = await self.manager.get_by_uuid(project_uuid)
+        project = await self.manager.get_by_uuid(project_uuid_validated)
         try:
             return ProjectSchema.model_validate(
                 project,

@@ -1,5 +1,4 @@
 from typing import Annotated
-from uuid import UUID
 
 from fastapi import Depends, HTTPException, status
 
@@ -7,16 +6,6 @@ from api.api_v2.auth import token_utils
 from app_exceptions import ProjectNotFoundError, UserNotFoundError
 from core.crud import GetCRUDService, crud_manager
 from schemas import ProjectReadSchema
-
-
-async def validate_uuid_str(project_uuid: str) -> UUID:
-    try:
-        return UUID(project_uuid)
-    except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Некорректный формат UUID",
-        ) from e
 
 
 async def get_user_projects(

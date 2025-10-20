@@ -1,20 +1,12 @@
-from uuid import UUID
-
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app_exceptions import InvalidUUIDError, UserNotFoundError
+from api.api_v2.dependencies import validate_uuid_str
+from app_exceptions import (
+    UserNotFoundError,
+)
 from core.crud.managers import UserManager
 from schemas import UserReadSchema
-
-
-def validate_uuid_str(
-    project_uuid: str,
-) -> UUID:
-    try:
-        return UUID(project_uuid)
-    except ValueError as e:
-        raise InvalidUUIDError from e
 
 
 class UserService:

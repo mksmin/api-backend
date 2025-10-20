@@ -41,3 +41,9 @@ class UserSchema(UserBase):
     uuid: UUID
     created_at: datetime
     deleted_at: datetime | None
+
+
+class UserCreateModel(UserBase):
+    """
+    Модель для создания пользователя
+    """

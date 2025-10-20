@@ -1,6 +1,9 @@
 class UserNotFoundError(Exception): ...
 
 
+class UserAlreadyExistsError(Exception): ...
+
+
 class InvalidUUIDError(Exception): ...
 
 
