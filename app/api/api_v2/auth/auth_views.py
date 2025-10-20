@@ -15,6 +15,7 @@ from fastapi.responses import (
     RedirectResponse,
 )
 
+from app_exceptions import UserAlreadyExistsError
 from core.config import settings
 from core.crud import GetCRUDService
 from paths_constants import templates
@@ -105,10 +106,14 @@ async def auth_user(
     else:
         user_data = await auth_utils.extract_user_data(data_dict)
     user_data["tg_id"] = user_data.pop("id")
-
-    user = await crud_service.user.create_user(
-        user_create=UserCreateSchema.model_validate(user_data),
-    )
+    try:
+        user = await crud_service.user.create_user(
+            user_create=UserCreateSchema.model_validate(user_data),
+        )
+    except UserAlreadyExistsError:
+        user = await crud_service.user.get_by_tg_id(
+            int(user_data["tg_id"]),
+        )
 
     # Формирую ответ
     response = RedirectResponse(
