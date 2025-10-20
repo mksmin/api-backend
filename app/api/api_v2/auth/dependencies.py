@@ -13,6 +13,7 @@ from fastapi import (
     status,
 )
 
+from app_exceptions import UserAlreadyExistsError
 from core.config import settings
 from core.crud import GetCRUDService
 from schemas import UserCreateSchema
@@ -270,9 +271,12 @@ async def verified_data_dependency(
 
         log.debug("Verified data dependency | data: %s", data)
         data["tg_id"] = data.pop("id")
-        user = await crud_service.user.create_user(
-            user_create=UserCreateSchema.model_validate(data),
-        )
+        try:
+            user = await crud_service.user.create_user(
+                user_create=UserCreateSchema.model_validate(data),
+            )
+        except UserAlreadyExistsError:
+            user = await crud_service.user.get_user_by_tg_id(data["tg_id"])
         log.debug("Получен пользователь: %s", user)
 
     return result
