@@ -3,7 +3,7 @@ import hmac
 import json
 import logging
 from collections.abc import Callable, Coroutine
-from typing import Any
+from typing import Annotated, Any
 from urllib.parse import parse_qs, parse_qsl
 
 from fastapi import (
@@ -14,7 +14,8 @@ from fastapi import (
 )
 
 from core.config import settings
-from core.crud import crud_manager
+from core.crud import GetCRUDService
+from schemas import UserCreateSchema
 
 from .access_token_helper import BOT_CONFIG
 
@@ -216,7 +217,8 @@ def get_verified_data(
 async def verified_data_dependency(
     request: Request,
     bot_name: str,
-    client_type: str = Depends(verify_client),
+    client_type: Annotated[str, Depends(verify_client)],
+    crud_service: GetCRUDService,
 ) -> dict[str, str | bool]:
     log.debug(
         "Verified data dependency | "
@@ -268,7 +270,9 @@ async def verified_data_dependency(
 
         log.debug("Verified data dependency | data: %s", data)
         data["tg_id"] = data.pop("id")
-        user = await crud_manager.user.create(data)
+        user = await crud_service.user.create_user(
+            user_create=UserCreateSchema.model_validate(data),
+        )
         log.debug("Получен пользователь: %s", user)
 
     return result

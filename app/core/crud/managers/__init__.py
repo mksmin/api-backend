@@ -1,8 +1,13 @@
 __all__ = (
-    "APIKeyManager",
     "BaseCRUDManager",
     "ModelType",
+    "ProjectManager",
+    "UserManager",
 )
 
-from .api_key import APIKeyManager
-from .base import BaseCRUDManager, ModelType
+from core.crud.managers.base import BaseCRUDManager
+from core.crud.managers.projects import ProjectManager
+from core.crud.managers.users import UserManager
+
+# from .api_key import APIKeyManagerOld
+from .base import ModelType

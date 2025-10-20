@@ -1,7 +1,7 @@
 import asyncio
 import json
 import logging
-from typing import TYPE_CHECKING, Annotated, Any
+from typing import Annotated, Any
 
 from fastapi import Depends
 from fastapi.params import Query
@@ -11,10 +11,7 @@ from pydantic import BaseModel
 
 from api.api_v2.auth import token_utils
 from core.config import settings
-from core.crud import crud_manager
-
-if TYPE_CHECKING:
-    from core.database import User
+from core.crud import GetCRUDService
 
 rmq_router = fastapi.RabbitRouter(
     settings.rabbit.url,
@@ -39,21 +36,18 @@ class UserDataReadSchema(BaseModel):
 
 
 async def return_user_data(
-    user_id: str = Depends(token_utils.soft_validate_access_token),
+    crud_service: GetCRUDService,
+    user_id: str = Depends(
+        token_utils.soft_validate_access_token,
+    ),
 ) -> UserDataReadSchema | None:
-    if user_id is None:
+    if not user_id:
         return None
 
-    user: User | None = await crud_manager.user.get_one(
-        field="id",
-        value=user_id,
-    )
-    if not user:
-        msg_error = "User not found"
-        raise ValueError(msg_error)
+    user = await crud_service.user.get_by_id_or_uuid(user_id)
 
     return UserDataReadSchema(
-        id=user.id,
+        id=user_id,
         tg_id=user.tg_id,
         first_name=user.first_name,
         last_name=user.last_name,
