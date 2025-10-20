@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Annotated, Any
+from typing import Annotated, Any
 from urllib.parse import parse_qsl
 
 from fastapi import (
@@ -16,13 +16,11 @@ from fastapi.responses import (
 )
 
 from core.config import settings
-from core.crud import crud_manager
+from core.crud import GetCRUDService
 from paths_constants import templates
+from schemas import UserCreateSchema
 
 from . import auth_utils, token_utils
-
-if TYPE_CHECKING:
-    from core.database import User
 
 log = logging.getLogger(__name__)
 router = APIRouter()
@@ -74,6 +72,7 @@ async def auth_user(
         dict[str, Any],
         Depends(auth_utils.verified_data_dependency),
     ],
+    crud_service: GetCRUDService,
 ) -> RedirectResponse:
     client_type: str = data_validate["client_type"]
     access_validate: bool = data_validate["is_authorized"]
@@ -107,7 +106,9 @@ async def auth_user(
         user_data = await auth_utils.extract_user_data(data_dict)
     user_data["tg_id"] = user_data.pop("id")
 
-    user: User = await crud_manager.user.create(data=user_data)
+    user = await crud_service.user.create_user(
+        user_create=UserCreateSchema.model_validate(user_data),
+    )
 
     # Формирую ответ
     response = RedirectResponse(
@@ -116,7 +117,7 @@ async def auth_user(
     )
 
     # Генерирую токены
-    jwt_token = await token_utils.sign_jwt_token(int(user.id))
+    jwt_token = await token_utils.sign_jwt_token(user.id)
     csrf_token = token_utils.sign_csrf_token()
 
     log.info(

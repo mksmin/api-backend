@@ -7,7 +7,7 @@ from app_exceptions import (
     UserNotFoundError,
 )
 from core.crud.managers import UserManager
-from schemas import UserReadSchema
+from schemas import UserReadSchema, UserSchema
 from schemas.users import UserCreateModel, UserCreateSchema
 
 
@@ -22,7 +22,7 @@ class UserService:
     async def create_user(
         self,
         user_create: UserCreateSchema,
-    ) -> UserReadSchema:
+    ) -> UserSchema:
         user_exists = await self.manager.get_by_tg_id(user_create.tg_id)
         if user_exists:
             raise UserAlreadyExistsError
@@ -32,7 +32,7 @@ class UserService:
 
         await self.session.commit()
 
-        return UserReadSchema.model_validate(user)
+        return UserSchema.model_validate(user)
 
     async def get_by_id_or_uuid(
         self,

@@ -6,7 +6,8 @@ import pandas as pd
 from fastapi import File, HTTPException, UploadFile, status
 
 from api.api_v2.auth import access_token_helper as token_utils
-from core.crud import crud_manager
+from core.crud import GetCRUDService
+from schemas import UserCreateSchema
 
 log = logging.getLogger(__name__)
 
@@ -24,6 +25,7 @@ async def create_token_by_user_id(
 
 async def read_and_parse_csv(
     file: Annotated[UploadFile, File()],
+    crud_service: GetCRUDService,
 ) -> None:
     if file.filename and not file.filename.endswith(".csv"):
         raise HTTPException(
@@ -51,7 +53,9 @@ async def read_and_parse_csv(
             user.pop("created_at", None)
             user.pop("copmetention", None)
 
-            await crud_manager.user.create(data=user)  # type: ignore[arg-type]
+            await crud_service.user.create_user(
+                user_create=UserCreateSchema.model_validate(user),
+            )
 
     except pd.errors.EmptyDataError as ed:
         raise HTTPException(
