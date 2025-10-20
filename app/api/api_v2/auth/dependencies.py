@@ -276,7 +276,9 @@ async def verified_data_dependency(
                 user_create=UserCreateSchema.model_validate(data),
             )
         except UserAlreadyExistsError:
-            user = await crud_service.user.get_by_tg_id(data["tg_id"])
+            user = await crud_service.user.get_by_tg_id(
+                int(data["tg_id"]),
+            )
         log.debug("Получен пользователь: %s", user)
 
     return result
