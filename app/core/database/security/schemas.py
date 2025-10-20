@@ -92,7 +92,7 @@ class APIKeyCreateRequest(BaseModel):
     """
 
     temporary: bool = Field(False, description="Временный ключ")
-    project_id: UUID = Field(..., description="Идентификатор проекта")
+    project_uuid: str = Field(..., description="Идентификатор проекта")
 
 
 class APIKeyCreateResponse(BaseModel):
@@ -118,7 +118,7 @@ class APIKeyCreateResponse(BaseModel):
         examples=[datetime.now(timezone.utc)],
     )
     expires_at: datetime | None = Field(None, description="Дата истечения ключа")
-    project_id: UUID = Field(..., description="Идентификатор проекта")
+    project_uuid: UUID = Field(..., description="Идентификатор проекта")
 
 
 class APIKeyGetResponse(BaseModel):

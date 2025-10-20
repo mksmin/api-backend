@@ -11,6 +11,7 @@ from api.api_v2.auth import token_utils
 from app_exceptions import (
     InvalidUUIDError,
     ProjectAlreadyExistsError,
+    ProjectNotFoundError,
     UserNotFoundError,
 )
 from core.crud import GetCRUDService, crud_manager
@@ -58,19 +59,25 @@ async def create_project(
 @router.post(
     "/generate-key",
     response_model=ak_schemas.APIKeyCreateResponse,
-    dependencies=[
-        Depends(token_utils.strict_validate_access_token),
-    ],
 )
 async def generate_api_key(
+    user_id: Annotated[
+        str,
+        Depends(token_utils.strict_validate_access_token),
+    ],
     data: ak_schemas.APIKeyCreateRequest,
+    crud_service: GetCRUDService,
 ) -> ak_schemas.APIKeyCreateResponse:
-    project = await crud_manager.project.get_project_by_id(project_uuid=data.project_id)
-    if not project:
+    try:
+        project = await crud_service.project.get_by_uuid(
+            user_id=user_id,
+            project_uuid=data.project_uuid,
+        )
+    except ProjectNotFoundError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Project not found",
-        )
+        ) from e
 
     raw_key, instance = await crud_manager.api_keys.create(
         project_id=project.id,
@@ -81,6 +88,6 @@ async def generate_api_key(
         key=raw_key,
         key_prefix=instance.key_prefix,
         created_at=instance.created_at,
-        project_id=project.uuid,
+        project_uuid=project.uuid,
         expires_at=instance.expires_at,
     )
