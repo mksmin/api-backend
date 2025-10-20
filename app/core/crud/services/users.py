@@ -3,10 +3,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.api_v2.dependencies import validate_uuid_str
 from app_exceptions import (
+    UserAlreadyExistsError,
     UserNotFoundError,
 )
 from core.crud.managers import UserManager
 from schemas import UserReadSchema
+from schemas.users import UserCreateModel, UserCreateSchema
 
 
 class UserService:
@@ -14,7 +16,23 @@ class UserService:
         self,
         session: AsyncSession,
     ) -> None:
-        self.manager = UserManager(session)
+        self.session = session
+        self.manager = UserManager(self.session)
+
+    async def create_user(
+        self,
+        user_create: UserCreateSchema,
+    ) -> UserReadSchema:
+        user_exists = await self.manager.get_by_tg_id(user_create.tg_id)
+        if user_exists:
+            raise UserAlreadyExistsError
+
+        user_create_model = UserCreateModel.model_validate(user_create)
+        user = await self.manager.create(user_create_model)
+
+        await self.session.commit()
+
+        return UserReadSchema.model_validate(user)
 
     async def get_by_id_or_uuid(
         self,

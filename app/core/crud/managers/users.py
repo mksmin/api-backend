@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.crud.managers.base import BaseCRUDManager
 from core.database import User
+from schemas.users import UserCreateModel
 
 
 class UserManager(BaseCRUDManager[User]):
@@ -16,6 +17,14 @@ class UserManager(BaseCRUDManager[User]):
             session=session,
             model=User,
         )
+
+    async def create(
+        self,
+        user_create: UserCreateModel,
+    ) -> User:
+        instance_create = self.model(**user_create.model_dump())
+        self.session.add(instance_create)
+        return instance_create
 
     async def _get_by(
         self,
