@@ -8,6 +8,7 @@ from paths_constants import templates
 
 from .dependencies import (
     get_dict_with_user_affirmations,
+    redirect_to_login_page,
     return_data_for_user_profile_template,
     rmq_router,
 )
@@ -20,6 +21,9 @@ router = APIRouter(
 @router.get(
     "/affirmations",
     include_in_schema=settings.run.dev_mode,
+    dependencies=[
+        Depends(redirect_to_login_page),
+    ],
 )
 async def page_user_affirmations(
     affirmations: Annotated[

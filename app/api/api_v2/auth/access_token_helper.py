@@ -25,7 +25,7 @@ BOT_CONFIG: dict[str, dict[str, str]] = {
     },
     "bot3": {
         "name": "testbot",
-        "redirect_url": "/profile",
+        "redirect_url": "/projects",
     },
 }
 
