@@ -3,7 +3,6 @@ from typing import Annotated, Any
 from fastapi import (
     APIRouter,
     Body,
-    Request,
     status,
 )
 from fastapi.responses import RedirectResponse
@@ -19,35 +18,6 @@ actual_version = "/api/v2/"
 path_mapping = {
     "users": actual_version + "users/",
 }
-
-
-@router.api_route(
-    "/projects/{path:path}",
-    methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
-    include_in_schema=settings.run.dev_mode,
-)
-async def project_nested_redirect(
-    request: Request,
-    path: str,
-) -> RedirectResponse:
-    query = f"?{request.query_params}" if request.query_params else ""
-    return RedirectResponse(
-        url=f"{path_mapping['users']}projects/{path}{query}",
-        status_code=status.HTTP_307_TEMPORARY_REDIRECT,
-    )
-
-
-@router.delete(
-    "/projects/{project_id}",
-    include_in_schema=settings.run.dev_mode,
-)
-async def create_project(
-    project_id: int,
-) -> RedirectResponse:
-    return RedirectResponse(
-        url=f"{path_mapping['users']}projects/{project_id}",
-        status_code=status.HTTP_308_PERMANENT_REDIRECT,
-    )
 
 
 @router.post(
