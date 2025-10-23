@@ -12,21 +12,22 @@ from core.config import settings
 from core.database.schemas import ProjectResponseSchema
 from paths_constants import templates
 from rest.pages_views.dependencies import (
-    redirect_to,
+    redirect_to_login_page,
     return_data_for_user_profile_template,
 )
 from schemas import ProjectReadSchema
 
-router = APIRouter()
+router = APIRouter(
+    dependencies=[
+        Depends(redirect_to_login_page),
+    ],
+)
 
 
 @router.get(
     "/projects",
     name="user-projects:list",
     include_in_schema=settings.run.dev_mode,
-    dependencies=[
-        Depends(redirect_to),
-    ],
 )
 async def get_page_list_projects(
     request: Request,

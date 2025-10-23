@@ -8,7 +8,7 @@ from paths_constants import templates
 
 from .dependencies import (
     get_dict_with_user_affirmations,
-    redirect_to,
+    redirect_to_login_page,
     return_data_for_user_profile_template,
     rmq_router,
 )
@@ -22,7 +22,7 @@ router = APIRouter(
     "/affirmations",
     include_in_schema=settings.run.dev_mode,
     dependencies=[
-        Depends(redirect_to),
+        Depends(redirect_to_login_page),
     ],
 )
 async def page_user_affirmations(

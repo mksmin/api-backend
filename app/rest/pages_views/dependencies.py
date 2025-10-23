@@ -175,7 +175,7 @@ async def get_project_by_uuid(
     return ProjectReadSchema.model_validate(project)
 
 
-async def redirect_to(
+async def redirect_to_login_page(
     request: Request,
     user_id: str = Depends(
         token_utils.soft_validate_access_token,
