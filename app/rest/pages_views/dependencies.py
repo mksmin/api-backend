@@ -3,15 +3,22 @@ import json
 import logging
 from typing import Annotated, Any
 
-from fastapi import Depends
+from fastapi import (
+    Depends,
+    HTTPException,
+    status,
+)
 from fastapi.params import Query
 from fastapi.requests import Request
+from fastapi.responses import RedirectResponse
 from faststream.rabbit import RabbitBroker, RabbitMessage, fastapi
 from pydantic import BaseModel
 
 from api.api_v2.auth import token_utils
+from app_exceptions import UserNotFoundError
 from core.config import settings
 from core.crud import GetCRUDService
+from schemas import ProjectReadSchema
 
 rmq_router = fastapi.RabbitRouter(
     settings.rabbit.url,
@@ -134,3 +141,51 @@ async def get_dict_with_user_affirmations(
             "user": user_data.model_dump(),
             "error": "Сервис временно недоступен",
         }
+
+
+async def get_user_projects(
+    request: Request,
+    crud_service: GetCRUDService,
+    user_id: Annotated[
+        str,
+        Depends(token_utils.soft_validate_access_token),
+    ],
+) -> list[ProjectReadSchema] | RedirectResponse:
+    try:
+        return await crud_service.project.get_all(int(user_id))
+    except UserNotFoundError:
+        return RedirectResponse(
+            url=request.url_for("auth:login"),
+            status_code=status.HTTP_303_SEE_OTHER,
+        )
+
+
+async def get_project_by_uuid(
+    project_uuid: str,
+    user_id: Annotated[
+        str,
+        Depends(token_utils.strict_validate_access_token),
+    ],
+    crud_service: GetCRUDService,
+) -> ProjectReadSchema:
+    project = await crud_service.project.get_by_uuid(
+        user_id=int(user_id),
+        project_uuid=project_uuid,
+    )
+    return ProjectReadSchema.model_validate(project)
+
+
+async def redirect_to(
+    request: Request,
+    user_id: str = Depends(
+        token_utils.soft_validate_access_token,
+    ),
+) -> None:
+    if not user_id:
+        login_url = request.url_for("auth:login").include_query_params(
+            redirect_url=str(request.url.path),
+        )
+        raise HTTPException(
+            status_code=status.HTTP_303_SEE_OTHER,
+            headers={"Location": str(login_url)},
+        )

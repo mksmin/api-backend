@@ -22,23 +22,6 @@ path_mapping = {
 
 
 @router.api_route(
-    "/projects",
-    methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
-    include_in_schema=settings.run.dev_mode,
-)
-async def project_redirect(
-    request: Request,
-) -> RedirectResponse:
-    path = f"{path_mapping['users']}projects"
-    if request.query_params:
-        path = f"{path_mapping['users']}projects?{request.query_params}"
-    return RedirectResponse(
-        url=path,
-        status_code=status.HTTP_307_TEMPORARY_REDIRECT,
-    )
-
-
-@router.api_route(
     "/projects/{path:path}",
     methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
     include_in_schema=settings.run.dev_mode,
