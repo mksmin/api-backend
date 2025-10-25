@@ -5,7 +5,7 @@ from typing import Annotated, Any
 import pandas as pd
 from fastapi import File, HTTPException, UploadFile, status
 
-from api.api_v2.auth import access_token_helper as token_utils
+from api.api_v2.auth import access_token_helper
 from core.crud import GetCRUDService
 from schemas import UserCreateSchema
 
@@ -20,7 +20,7 @@ async def create_token_by_user_id(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="User ID must be an integer",
         )
-    return await token_utils.sign_jwt_token(user_id)
+    return await access_token_helper.sign_jwt_token(user_id)
 
 
 async def read_and_parse_csv(
