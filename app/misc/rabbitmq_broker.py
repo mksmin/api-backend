@@ -1,3 +1,6 @@
+from typing import Annotated
+
+from fastapi import Depends
 from faststream.rabbit import RabbitBroker, fastapi
 
 from core.config import settings
@@ -9,3 +12,9 @@ rabbitmq_broker = fastapi.RabbitRouter(
 
 def get_broker() -> RabbitBroker:
     return rabbitmq_broker.broker
+
+
+GetRabbitBroker = Annotated[
+    RabbitBroker,
+    Depends(get_broker),
+]
