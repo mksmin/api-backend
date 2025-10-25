@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
 
-from api.api_v2.auth import token_utils
+from api.api_v2.auth import access_token_helper
 from app_exceptions import ProjectNotFoundError, UserNotFoundError
 from core.crud import GetCRUDService
 from schemas import ProjectReadSchema
@@ -12,7 +12,7 @@ async def get_user_projects(
     crud_service: GetCRUDService,
     user_id: Annotated[
         str,
-        Depends(token_utils.strict_validate_access_token),
+        Depends(access_token_helper.strict_validate_access_token),
     ],
 ) -> list[ProjectReadSchema]:
     try:
@@ -29,7 +29,7 @@ async def get_project_by_uuid(
     project_uuid: str,
     user_id: Annotated[
         str,
-        Depends(token_utils.strict_validate_access_token),
+        Depends(access_token_helper.strict_validate_access_token),
     ],
     crud_service: GetCRUDService,
 ) -> ProjectReadSchema:
@@ -44,7 +44,7 @@ async def delete_project_by_uuid(
     project_uuid: str,
     user_id: Annotated[
         str,
-        Depends(token_utils.strict_validate_access_token),
+        Depends(access_token_helper.strict_validate_access_token),
     ],
     crud_service: GetCRUDService,
 ) -> None:

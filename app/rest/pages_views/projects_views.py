@@ -11,10 +11,10 @@ from api.api_v2.users_views.projects_views.dependencies import (
 from core.config import settings
 from core.database.schemas import ProjectResponseSchema
 from paths_constants import templates
-from rest.pages_views.dependencies import (
-    redirect_to_login_page,
+from rest.pages_views.dependencies.user_data import (
     return_data_for_user_profile_template,
 )
+from rest.pages_views.redirect import redirect_to_login_page
 from schemas import ProjectReadSchema
 
 router = APIRouter(

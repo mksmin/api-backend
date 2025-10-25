@@ -21,7 +21,7 @@ from core.crud import GetCRUDService
 from paths_constants import templates
 from schemas import UserCreateSchema
 
-from . import auth_utils, token_utils
+from . import access_token_helper, auth_utils
 
 log = logging.getLogger(__name__)
 router = APIRouter()
@@ -35,11 +35,14 @@ router = APIRouter()
 async def handle_telegram_init(
     request: Request,
     bot_name: str,
-    cookie_token: Annotated[str, Depends(token_utils.soft_validate_access_token)],
+    cookie_token: Annotated[
+        str,
+        Depends(access_token_helper.soft_validate_access_token),
+    ],
 ) -> RedirectResponse | HTMLResponse:
     if not cookie_token:
         # Проверяем существование бота
-        bot_config = token_utils.BOT_CONFIG.get(bot_name)
+        bot_config = access_token_helper.BOT_CONFIG.get(bot_name)
         if not bot_config:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -51,7 +54,7 @@ async def handle_telegram_init(
             {"request": request},
         )
 
-    bot_data = token_utils.BOT_CONFIG.get(bot_name, {})
+    bot_data = access_token_helper.BOT_CONFIG.get(bot_name, {})
     redirect_url = bot_data.get("redirect_url", "/profile")
     return RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
 
@@ -90,7 +93,7 @@ async def auth_user(
         access_validate,
     )
 
-    bot_data = token_utils.BOT_CONFIG.get(bot_name, {})
+    bot_data = access_token_helper.BOT_CONFIG.get(bot_name, {})
     redirect_url = bot_data.get("redirect_url", "/profile")
 
     raw_data = (await request.body()).decode()
@@ -122,8 +125,8 @@ async def auth_user(
     )
 
     # Генерирую токены
-    jwt_token = await token_utils.sign_jwt_token(user.id)
-    csrf_token = token_utils.sign_csrf_token()
+    jwt_token = await access_token_helper.sign_jwt_token(user.id)
+    csrf_token = access_token_helper.sign_csrf_token()
 
     log.info(
         "Tokens generated | User: %d | JWT expiry: %d",
@@ -165,9 +168,9 @@ async def refresh_csrf(
             detail="Unauthorized",
         )
 
-    await token_utils.decode_jwt(token)
+    await access_token_helper.decode_jwt(token)
 
-    new_csrf_token = token_utils.sign_csrf_token()
+    new_csrf_token = access_token_helper.sign_csrf_token()
 
     response = JSONResponse({"status": "CSRF token refreshed"})
     response.set_cookie(

@@ -16,6 +16,7 @@ from paths_constants import (
 from rest.main_views import router as main_views_router
 from rest.pages_views import router as pages_router
 from rest.redirect import router as redirect_router
+from temp_views import router as temp_router
 
 log = logging.getLogger(__name__)
 main_app = FastAPI(
@@ -56,6 +57,7 @@ routers_for_include = (
     redirect_router,
     main_views_router,
     pages_router,
+    temp_router,
 )
 
 for router in routers_for_include:

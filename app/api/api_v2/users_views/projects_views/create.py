@@ -7,7 +7,7 @@ from fastapi import (
     status,
 )
 
-from api.api_v2.auth import token_utils
+from api.api_v2.auth import access_token_helper
 from app_exceptions import (
     InvalidUUIDError,
     ProjectAlreadyExistsError,
@@ -28,7 +28,7 @@ async def create_project(
     project_create: ProjectCreateSchema,
     user_id: Annotated[
         str,
-        Depends(token_utils.strict_validate_access_token),
+        Depends(access_token_helper.strict_validate_access_token),
     ],
 ) -> ProjectReadSchema:
     try:
@@ -62,7 +62,7 @@ async def create_project(
 async def generate_api_key(
     # user_id: Annotated[
     #     str,
-    #     Depends(token_utils.strict_validate_access_token),
+    #     Depends(access_token_helper.strict_validate_access_token),
     # ],
     # data: ak_schemas.APIKeyCreateRequest,
     # crud_service: GetCRUDService,
