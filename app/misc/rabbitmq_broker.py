@@ -1,0 +1,11 @@
+from faststream.rabbit import RabbitBroker, fastapi
+
+from core.config import settings
+
+rabbitmq_broker = fastapi.RabbitRouter(
+    settings.rabbit.url,
+)
+
+
+def get_broker() -> RabbitBroker:
+    return rabbitmq_broker.broker

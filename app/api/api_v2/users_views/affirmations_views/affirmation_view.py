@@ -1,12 +1,13 @@
 import logging
-from typing import Annotated, Any, cast
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, status
 
-from api.api_v2.auth import token_utils
-from rest.pages_views.dependencies import get_dict_with_user_affirmations
-
-from .dependencies import delete_user_affirmation
+from api.api_v2.auth import access_token_helper
+from rest.pages_views.dependencies.affirmations import (
+    delete_user_affirmation,
+    get_dict_with_user_affirmations,
+)
 
 router = APIRouter()
 log = logging.getLogger(__name__)
@@ -15,7 +16,7 @@ log = logging.getLogger(__name__)
 @router.get(
     "/",
     dependencies=[
-        Depends(token_utils.strict_validate_access_token),
+        Depends(access_token_helper.strict_validate_access_token),
     ],
 )
 def get_user_affirmations(
@@ -23,18 +24,15 @@ def get_user_affirmations(
         dict[str, Any],
         Depends(get_dict_with_user_affirmations),
     ],
-) -> list[dict[str, Any]]:
-    return cast(
-        "list[dict[str, Any]]",
-        affirmations.get("affirm", []),
-    )
+) -> dict[str, Any]:
+    return affirmations
 
 
 @router.delete(
     "/{affirmation_id}",
     status_code=status.HTTP_204_NO_CONTENT,
     dependencies=[
-        Depends(token_utils.strict_validate_access_token),
+        Depends(access_token_helper.strict_validate_access_token),
         Depends(delete_user_affirmation),
     ],
 )
