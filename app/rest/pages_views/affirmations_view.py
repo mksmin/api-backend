@@ -16,6 +16,7 @@ from paths_constants import templates
 from .dependencies.affirmations import (
     delete_user_affirmation,
     get_dict_with_user_affirmations,
+    get_user_settings,
 )
 from .dependencies.user_data import (
     get_user_data_by_access_token,
@@ -48,6 +49,10 @@ async def page_user_affirmations(
         dict[str, Any],
         Depends(get_dict_with_user_affirmations),
     ],
+    user_settings: Annotated[
+        dict[str, Any],
+        Depends(get_user_settings),
+    ],
 ) -> HTMLResponse:
     """Страница с пользовательскими аффирмациями"""
     context = {}
@@ -57,12 +62,7 @@ async def page_user_affirmations(
         **affirmations,
     }
     context.update(context_data)
-    context.update(
-        settings={
-            "count_tasks": "--",
-            "time_send": "--",
-        },
-    )
+    context.update(settings=user_settings)
     return templates.TemplateResponse(
         "pages/affirmations.html",
         context=context,

@@ -22,6 +22,7 @@ from rest.pages_views.schemas import (
     GetListAffirmationsResponse,
     UserDataReadSchema,
 )
+from rest.pages_views.schemas.affirmations_data import GetUserSettingsResponse
 
 
 async def get_dict_with_user_affirmations(
@@ -63,6 +64,36 @@ async def get_dict_with_user_affirmations(
             result.body.decode("utf-8"),
         )
         return GetListAffirmationsResponse.model_validate(
+            decoded_broker_response,
+        ).model_dump()
+    except asyncio.TimeoutError as e:
+        raise RabbitMQServiceUnavailableError from e
+
+
+async def get_user_settings(
+    user_data: Annotated[
+        UserDataReadSchema,
+        Depends(get_user_data_by_access_token),
+    ],
+    broker: GetRabbitBroker,
+) -> dict[str, Any]:
+    try:
+        message = {
+            "type": "GetUserSettings",
+            "payload": {
+                "user_tg": user_data.tg_id,
+            },
+        }
+
+        result = await broker.request(
+            message,
+            queue="qry.affirmations",
+            timeout=3,
+        )
+        decoded_broker_response = json.loads(
+            result.body.decode("utf-8"),
+        )
+        return GetUserSettingsResponse.model_validate(
             decoded_broker_response,
         ).model_dump()
     except asyncio.TimeoutError as e:
