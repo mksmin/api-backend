@@ -1,0 +1,19 @@
+[Unit]
+Description=FastAPI App (backend server)   # Service description (visible via systemctl)
+After=network.target                      # Ensure network is available before starting
+
+[Service]
+User=...                                 # Linux user that will run the app
+Group=...                                # Linux user group that will run the app
+
+WorkingDirectory= # /var/www/app_name    # Path to the app's working directory
+ExecStart= # /usr/bin/python3 run.py     # Command to start the application
+
+Restart=on-failure                       # Automatically restart if service crashes
+RestartSec=5                             # Delay (in seconds) before restart
+
+StandardOutput=inherit                   # Log standard output to journalctl
+StandardError=inherit                    # Log standard errors to journalctl
+
+[Install]
+WantedBy=multi-user.target               # Start automatically on system boot
