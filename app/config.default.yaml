@@ -23,3 +23,6 @@ api-backend:
     host: 127.0.0.1
     port: 8000
     dev_mode: false
+
+  secrets:
+    session_secret:

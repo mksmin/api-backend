@@ -5,6 +5,7 @@ from fastapi import (
 )
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.sessions import SessionMiddleware
 
 from api import router as api_router
 from api.api_v2.auth import router as auth_router
@@ -50,6 +51,10 @@ main_app.add_middleware(
     expose_headers=["X-Request-ID"],
 )
 
+main_app.add_middleware(
+    SessionMiddleware,
+    secret_key=settings.secrets.session_secret,
+)
 
 routers_for_include = (
     auth_router,

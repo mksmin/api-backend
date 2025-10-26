@@ -2,8 +2,10 @@ import logging
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, status
+from starlette.requests import Request
 
 from api.api_v2.auth import access_token_helper
+from misc.flash_messages import flash
 from rest.pages_views.dependencies.affirmations import (
     delete_user_affirmation,
     get_dict_with_user_affirmations,
@@ -37,6 +39,12 @@ def get_user_affirmations(
     ],
 )
 def delete_affirmation(
+    request: Request,
     affirmation_id: int,
 ) -> None:
+    flash(
+        request,
+        message="Affirmation deleted",
+        category="success",
+    )
     log.info("Deleting affirmation id=%s", affirmation_id)

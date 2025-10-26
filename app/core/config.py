@@ -156,6 +156,7 @@ class RunConfig(BaseModel):
 
 class SecretsConfig(BaseModel):
     bots_tokens: dict[str, str]
+    session_secret: str
 
 
 class Settings(BaseSettings):
