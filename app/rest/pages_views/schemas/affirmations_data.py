@@ -8,8 +8,12 @@ class GetListAffirmationsResponse(BaseModel):
     affirmations: list[dict[str, Any] | None] = []
 
 
-class GetUserSettingsResponse(BaseModel):
+class SettingsUserTGResponse(BaseModel):
     user_tg: int
+
+
+class GetUserSettingsResponse(BaseModel):
+    user: SettingsUserTGResponse
     count_tasks: int
     send_time: time
     send_enable: bool
