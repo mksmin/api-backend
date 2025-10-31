@@ -1,6 +1,7 @@
 import logging
+import re
 from pathlib import Path
-from typing import ClassVar
+from typing import Any, ClassVar
 from urllib.parse import quote
 
 from pydantic import (
@@ -21,34 +22,79 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 class CustomFormatter(logging.Formatter):
-    grey = "\x1b[38;20m"
-    yellow = "\x1b[33;20m"
-    red = "\x1b[31;20m"
-    bold_red = "\x1b[31;1m"
-    green = "\x1b[32;20m"
-    reset = "\x1b[0m"
-    format_str = "[%(asctime)s] %(levelname)s: %(message)s (%(filename)s:%(lineno)d)"
-
-    FORMATS: ClassVar[dict[int, str]] = {
-        logging.DEBUG: grey + format_str + reset,
-        logging.INFO: green + format_str + reset,
-        logging.WARNING: yellow + format_str + reset,
-        logging.ERROR: red + format_str + reset,
-        logging.CRITICAL: bold_red + format_str + reset,
+    RESET = "\033[0m"
+    COLORS: ClassVar[dict[str, Any]] = {
+        "time": "\033[97m",
+        "level": {
+            logging.DEBUG: "\033[37m",
+            logging.INFO: "\033[32m",
+            logging.WARNING: "\033[33m",
+            logging.ERROR: "\033[31m",
+            logging.CRITICAL: "\033[31;1m",
+        },
+        "method": "\033[33m",
+        "path": "\033[0m",
+        "status": {
+            "2": "\033[92m",
+            "3": "\033[96m",
+            "4": "\033[91m",
+            "5": "\033[91m",
+        },
+        "location": "\033[35m",
+        "errors": "\033[31m",
     }
+    HTTP_LOG_REGEX = re.compile(
+        r'"(GET|POST|PUT|DELETE|PATCH|OPTIONS|HEAD).*?" (\d{3})',
+    )
 
-    def format(
-        self,
-        record: logging.LogRecord,
-    ) -> str:
-        log_fmt = self.FORMATS.get(record.levelno)
-        formatter = logging.Formatter(log_fmt, "%Y/%m/%d %H:%M:%S")
-        return formatter.format(record)
+    def format(self, record: logging.LogRecord) -> str:
+        time_str = (
+            f"{self.COLORS['time']}"
+            f"[{self.formatTime(record, '%Y/%m/%d %H:%M:%S')}]"
+            f"{self.RESET}"
+        )
+        level_str = (
+            f"{self.COLORS['level'][record.levelno]}"
+            f"{record.levelname}:"
+            f"{self.RESET}"
+        )
+
+        msg = record.getMessage()
+
+        if record.exc_info:
+            exc_text = self.formatException(record.exc_info)
+            msg = f"{self.COLORS['errors']}{msg}\n{exc_text}{self.RESET}"
+
+        match = self.HTTP_LOG_REGEX.search(msg)
+        if match:
+            method = f"{self.COLORS['method']}{match.group(1)}{self.RESET}"
+            status_code = match.group(2)
+            status_color = self.COLORS["status"].get(status_code[0], self.RESET)
+            status = f"{status_color}{status_code} {self.RESET}"
+
+            start, end = match.span()
+
+            main_msg = msg[
+                start
+                + len(match.group(1))
+                + 1 : start
+                + len(match.group(0))
+                - len(match.group(2))
+            ]
+
+            msg = msg[:start] + status + method + main_msg + msg[end:]
+
+        location_str = (
+            f"{self.COLORS['location']}"
+            f"({record.filename}:{record.lineno})"
+            f"{self.RESET}"
+        )
+
+        return f"{time_str} {level_str} {msg} {location_str}"
 
 
 log = logging.getLogger(__name__)
 
-# Консольноый логгер
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(CustomFormatter())
 
