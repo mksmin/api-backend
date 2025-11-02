@@ -12,9 +12,9 @@ from fastapi import (
 )
 from fastapi.params import Query
 
-from api.api_v2.auth import access_token_helper
 from app_exceptions import UserNotFoundError
 from app_exceptions.exceptions import RabbitMQServiceUnavailableError
+from auth import jwt_helper
 from core.crud import GetCRUDService
 from misc.rabbitmq_broker import GetRabbitBroker
 from rest.pages_views.dependencies.user_data import get_user_data_by_access_token
@@ -102,7 +102,10 @@ async def get_user_settings(
 
 async def delete_user_affirmation(
     affirmation_id: int,
-    user_id: Annotated[str, Depends(access_token_helper.strict_validate_access_token)],
+    user_id: Annotated[
+        str,
+        Depends(jwt_helper.strict_validate_access_token),
+    ],
     crud_service: GetCRUDService,
     broker: GetRabbitBroker,
 ) -> bool:

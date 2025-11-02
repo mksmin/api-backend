@@ -3,7 +3,7 @@ from typing import Annotated, Any
 from fastapi import Depends
 from starlette.requests import Request
 
-from api.api_v2.auth import access_token_helper
+from auth import jwt_helper
 from core.crud import GetCRUDService
 from rest.pages_views.schemas.user_data import UserDataReadSchema
 
@@ -11,7 +11,7 @@ from rest.pages_views.schemas.user_data import UserDataReadSchema
 async def get_user_data_by_access_token(
     crud_service: GetCRUDService,
     user_id: str = Depends(
-        access_token_helper.strict_validate_access_token,
+        jwt_helper.strict_validate_access_token,
     ),
 ) -> UserDataReadSchema | None:
     user = await crud_service.user.get_by_id_or_uuid(user_id)

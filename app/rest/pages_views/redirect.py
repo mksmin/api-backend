@@ -7,7 +7,7 @@ from fastapi import (
 )
 from fastapi.requests import Request
 
-from api.api_v2.auth import access_token_helper
+from auth import jwt_helper
 
 log = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 async def redirect_to_login_page(
     request: Request,
     user_id: str = Depends(
-        access_token_helper.soft_validate_access_token,
+        jwt_helper.soft_validate_access_token,
     ),
 ) -> None:
     if not user_id:

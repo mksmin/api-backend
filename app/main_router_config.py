@@ -8,12 +8,12 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
 from api import router as api_router
-from api.api_v2.auth import router as auth_router
 from app_lifespan import lifespan
 from core.config import settings
 from paths_constants import (
     FRONTEND_DIR_PATH,
 )
+from rest.auth_views import router as auth_router
 from rest.main_views import router as main_views_router
 from rest.pages_views import router as pages_router
 from rest.redirect import router as redirect_router

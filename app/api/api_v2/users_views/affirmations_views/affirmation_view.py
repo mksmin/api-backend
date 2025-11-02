@@ -4,7 +4,7 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Depends, status
 from starlette.requests import Request
 
-from api.api_v2.auth import access_token_helper
+from auth import jwt_helper
 from misc.flash_messages import flash
 from rest.pages_views.dependencies.affirmations import (
     delete_user_affirmation,
@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 @router.get(
     "/",
     dependencies=[
-        Depends(access_token_helper.strict_validate_access_token),
+        Depends(jwt_helper.strict_validate_access_token),
     ],
 )
 def get_user_affirmations(
@@ -34,7 +34,7 @@ def get_user_affirmations(
     "/{affirmation_id}",
     status_code=status.HTTP_204_NO_CONTENT,
     dependencies=[
-        Depends(access_token_helper.strict_validate_access_token),
+        Depends(jwt_helper.strict_validate_access_token),
         Depends(delete_user_affirmation),
     ],
 )

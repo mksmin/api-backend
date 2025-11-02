@@ -9,7 +9,7 @@ from fastapi import (
 from fastapi.params import Depends
 from fastapi.responses import JSONResponse
 
-from api.api_v2.auth import access_token_helper
+from auth import jwt_helper
 from core.config import settings
 
 from .dependencies import (
@@ -39,7 +39,7 @@ async def decode_token(
         )
 
     try:
-        return await access_token_helper.decode_jwt(token)
+        return await jwt_helper.decode_jwt(token)
     except HTTPException as he:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

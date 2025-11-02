@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import Annotated, Any
 from urllib.parse import parse_qsl
@@ -5,10 +6,9 @@ from urllib.parse import parse_qsl
 from fastapi import (
     APIRouter,
     Depends,
-    HTTPException,
-    Request,
     status,
 )
+from fastapi.requests import Request
 from fastapi.responses import (
     HTMLResponse,
     JSONResponse,
@@ -16,12 +16,15 @@ from fastapi.responses import (
 )
 
 from app_exceptions import UserAlreadyExistsError
+from auth import (
+    jwt_helper,
+    tg_auth_depends,
+)
+from auth.tg_auth_depends import verify_client
 from core.config import settings
 from core.crud import GetCRUDService
 from paths_constants import templates
 from schemas import UserCreateSchema
-
-from . import access_token_helper, auth_utils
 
 log = logging.getLogger(__name__)
 router = APIRouter()
@@ -32,15 +35,15 @@ router = APIRouter()
     response_class=HTMLResponse,
     response_model=None,
 )
-async def handle_telegram_init(
+async def tg_mini_app_page(
     request: Request,
     bot_name: str,
     cookie_token: Annotated[
         str,
-        Depends(access_token_helper.soft_validate_access_token),
+        Depends(jwt_helper.soft_validate_access_token),
     ],
 ) -> RedirectResponse | HTMLResponse:
-    bot_config = access_token_helper.BOT_CONFIG.get(bot_name, {})
+    bot_config = jwt_helper.BOT_CONFIG.get(bot_name, {})
 
     if not cookie_token:
         errors = "" if bot_config else "Bot not found"
@@ -61,26 +64,32 @@ async def handle_telegram_init(
 
 
 @router.post("/auth")
-async def auth_redirect() -> RedirectResponse:
-    # Редирект на /auth/bot1 с нужным кодом
+async def auth_redirect(
+    request: Request,
+) -> RedirectResponse:
     return RedirectResponse(
-        url="/auth/bot1",
+        url=request.url_for(
+            "auth_bots",
+            bot_name="bot1",
+        ),
         status_code=status.HTTP_308_PERMANENT_REDIRECT,
     )
 
 
-@router.post("/auth/{bot_name}")
-async def auth_user(
+@router.post(
+    "/auth/{bot_name}",
+    name="auth_bots",
+)
+async def auth_user_via_tg_bot(
     request: Request,
     bot_name: str,
+    client_type: Annotated[str, Depends(verify_client)],
     data_validate: Annotated[
         dict[str, Any],
-        Depends(auth_utils.verified_data_dependency),
+        Depends(tg_auth_depends.verified_tg_data_dependency),
     ],
     crud_service: GetCRUDService,
-) -> RedirectResponse:
-    client_type: str = data_validate["client_type"]
-    access_validate: bool = data_validate["is_authorized"]
+) -> JSONResponse:
 
     log.info(
         "Auth request started | "
@@ -91,10 +100,10 @@ async def auth_user(
         request.url.path,
         client_type,
         bot_name,
-        access_validate,
+        data_validate,
     )
 
-    bot_data = access_token_helper.BOT_CONFIG.get(bot_name, {})
+    bot_data = jwt_helper.BOT_CONFIG.get(bot_name, {})
     redirect_url = bot_data.get("redirect_url", "/profile")
 
     raw_data = (await request.body()).decode()
@@ -106,9 +115,9 @@ async def auth_user(
     )
 
     if client_type == "TelegramWidget":
-        user_data = data_dict
+        user_data = json.loads(raw_data)
     else:
-        user_data = await auth_utils.extract_user_data(data_dict)
+        user_data = await tg_auth_depends.extract_user_data(data_dict)
     user_data["tg_id"] = user_data.pop("id")
     try:
         user = await crud_service.user.create_user(
@@ -119,15 +128,12 @@ async def auth_user(
             int(user_data["tg_id"]),
         )
 
-    # Формирую ответ
-    response = RedirectResponse(
-        url=redirect_url,
-        status_code=status.HTTP_303_SEE_OTHER,
+    response = JSONResponse(
+        {"redirect_url": redirect_url},
+        status_code=status.HTTP_200_OK,
     )
 
-    # Генерирую токены
-    jwt_token = await access_token_helper.sign_jwt_token(user.id)
-    csrf_token = access_token_helper.sign_csrf_token()
+    jwt_token = await jwt_helper.sign_jwt_token(user.id)
 
     log.info(
         "Tokens generated | User: %d | JWT expiry: %d",
@@ -144,41 +150,5 @@ async def auth_user(
         samesite="none",
         path="/",
         max_age=settings.access_token.lifetime_seconds,
-    )
-
-    response.set_cookie(
-        key="csrf_token",
-        value=csrf_token,
-        secure=True,
-        samesite="none",
-        path="/",
-        max_age=1800,
-    )
-    return response
-
-
-@router.post("/refresh-csrf")
-async def refresh_csrf(
-    request: Request,
-) -> JSONResponse:
-    # Проверяю JWT токен
-    token = request.cookies.get("jwt_token")
-    if not token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Unauthorized",
-        )
-
-    await access_token_helper.decode_jwt(token)
-
-    new_csrf_token = access_token_helper.sign_csrf_token()
-
-    response = JSONResponse({"status": "CSRF token refreshed"})
-    response.set_cookie(
-        key="csrf_token",
-        value=new_csrf_token,
-        secure=True,
-        samesite="lax",
-        max_age=1800,
     )
     return response

@@ -25,7 +25,7 @@ if __name__ == "__main__":
             "app": "main_router_config:main_app",
             "host": settings.run.host,
             "port": settings.run.port,
-            "log_level": settings.log.mode.lower(),
+            "log_level": settings.log.level,
             "reload": False,
             "log_config": None,
             "use_colors": True,

@@ -7,21 +7,21 @@ from starlette import status
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from api.api_v2.auth import access_token_helper
+from auth import jwt_helper
 from core.config import settings
 from misc.flash_messages import flash
 from misc.rabbitmq_broker import rabbitmq_broker
 from paths_constants import templates
-
-from .dependencies.affirmations import (
+from rest.pages_views.dependencies.affirmations import (
     delete_user_affirmation,
     get_dict_with_user_affirmations,
     get_user_settings,
 )
-from .dependencies.user_data import (
+from rest.pages_views.dependencies.user_data import (
     get_user_data_by_access_token,
     return_data_for_user_profile_template,
 )
+
 from .redirect import redirect_to_login_page
 from .schemas.user_data import UserDataReadSchema
 
@@ -74,7 +74,7 @@ async def page_user_affirmations(
     name="affirmations:delete",
     status_code=status.HTTP_204_NO_CONTENT,
     dependencies=[
-        Depends(access_token_helper.strict_validate_access_token),
+        Depends(jwt_helper.strict_validate_access_token),
         Depends(delete_user_affirmation),
     ],
 )
