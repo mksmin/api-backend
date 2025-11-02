@@ -44,7 +44,7 @@ def delete_affirmation(
 ) -> None:
     flash(
         request,
-        message="Affirmation deleted",
+        message="Аффирмация удалена",
         category="success",
     )
     log.info("Deleting affirmation id=%s", affirmation_id)
