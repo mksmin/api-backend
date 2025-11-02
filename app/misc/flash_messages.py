@@ -1,6 +1,6 @@
 from typing import TypedDict, cast
 
-from starlette.requests import Request
+from fastapi.requests import Request
 
 FLASH_MESSAGES_KEY = "_flashed_messages"
 

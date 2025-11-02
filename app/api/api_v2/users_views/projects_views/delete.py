@@ -1,5 +1,8 @@
-from fastapi import APIRouter, Depends
-from starlette import status
+from fastapi import (
+    APIRouter,
+    Depends,
+    status,
+)
 
 from api.api_v2.users_views.projects_views.dependencies import delete_project_by_uuid
 

@@ -3,8 +3,10 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID
 
-from fastapi import HTTPException
-from starlette import status
+from fastapi import (
+    HTTPException,
+    status,
+)
 
 from app_exceptions import InvalidUUIDError
 

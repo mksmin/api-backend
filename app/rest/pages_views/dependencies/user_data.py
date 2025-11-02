@@ -1,7 +1,7 @@
 from typing import Annotated, Any
 
 from fastapi import Depends
-from starlette.requests import Request
+from fastapi.requests import Request
 
 from auth import jwt_helper
 from core.crud import GetCRUDService

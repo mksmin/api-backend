@@ -1,16 +1,23 @@
 import logging
-from typing import Annotated, Any
+from typing import (
+    Annotated,
+    Any,
+)
 
-from fastapi import APIRouter, Depends
-from fastapi.responses import HTMLResponse
-from starlette import status
-from starlette.requests import Request
-from starlette.responses import JSONResponse
+from fastapi import (
+    APIRouter,
+    Depends,
+    status,
+)
+from fastapi.requests import Request
+from fastapi.responses import (
+    HTMLResponse,
+    JSONResponse,
+)
 
 from auth import jwt_helper
 from core.config import settings
 from misc.flash_messages import flash
-from misc.rabbitmq_broker import rabbitmq_broker
 from paths_constants import templates
 from rest.pages_views.dependencies.affirmations import (
     delete_user_affirmation,
@@ -21,13 +28,10 @@ from rest.pages_views.dependencies.user_data import (
     get_user_data_by_access_token,
     return_data_for_user_profile_template,
 )
+from rest.pages_views.redirect import redirect_to_login_page
+from rest.pages_views.schemas.user_data import UserDataReadSchema
 
-from .redirect import redirect_to_login_page
-from .schemas.user_data import UserDataReadSchema
-
-router = APIRouter(
-    tags=["Page views"],
-)
+router = APIRouter()
 log = logging.getLogger(__name__)
 
 
@@ -108,6 +112,3 @@ async def page_profile(
         "profiles/profile.html",
         template_data,
     )
-
-
-router.include_router(rabbitmq_broker)

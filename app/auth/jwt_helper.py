@@ -1,12 +1,26 @@
 import logging
 import uuid
-from datetime import datetime, timedelta, timezone
-from typing import Annotated, Any
+from datetime import (
+    datetime,
+    timedelta,
+    timezone,
+)
+from typing import (
+    Annotated,
+    Any,
+)
 
 import jwt
-from fastapi import Cookie, Depends, HTTPException
-from jwt import ExpiredSignatureError, InvalidTokenError
-from starlette import status
+from fastapi import (
+    Cookie,
+    Depends,
+    HTTPException,
+    status,
+)
+from jwt import (
+    ExpiredSignatureError,
+    InvalidTokenError,
+)
 
 from core.config import settings
 

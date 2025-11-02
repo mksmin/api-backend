@@ -2,7 +2,7 @@ import logging
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, status
-from starlette.requests import Request
+from fastapi.requests import Request
 
 from auth import jwt_helper
 from misc.flash_messages import flash
