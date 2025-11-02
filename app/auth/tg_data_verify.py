@@ -8,10 +8,10 @@ log = logging.getLogger(__name__)
 
 
 def _verify_tg_signature(
-    data: dict[str, str | int],
+    data: dict[str, str],
     secret_key: bytes,
 ) -> bool:
-    received_hash: str = data.pop("hash", None)
+    received_hash: str = data.pop("hash", "")
     if not received_hash:
         return False
 
