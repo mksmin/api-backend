@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query
-from starlette.requests import Request
-from starlette.responses import HTMLResponse
+from fastapi.requests import Request
+from fastapi.responses import HTMLResponse
 
 from paths_constants import templates
 
