@@ -16,15 +16,15 @@ logger = logging.getLogger(__name__)
 
 BOT_CONFIG: dict[str, dict[str, str]] = {
     "bot1": {
-        "name": "atombot",
+        "name": "atomlabrf_bot",
         "redirect_url": "/profile",
     },
     "bot2": {
-        "name": "mininbot",
+        "name": "mininwork_bot",
         "redirect_url": "/affirmations",
     },
     "bot3": {
-        "name": "testbot",
+        "name": "test_mininBot",
         "redirect_url": "/projects",
     },
 }
