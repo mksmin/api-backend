@@ -40,23 +40,24 @@ async def handle_telegram_init(
         Depends(access_token_helper.soft_validate_access_token),
     ],
 ) -> RedirectResponse | HTMLResponse:
-    if not cookie_token:
-        # Проверяем существование бота
-        bot_config = access_token_helper.BOT_CONFIG.get(bot_name)
-        if not bot_config:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Bot not found",
-            )
+    bot_config = access_token_helper.BOT_CONFIG.get(bot_name, {})
 
+    if not cookie_token:
+        errors = "" if bot_config else "Bot not found"
         return templates.TemplateResponse(
             "basebots.html",
-            {"request": request},
+            {
+                "request": request,
+                "botConfigPath": bot_config.get("name"),
+                "errors": errors,
+            },
         )
 
-    bot_data = access_token_helper.BOT_CONFIG.get(bot_name, {})
-    redirect_url = bot_data.get("redirect_url", "/profile")
-    return RedirectResponse(url=redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+    redirect_url = bot_config.get("redirect_url", "/profile")
+    return RedirectResponse(
+        url=redirect_url,
+        status_code=status.HTTP_303_SEE_OTHER,
+    )
 
 
 @router.post("/auth")
