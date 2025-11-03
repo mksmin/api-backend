@@ -148,35 +148,6 @@ async def verified_tg_data_dependency(
         client_type,
     )
 
-    # # TODO: После успешной проверки зарегистрировать пользователя
-    # if dependency_func:
-    #     raw_data = await request.body()
-    #     raw_data_str = raw_data.decode()
-    #     if client_type == "TelegramWidget":
-    #         data = json.loads(raw_data_str)
-    #         data.pop("hash", None)
-    #         data.pop("auth_date", None)
-    #     else:
-    #         log.info("Зашел в блок TelegramMiniApp, чтобы спарсить данные")
-    #         miniapp_pairs: list[tuple[str, str]] = parse_qsl(
-    #             raw_data_str,
-    #             keep_blank_values=True,
-    #         )
-    #         data_dict = dict(miniapp_pairs)
-    #         data = await extract_user_data(data_dict)
-    #
-    #     log.debug("Verified data dependency | data: %s", data)
-    #     data["tg_id"] = data.pop("id")
-    #     try:
-    #         user = await crud_service.user.create_user(
-    #             user_create=UserCreateSchema.model_validate(data),
-    #         )
-    #     except UserAlreadyExistsError:
-    #         user = await crud_service.user.get_by_tg_id(
-    #             int(data["tg_id"]),
-    #         )
-    #     log.debug("Получен пользователь: %s", user)
-
 
 async def extract_user_data(
     data_dict: dict[str, Any],

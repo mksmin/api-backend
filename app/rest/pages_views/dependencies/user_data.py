@@ -21,7 +21,7 @@ async def get_user_data_by_access_token(
         first_name=user.first_name,
         last_name=user.last_name,
         username=user.username,
-        photo_url="https://t.me/i/userpic/320/KAW0oZ7WjH_Mp1p43zuUi2lzp_IW2rxF954-zq5f3us.jpg",
+        photo_url="/static/media/nonePhoto.png",
     )
 
 
