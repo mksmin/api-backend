@@ -101,6 +101,9 @@ def delete_affirmation(
     "/profile",
     name="profiles:user-profile",
     include_in_schema=settings.run.dev_mode,
+    dependencies=[
+        Depends(redirect_to_login_page),
+    ],
 )
 async def page_profile(
     template_data: Annotated[
