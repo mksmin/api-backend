@@ -99,6 +99,7 @@ def delete_affirmation(
 
 @router.get(
     "/profile",
+    name="profiles:user-profile",
     include_in_schema=settings.run.dev_mode,
 )
 async def page_profile(
