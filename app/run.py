@@ -21,7 +21,7 @@ log = logging.getLogger(__name__)
 
 if __name__ == "__main__":
     try:
-        forwarded_allow_ips = "127.0.0.1"
+        forwarded_allow_ips = "*"
         run_args: dict[str, Any] = {
             "app": "main_router_config:main_app",
             "host": settings.run.host,
@@ -31,6 +31,7 @@ if __name__ == "__main__":
             "log_config": None,
             "use_colors": True,
             "workers": 1,
+            "proxy_headers": True,
             "forwarded_allow_ips": forwarded_allow_ips,
         }
         if not sys.platform.startswith("win") or os.getenv("FORCE_UNIX_SOCKET"):
