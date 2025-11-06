@@ -1,7 +1,11 @@
 import logging
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    status,
+)
 from fastapi.requests import Request
 
 from auth import jwt_helper
@@ -9,6 +13,7 @@ from misc.flash_messages import flash
 from rest.pages_views.dependencies.affirmations import (
     delete_user_affirmation,
     get_dict_with_user_affirmations,
+    patch_user_affirmation_settings,
 )
 
 router = APIRouter()
@@ -48,3 +53,15 @@ def delete_affirmation(
         category="success",
     )
     log.info("Deleting affirmation id=%s", affirmation_id)
+
+
+@router.patch(
+    "/settings",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[
+        Depends(jwt_helper.strict_validate_access_token),
+        Depends(patch_user_affirmation_settings),
+    ],
+)
+async def patch_user_settings() -> None:
+    """Обновление настроек аффирмаций"""
