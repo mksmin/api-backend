@@ -10,8 +10,12 @@ from fastapi import (
     HTTPException,
     status,
 )
-from fastapi.params import Query
+from fastapi.params import (
+    Body,
+    Query,
+)
 
+from api.api_v2.users_views.affirmations_views.schemas import ChangeAffirmationsSettings
 from app_exceptions import UserNotFoundError
 from app_exceptions.exceptions import RabbitMQServiceUnavailableError
 from auth import jwt_helper
@@ -119,6 +123,43 @@ async def delete_user_affirmation(
             },
         }
 
+        await broker.publish(
+            message,
+            queue="cmd.affirmations",
+            timeout=3,
+        )
+    except UserNotFoundError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        ) from e
+    except asyncio.TimeoutError as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Service unavailable",
+        ) from e
+    else:
+        return True
+
+
+async def patch_user_affirmation_settings(
+    user_id: Annotated[
+        str,
+        Depends(jwt_helper.strict_validate_access_token),
+    ],
+    crud_service: GetCRUDService,
+    broker: GetRabbitBroker,
+    settings_in: Annotated[ChangeAffirmationsSettings, Body()],
+) -> bool:
+    try:
+        user = await crud_service.user.get_by_id_or_uuid(user_id)
+        message = {
+            "type": "PatchAffirmationsSettings",
+            "payload": {
+                "user_tg": user.tg_id,
+                "settings_in": settings_in.model_dump(),
+            },
+        }
         await broker.publish(
             message,
             queue="cmd.affirmations",
