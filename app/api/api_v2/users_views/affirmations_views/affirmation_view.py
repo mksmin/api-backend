@@ -49,11 +49,6 @@ def update_affirmation(
     request: Request,
     affirmation_id: int,
 ) -> JSONResponse:
-    flash(
-        request,
-        message="Аффирмация обновлена",
-        category="success",
-    )
     log.info("Updating affirmation id=%s", affirmation_id)
     return JSONResponse(
         {
