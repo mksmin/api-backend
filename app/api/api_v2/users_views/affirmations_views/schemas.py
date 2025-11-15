@@ -11,3 +11,11 @@ class ChangeAffirmationsSettings(BaseModel):
     )
     send_time: time | None = None
     send_enable: bool | None = None
+
+
+class UpdateAffirmation(BaseModel):
+    text: str | None = Field(
+        None,
+        min_length=1,
+        max_length=500,
+    )
