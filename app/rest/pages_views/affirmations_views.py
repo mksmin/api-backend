@@ -26,17 +26,18 @@ from rest.pages_views.dependencies.affirmations import (
 )
 from rest.pages_views.dependencies.user_data import (
     get_user_data_by_access_token,
-    return_data_for_user_profile_template,
 )
 from rest.pages_views.redirect import redirect_to_login_page
 from rest.pages_views.schemas.user_data import UserDataReadSchema
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/affirmations",
+)
 log = logging.getLogger(__name__)
 
 
 @router.get(
-    "/affirmations",
+    "/",
     name="affirmations:list-page",
     include_in_schema=settings.run.dev_mode,
     dependencies=[
@@ -74,7 +75,7 @@ async def page_user_affirmations(
 
 
 @router.delete(
-    "/affirmations/{affirmation_id}",
+    "/{affirmation_id}",
     name="affirmations:delete",
     status_code=status.HTTP_204_NO_CONTENT,
     dependencies=[
@@ -88,31 +89,14 @@ def delete_affirmation(
 ) -> JSONResponse:
     flash(
         request,
-        message="Affirmation deleted",
+        message="Аффирмация удалена",
         category="success",
     )
     log.info("Deleting affirmation id=%s", affirmation_id)
     return JSONResponse(
-        {"redirect": str(request.url_for("affirmations:list-page"))},
-    )
-
-
-@router.get(
-    "/profile",
-    name="profiles:user-profile",
-    include_in_schema=settings.run.dev_mode,
-    dependencies=[
-        Depends(redirect_to_login_page),
-    ],
-)
-async def page_profile(
-    template_data: Annotated[
-        dict[str, Any],
-        Depends(return_data_for_user_profile_template),
-    ],
-) -> HTMLResponse:
-    """Страница с профилем пользователя"""
-    return templates.TemplateResponse(
-        "profiles/profile.html",
-        template_data,
+        {
+            "redirect": str(
+                request.url_for("affirmations:list-page"),
+            ),
+        },
     )
