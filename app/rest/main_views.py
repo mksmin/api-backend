@@ -27,5 +27,11 @@ async def index_page() -> FileResponse:
     return FileResponse(index_html)
 
 
+@router.get("/new")
+async def new_index_page() -> FileResponse:
+    index_html = HTML_DIR / "index_new.html"
+    return FileResponse(index_html)
+
+
 router.include_router(system_router)
 router.include_router(static_router)
