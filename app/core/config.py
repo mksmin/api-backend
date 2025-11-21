@@ -205,6 +205,10 @@ class SecretsConfig(BaseModel):
     session_secret: str
 
 
+class TelegramAuthConfig(BaseModel):
+    widget_bot_id: int
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(
@@ -259,6 +263,7 @@ class Settings(BaseSettings):
     rabbit: RabbitMQConfig
     run: RunConfig
     secrets: SecretsConfig
+    tg: TelegramAuthConfig
 
 
 settings = Settings()

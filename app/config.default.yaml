@@ -26,3 +26,6 @@ api-backend:
 
   secrets:
     session_secret:
+
+  tg:
+    widget_bot_id: 123456
