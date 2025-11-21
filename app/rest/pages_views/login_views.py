@@ -2,6 +2,7 @@ from fastapi import APIRouter, Query
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse
 
+from core.config import settings
 from paths_constants import templates
 
 router = APIRouter()
@@ -21,5 +22,6 @@ async def get_login_page(
         context={
             "request": request,
             "redirect_url": redirect_path,
+            "telegram_bot_id": settings.tg.widget_bot_id,
         },
     )
