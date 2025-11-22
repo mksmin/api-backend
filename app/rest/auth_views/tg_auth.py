@@ -48,7 +48,7 @@ async def tg_mini_app_page(
     if not cookie_token:
         errors = "" if bot_config else "Bot not found"
         return templates.TemplateResponse(
-            "basebots.html",
+            "/auth/telegram_miniapp.html",
             {
                 "request": request,
                 "botConfigPath": bot_config.get("name"),
