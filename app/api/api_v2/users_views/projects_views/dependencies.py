@@ -2,7 +2,11 @@ from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
 
-from app_exceptions import ProjectNotFoundError, UserNotFoundError
+from app_exceptions import (
+    InvalidUUIDError,
+    ProjectNotFoundError,
+    UserNotFoundError,
+)
 from auth import jwt_helper
 from core.crud import GetCRUDService
 from schemas import ProjectReadSchema
@@ -32,12 +36,16 @@ async def get_project_by_uuid(
         Depends(jwt_helper.strict_validate_access_token),
     ],
     crud_service: GetCRUDService,
-) -> ProjectReadSchema:
-    project = await crud_service.project.get_by_uuid(
-        user_id=int(user_id),
-        project_uuid=project_uuid,
-    )
-    return ProjectReadSchema.model_validate(project)
+) -> ProjectReadSchema | None:
+    try:
+        project = await crud_service.project.get_by_uuid(
+            user_id=int(user_id),
+            project_uuid=project_uuid,
+        )
+    except (ProjectNotFoundError, InvalidUUIDError):
+        return None
+    else:
+        return ProjectReadSchema.model_validate(project)
 
 
 async def delete_project_by_uuid(

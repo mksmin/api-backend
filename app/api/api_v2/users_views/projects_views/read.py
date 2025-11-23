@@ -22,8 +22,8 @@ async def get_project(
         ProjectResponseSchema,
         Depends(get_project_by_uuid),
     ],
-) -> ProjectResponseSchema:
-    return project
+) -> ProjectResponseSchema | dict[str, str]:
+    return project if project else {}
 
 
 @router.get(

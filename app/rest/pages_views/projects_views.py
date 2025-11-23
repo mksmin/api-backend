@@ -69,6 +69,6 @@ async def get_page_project_detail(
         "projects/details.html",
         context={
             "request": request,
-            "project": project.model_dump(),
+            "project": project.model_dump() if project else None,
         },
     )

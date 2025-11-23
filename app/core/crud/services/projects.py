@@ -69,6 +69,9 @@ class ProjectService:
             raise UserNotFoundError
 
         project = await self.manager.get_by_uuid(project_uuid_validated)
+        if not project:
+            raise ProjectNotFoundError
+
         try:
             return ProjectSchema.model_validate(
                 project,
