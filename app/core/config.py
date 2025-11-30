@@ -200,6 +200,13 @@ class RunConfig(BaseModel):
     dev_mode: bool
 
 
+class S3Config(BaseModel):
+    access_key: str
+    secret_key: str
+    endpoint_url: str
+    bucket_name: str
+
+
 class SecretsConfig(BaseModel):
     bots_tokens: dict[str, str]
     session_secret: str
@@ -263,6 +270,7 @@ class Settings(BaseSettings):
     rabbit: RabbitMQConfig
     run: RunConfig
     secrets: SecretsConfig
+    s3: S3Config
     tg: TelegramAuthConfig
 
 
