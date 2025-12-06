@@ -482,6 +482,24 @@ urllib3 = {version = ">=1.25.4,<2.2.0 || >2.2.0,<3", markers = "python_version >
 crt = ["awscrt (==0.29.0)"]
 
 [[package]]
+name = "botocore-stubs"
+version = "1.42.4"
+description = "Type annotations and code completion for botocore"
+optional = false
+python-versions = ">=3.9"
+groups = ["dev"]
+files = [
+    {file = "botocore_stubs-1.42.4-py3-none-any.whl", hash = "sha256:0b6711abe0ceffe32fa572c0c683e93d9a17b2c4cff1b47a7b48bb784fe2dbcc"},
+    {file = "botocore_stubs-1.42.4.tar.gz", hash = "sha256:5b8e63a1f62800945dcc824514fa0465f78ad2c8fe7a592b59f77ca19f1aa10b"},
+]
+
+[package.dependencies]
+types-awscrt = "*"
+
+[package.extras]
+botocore = ["botocore"]
+
+[[package]]
 name = "certifi"
 version = "2025.10.5"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -1849,6 +1867,115 @@ files = [
 ]
 
 [[package]]
+name = "pillow"
+version = "12.0.0"
+description = "Python Imaging Library (fork)"
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+files = [
+    {file = "pillow-12.0.0-cp310-cp310-macosx_10_10_x86_64.whl", hash = "sha256:3adfb466bbc544b926d50fe8f4a4e6abd8c6bffd28a26177594e6e9b2b76572b"},
+    {file = "pillow-12.0.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:1ac11e8ea4f611c3c0147424eae514028b5e9077dd99ab91e1bd7bc33ff145e1"},
+    {file = "pillow-12.0.0-cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:d49e2314c373f4c2b39446fb1a45ed333c850e09d0c59ac79b72eb3b95397363"},
+    {file = "pillow-12.0.0-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:c7b2a63fd6d5246349f3d3f37b14430d73ee7e8173154461785e43036ffa96ca"},
+    {file = "pillow-12.0.0-cp310-cp310-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:d64317d2587c70324b79861babb9c09f71fbb780bad212018874b2c013d8600e"},
+    {file = "pillow-12.0.0-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:d77153e14b709fd8b8af6f66a3afbb9ed6e9fc5ccf0b6b7e1ced7b036a228782"},
+    {file = "pillow-12.0.0-cp310-cp310-musllinux_1_2_aarch64.whl", hash = "sha256:32ed80ea8a90ee3e6fa08c21e2e091bba6eda8eccc83dbc34c95169507a91f10"},
+    {file = "pillow-12.0.0-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:c828a1ae702fc712978bda0320ba1b9893d99be0badf2647f693cc01cf0f04fa"},
+    {file = "pillow-12.0.0-cp310-cp310-win32.whl", hash = "sha256:bd87e140e45399c818fac4247880b9ce719e4783d767e030a883a970be632275"},
+    {file = "pillow-12.0.0-cp310-cp310-win_amd64.whl", hash = "sha256:455247ac8a4cfb7b9bc45b7e432d10421aea9fc2e74d285ba4072688a74c2e9d"},
+    {file = "pillow-12.0.0-cp310-cp310-win_arm64.whl", hash = "sha256:6ace95230bfb7cd79ef66caa064bbe2f2a1e63d93471c3a2e1f1348d9f22d6b7"},
+    {file = "pillow-12.0.0-cp311-cp311-macosx_10_10_x86_64.whl", hash = "sha256:0fd00cac9c03256c8b2ff58f162ebcd2587ad3e1f2e397eab718c47e24d231cc"},
+    {file = "pillow-12.0.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:a3475b96f5908b3b16c47533daaa87380c491357d197564e0ba34ae75c0f3257"},
+    {file = "pillow-12.0.0-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:110486b79f2d112cf6add83b28b627e369219388f64ef2f960fef9ebaf54c642"},
+    {file = "pillow-12.0.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:5269cc1caeedb67e6f7269a42014f381f45e2e7cd42d834ede3c703a1d915fe3"},
+    {file = "pillow-12.0.0-cp311-cp311-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:aa5129de4e174daccbc59d0a3b6d20eaf24417d59851c07ebb37aeb02947987c"},
+    {file = "pillow-12.0.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:bee2a6db3a7242ea309aa7ee8e2780726fed67ff4e5b40169f2c940e7eb09227"},
+    {file = "pillow-12.0.0-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:90387104ee8400a7b4598253b4c406f8958f59fcf983a6cea2b50d59f7d63d0b"},
+    {file = "pillow-12.0.0-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:bc91a56697869546d1b8f0a3ff35224557ae7f881050e99f615e0119bf934b4e"},
+    {file = "pillow-12.0.0-cp311-cp311-win32.whl", hash = "sha256:27f95b12453d165099c84f8a8bfdfd46b9e4bda9e0e4b65f0635430027f55739"},
+    {file = "pillow-12.0.0-cp311-cp311-win_amd64.whl", hash = "sha256:b583dc9070312190192631373c6c8ed277254aa6e6084b74bdd0a6d3b221608e"},
+    {file = "pillow-12.0.0-cp311-cp311-win_arm64.whl", hash = "sha256:759de84a33be3b178a64c8ba28ad5c135900359e85fb662bc6e403ad4407791d"},
+    {file = "pillow-12.0.0-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:53561a4ddc36facb432fae7a9d8afbfaf94795414f5cdc5fc52f28c1dca90371"},
+    {file = "pillow-12.0.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:71db6b4c1653045dacc1585c1b0d184004f0d7e694c7b34ac165ca70c0838082"},
+    {file = "pillow-12.0.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:2fa5f0b6716fc88f11380b88b31fe591a06c6315e955c096c35715788b339e3f"},
+    {file = "pillow-12.0.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:82240051c6ca513c616f7f9da06e871f61bfd7805f566275841af15015b8f98d"},
+    {file = "pillow-12.0.0-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:55f818bd74fe2f11d4d7cbc65880a843c4075e0ac7226bc1a23261dbea531953"},
+    {file = "pillow-12.0.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:b87843e225e74576437fd5b6a4c2205d422754f84a06942cfaf1dc32243e45a8"},
+    {file = "pillow-12.0.0-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:c607c90ba67533e1b2355b821fef6764d1dd2cbe26b8c1005ae84f7aea25ff79"},
+    {file = "pillow-12.0.0-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:21f241bdd5080a15bc86d3466a9f6074a9c2c2b314100dd896ac81ee6db2f1ba"},
+    {file = "pillow-12.0.0-cp312-cp312-win32.whl", hash = "sha256:dd333073e0cacdc3089525c7df7d39b211bcdf31fc2824e49d01c6b6187b07d0"},
+    {file = "pillow-12.0.0-cp312-cp312-win_amd64.whl", hash = "sha256:9fe611163f6303d1619bbcb653540a4d60f9e55e622d60a3108be0d5b441017a"},
+    {file = "pillow-12.0.0-cp312-cp312-win_arm64.whl", hash = "sha256:7dfb439562f234f7d57b1ac6bc8fe7f838a4bd49c79230e0f6a1da93e82f1fad"},
+    {file = "pillow-12.0.0-cp313-cp313-ios_13_0_arm64_iphoneos.whl", hash = "sha256:0869154a2d0546545cde61d1789a6524319fc1897d9ee31218eae7a60ccc5643"},
+    {file = "pillow-12.0.0-cp313-cp313-ios_13_0_arm64_iphonesimulator.whl", hash = "sha256:a7921c5a6d31b3d756ec980f2f47c0cfdbce0fc48c22a39347a895f41f4a6ea4"},
+    {file = "pillow-12.0.0-cp313-cp313-ios_13_0_x86_64_iphonesimulator.whl", hash = "sha256:1ee80a59f6ce048ae13cda1abf7fbd2a34ab9ee7d401c46be3ca685d1999a399"},
+    {file = "pillow-12.0.0-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:c50f36a62a22d350c96e49ad02d0da41dbd17ddc2e29750dbdba4323f85eb4a5"},
+    {file = "pillow-12.0.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:5193fde9a5f23c331ea26d0cf171fbf67e3f247585f50c08b3e205c7aeb4589b"},
+    {file = "pillow-12.0.0-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:bde737cff1a975b70652b62d626f7785e0480918dece11e8fef3c0cf057351c3"},
+    {file = "pillow-12.0.0-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:a6597ff2b61d121172f5844b53f21467f7082f5fb385a9a29c01414463f93b07"},
+    {file = "pillow-12.0.0-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:0b817e7035ea7f6b942c13aa03bb554fc44fea70838ea21f8eb31c638326584e"},
+    {file = "pillow-12.0.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:f4f1231b7dec408e8670264ce63e9c71409d9583dd21d32c163e25213ee2a344"},
+    {file = "pillow-12.0.0-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:6e51b71417049ad6ab14c49608b4a24d8fb3fe605e5dfabfe523b58064dc3d27"},
+    {file = "pillow-12.0.0-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:d120c38a42c234dc9a8c5de7ceaaf899cf33561956acb4941653f8bdc657aa79"},
+    {file = "pillow-12.0.0-cp313-cp313-win32.whl", hash = "sha256:4cc6b3b2efff105c6a1656cfe59da4fdde2cda9af1c5e0b58529b24525d0a098"},
+    {file = "pillow-12.0.0-cp313-cp313-win_amd64.whl", hash = "sha256:4cf7fed4b4580601c4345ceb5d4cbf5a980d030fd5ad07c4d2ec589f95f09905"},
+    {file = "pillow-12.0.0-cp313-cp313-win_arm64.whl", hash = "sha256:9f0b04c6b8584c2c193babcccc908b38ed29524b29dd464bc8801bf10d746a3a"},
+    {file = "pillow-12.0.0-cp313-cp313t-macosx_10_13_x86_64.whl", hash = "sha256:7fa22993bac7b77b78cae22bad1e2a987ddf0d9015c63358032f84a53f23cdc3"},
+    {file = "pillow-12.0.0-cp313-cp313t-macosx_11_0_arm64.whl", hash = "sha256:f135c702ac42262573fe9714dfe99c944b4ba307af5eb507abef1667e2cbbced"},
+    {file = "pillow-12.0.0-cp313-cp313t-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:c85de1136429c524e55cfa4e033b4a7940ac5c8ee4d9401cc2d1bf48154bbc7b"},
+    {file = "pillow-12.0.0-cp313-cp313t-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:38df9b4bfd3db902c9c2bd369bcacaf9d935b2fff73709429d95cc41554f7b3d"},
+    {file = "pillow-12.0.0-cp313-cp313t-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:7d87ef5795da03d742bf49439f9ca4d027cde49c82c5371ba52464aee266699a"},
+    {file = "pillow-12.0.0-cp313-cp313t-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:aff9e4d82d082ff9513bdd6acd4f5bd359f5b2c870907d2b0a9c5e10d40c88fe"},
+    {file = "pillow-12.0.0-cp313-cp313t-musllinux_1_2_aarch64.whl", hash = "sha256:8d8ca2b210ada074d57fcee40c30446c9562e542fc46aedc19baf758a93532ee"},
+    {file = "pillow-12.0.0-cp313-cp313t-musllinux_1_2_x86_64.whl", hash = "sha256:99a7f72fb6249302aa62245680754862a44179b545ded638cf1fef59befb57ef"},
+    {file = "pillow-12.0.0-cp313-cp313t-win32.whl", hash = "sha256:4078242472387600b2ce8d93ade8899c12bf33fa89e55ec89fe126e9d6d5d9e9"},
+    {file = "pillow-12.0.0-cp313-cp313t-win_amd64.whl", hash = "sha256:2c54c1a783d6d60595d3514f0efe9b37c8808746a66920315bfd34a938d7994b"},
+    {file = "pillow-12.0.0-cp313-cp313t-win_arm64.whl", hash = "sha256:26d9f7d2b604cd23aba3e9faf795787456ac25634d82cd060556998e39c6fa47"},
+    {file = "pillow-12.0.0-cp314-cp314-ios_13_0_arm64_iphoneos.whl", hash = "sha256:beeae3f27f62308f1ddbcfb0690bf44b10732f2ef43758f169d5e9303165d3f9"},
+    {file = "pillow-12.0.0-cp314-cp314-ios_13_0_arm64_iphonesimulator.whl", hash = "sha256:d4827615da15cd59784ce39d3388275ec093ae3ee8d7f0c089b76fa87af756c2"},
+    {file = "pillow-12.0.0-cp314-cp314-ios_13_0_x86_64_iphonesimulator.whl", hash = "sha256:3e42edad50b6909089750e65c91aa09aaf1e0a71310d383f11321b27c224ed8a"},
+    {file = "pillow-12.0.0-cp314-cp314-macosx_10_15_x86_64.whl", hash = "sha256:e5d8efac84c9afcb40914ab49ba063d94f5dbdf5066db4482c66a992f47a3a3b"},
+    {file = "pillow-12.0.0-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:266cd5f2b63ff316d5a1bba46268e603c9caf5606d44f38c2873c380950576ad"},
+    {file = "pillow-12.0.0-cp314-cp314-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:58eea5ebe51504057dd95c5b77d21700b77615ab0243d8152793dc00eb4faf01"},
+    {file = "pillow-12.0.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:f13711b1a5ba512d647a0e4ba79280d3a9a045aaf7e0cc6fbe96b91d4cdf6b0c"},
+    {file = "pillow-12.0.0-cp314-cp314-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:6846bd2d116ff42cba6b646edf5bf61d37e5cbd256425fa089fee4ff5c07a99e"},
+    {file = "pillow-12.0.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:c98fa880d695de164b4135a52fd2e9cd7b7c90a9d8ac5e9e443a24a95ef9248e"},
+    {file = "pillow-12.0.0-cp314-cp314-musllinux_1_2_aarch64.whl", hash = "sha256:fa3ed2a29a9e9d2d488b4da81dcb54720ac3104a20bf0bd273f1e4648aff5af9"},
+    {file = "pillow-12.0.0-cp314-cp314-musllinux_1_2_x86_64.whl", hash = "sha256:d034140032870024e6b9892c692fe2968493790dd57208b2c37e3fb35f6df3ab"},
+    {file = "pillow-12.0.0-cp314-cp314-win32.whl", hash = "sha256:1b1b133e6e16105f524a8dec491e0586d072948ce15c9b914e41cdadd209052b"},
+    {file = "pillow-12.0.0-cp314-cp314-win_amd64.whl", hash = "sha256:8dc232e39d409036af549c86f24aed8273a40ffa459981146829a324e0848b4b"},
+    {file = "pillow-12.0.0-cp314-cp314-win_arm64.whl", hash = "sha256:d52610d51e265a51518692045e372a4c363056130d922a7351429ac9f27e70b0"},
+    {file = "pillow-12.0.0-cp314-cp314t-macosx_10_15_x86_64.whl", hash = "sha256:1979f4566bb96c1e50a62d9831e2ea2d1211761e5662afc545fa766f996632f6"},
+    {file = "pillow-12.0.0-cp314-cp314t-macosx_11_0_arm64.whl", hash = "sha256:b2e4b27a6e15b04832fe9bf292b94b5ca156016bbc1ea9c2c20098a0320d6cf6"},
+    {file = "pillow-12.0.0-cp314-cp314t-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:fb3096c30df99fd01c7bf8e544f392103d0795b9f98ba71a8054bcbf56b255f1"},
+    {file = "pillow-12.0.0-cp314-cp314t-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:7438839e9e053ef79f7112c881cef684013855016f928b168b81ed5835f3e75e"},
+    {file = "pillow-12.0.0-cp314-cp314t-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:5d5c411a8eaa2299322b647cd932586b1427367fd3184ffbb8f7a219ea2041ca"},
+    {file = "pillow-12.0.0-cp314-cp314t-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:d7e091d464ac59d2c7ad8e7e08105eaf9dafbc3883fd7265ffccc2baad6ac925"},
+    {file = "pillow-12.0.0-cp314-cp314t-musllinux_1_2_aarch64.whl", hash = "sha256:792a2c0be4dcc18af9d4a2dfd8a11a17d5e25274a1062b0ec1c2d79c76f3e7f8"},
+    {file = "pillow-12.0.0-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:afbefa430092f71a9593a99ab6a4e7538bc9eabbf7bf94f91510d3503943edc4"},
+    {file = "pillow-12.0.0-cp314-cp314t-win32.whl", hash = "sha256:3830c769decf88f1289680a59d4f4c46c72573446352e2befec9a8512104fa52"},
+    {file = "pillow-12.0.0-cp314-cp314t-win_amd64.whl", hash = "sha256:905b0365b210c73afb0ebe9101a32572152dfd1c144c7e28968a331b9217b94a"},
+    {file = "pillow-12.0.0-cp314-cp314t-win_arm64.whl", hash = "sha256:99353a06902c2e43b43e8ff74ee65a7d90307d82370604746738a1e0661ccca7"},
+    {file = "pillow-12.0.0-pp311-pypy311_pp73-macosx_10_15_x86_64.whl", hash = "sha256:b22bd8c974942477156be55a768f7aa37c46904c175be4e158b6a86e3a6b7ca8"},
+    {file = "pillow-12.0.0-pp311-pypy311_pp73-macosx_11_0_arm64.whl", hash = "sha256:805ebf596939e48dbb2e4922a1d3852cfc25c38160751ce02da93058b48d252a"},
+    {file = "pillow-12.0.0-pp311-pypy311_pp73-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:cae81479f77420d217def5f54b5b9d279804d17e982e0f2fa19b1d1e14ab5197"},
+    {file = "pillow-12.0.0-pp311-pypy311_pp73-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:aeaefa96c768fc66818730b952a862235d68825c178f1b3ffd4efd7ad2edcb7c"},
+    {file = "pillow-12.0.0-pp311-pypy311_pp73-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:09f2d0abef9e4e2f349305a4f8cc784a8a6c2f58a8c4892eea13b10a943bd26e"},
+    {file = "pillow-12.0.0-pp311-pypy311_pp73-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:bdee52571a343d721fb2eb3b090a82d959ff37fc631e3f70422e0c2e029f3e76"},
+    {file = "pillow-12.0.0-pp311-pypy311_pp73-win_amd64.whl", hash = "sha256:b290fd8aa38422444d4b50d579de197557f182ef1068b75f5aa8558638b8d0a5"},
+    {file = "pillow-12.0.0.tar.gz", hash = "sha256:87d4f8125c9988bfbed67af47dd7a953e2fc7b0cc1e7800ec6d2080d490bb353"},
+]
+
+[package.extras]
+docs = ["furo", "olefile", "sphinx (>=8.2)", "sphinx-autobuild", "sphinx-copybutton", "sphinx-inline-tabs", "sphinxext-opengraph"]
+fpx = ["olefile"]
+mic = ["olefile"]
+test-arrow = ["arro3-compute", "arro3-core", "nanoarrow", "pyarrow"]
+tests = ["check-manifest", "coverage (>=7.4.2)", "defusedxml", "markdown2", "olefile", "packaging", "pyroma (>=5)", "pytest", "pytest-cov", "pytest-timeout", "pytest-xdist", "trove-classifiers (>=2024.10.12)"]
+xmp = ["defusedxml"]
+
+[[package]]
 name = "platformdirs"
 version = "4.5.0"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a `user data dir`."
@@ -2939,6 +3066,484 @@ shellingham = ">=1.3.0"
 typing-extensions = ">=3.7.4.3"
 
 [[package]]
+name = "types-aiobotocore"
+version = "2.26.0.post2"
+description = "Type annotations for aiobotocore 2.26.0 generated with mypy-boto3-builder 8.12.0"
+optional = false
+python-versions = ">=3.9"
+groups = ["dev"]
+files = [
+    {file = "types_aiobotocore-2.26.0.post2-py3-none-any.whl", hash = "sha256:0e19caffd6ce6b1c3e7ba5b085d1d03357672e1aa65e5bcdfd9efb026a1041f7"},
+    {file = "types_aiobotocore-2.26.0.post2.tar.gz", hash = "sha256:68ebe5e9de3201442e56359af182493e2e642e855a9133a5918352cbf5ac4e2d"},
+]
+
+[package.dependencies]
+botocore-stubs = "*"
+types-aiobotocore-s3 = {version = ">=2.26.0,<2.27.0", optional = true, markers = "extra == \"s3\""}
+typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.12\""}
+
+[package.extras]
+accessanalyzer = ["types-aiobotocore-accessanalyzer (>=2.26.0,<2.27.0)"]
+account = ["types-aiobotocore-account (>=2.26.0,<2.27.0)"]
+acm = ["types-aiobotocore-acm (>=2.26.0,<2.27.0)"]
+acm-pca = ["types-aiobotocore-acm-pca (>=2.26.0,<2.27.0)"]
+aiobotocore = ["aiobotocore (==2.26.0)"]
+aiops = ["types-aiobotocore-aiops (>=2.26.0,<2.27.0)"]
+all = ["types-aiobotocore-accessanalyzer (>=2.26.0,<2.27.0)", "types-aiobotocore-account (>=2.26.0,<2.27.0)", "types-aiobotocore-acm (>=2.26.0,<2.27.0)", "types-aiobotocore-acm-pca (>=2.26.0,<2.27.0)", "types-aiobotocore-aiops (>=2.26.0,<2.27.0)", "types-aiobotocore-amp (>=2.26.0,<2.27.0)", "types-aiobotocore-amplify (>=2.26.0,<2.27.0)", "types-aiobotocore-amplifybackend (>=2.26.0,<2.27.0)", "types-aiobotocore-amplifyuibuilder (>=2.26.0,<2.27.0)", "types-aiobotocore-apigateway (>=2.26.0,<2.27.0)", "types-aiobotocore-apigatewaymanagementapi (>=2.26.0,<2.27.0)", "types-aiobotocore-apigatewayv2 (>=2.26.0,<2.27.0)", "types-aiobotocore-appconfig (>=2.26.0,<2.27.0)", "types-aiobotocore-appconfigdata (>=2.26.0,<2.27.0)", "types-aiobotocore-appfabric (>=2.26.0,<2.27.0)", "types-aiobotocore-appflow (>=2.26.0,<2.27.0)", "types-aiobotocore-appintegrations (>=2.26.0,<2.27.0)", "types-aiobotocore-application-autoscaling (>=2.26.0,<2.27.0)", "types-aiobotocore-application-insights (>=2.26.0,<2.27.0)", "types-aiobotocore-application-signals (>=2.26.0,<2.27.0)", "types-aiobotocore-applicationcostprofiler (>=2.26.0,<2.27.0)", "types-aiobotocore-appmesh (>=2.26.0,<2.27.0)", "types-aiobotocore-apprunner (>=2.26.0,<2.27.0)", "types-aiobotocore-appstream (>=2.26.0,<2.27.0)", "types-aiobotocore-appsync (>=2.26.0,<2.27.0)", "types-aiobotocore-arc-region-switch (>=2.26.0,<2.27.0)", "types-aiobotocore-arc-zonal-shift (>=2.26.0,<2.27.0)", "types-aiobotocore-artifact (>=2.26.0,<2.27.0)", "types-aiobotocore-athena (>=2.26.0,<2.27.0)", "types-aiobotocore-auditmanager (>=2.26.0,<2.27.0)", "types-aiobotocore-autoscaling (>=2.26.0,<2.27.0)", "types-aiobotocore-autoscaling-plans (>=2.26.0,<2.27.0)", "types-aiobotocore-b2bi (>=2.26.0,<2.27.0)", "types-aiobotocore-backup (>=2.26.0,<2.27.0)", "types-aiobotocore-backup-gateway (>=2.26.0,<2.27.0)", "types-aiobotocore-backupsearch (>=2.26.0,<2.27.0)", "types-aiobotocore-batch (>=2.26.0,<2.27.0)", "types-aiobotocore-bcm-dashboards (>=2.26.0,<2.27.0)", "types-aiobotocore-bcm-data-exports (>=2.26.0,<2.27.0)", "types-aiobotocore-bcm-pricing-calculator (>=2.26.0,<2.27.0)", "types-aiobotocore-bcm-recommended-actions (>=2.26.0,<2.27.0)", "types-aiobotocore-bedrock (>=2.26.0,<2.27.0)", "types-aiobotocore-bedrock-agent (>=2.26.0,<2.27.0)", "types-aiobotocore-bedrock-agent-runtime (>=2.26.0,<2.27.0)", "types-aiobotocore-bedrock-agentcore (>=2.26.0,<2.27.0)", "types-aiobotocore-bedrock-agentcore-control (>=2.26.0,<2.27.0)", "types-aiobotocore-bedrock-data-automation (>=2.26.0,<2.27.0)", "types-aiobotocore-bedrock-data-automation-runtime (>=2.26.0,<2.27.0)", "types-aiobotocore-bedrock-runtime (>=2.26.0,<2.27.0)", "types-aiobotocore-billing (>=2.26.0,<2.27.0)", "types-aiobotocore-billingconductor (>=2.26.0,<2.27.0)", "types-aiobotocore-braket (>=2.26.0,<2.27.0)", "types-aiobotocore-budgets (>=2.26.0,<2.27.0)", "types-aiobotocore-ce (>=2.26.0,<2.27.0)", "types-aiobotocore-chatbot (>=2.26.0,<2.27.0)", "types-aiobotocore-chime (>=2.26.0,<2.27.0)", "types-aiobotocore-chime-sdk-identity (>=2.26.0,<2.27.0)", "types-aiobotocore-chime-sdk-media-pipelines (>=2.26.0,<2.27.0)", "types-aiobotocore-chime-sdk-meetings (>=2.26.0,<2.27.0)", "types-aiobotocore-chime-sdk-messaging (>=2.26.0,<2.27.0)", "types-aiobotocore-chime-sdk-voice (>=2.26.0,<2.27.0)", "types-aiobotocore-cleanrooms (>=2.26.0,<2.27.0)", "types-aiobotocore-cleanroomsml (>=2.26.0,<2.27.0)", "types-aiobotocore-cloud9 (>=2.26.0,<2.27.0)", "types-aiobotocore-cloudcontrol (>=2.26.0,<2.27.0)", "types-aiobotocore-clouddirectory (>=2.26.0,<2.27.0)", "types-aiobotocore-cloudformation (>=2.26.0,<2.27.0)", "types-aiobotocore-cloudfront (>=2.26.0,<2.27.0)", "types-aiobotocore-cloudfront-keyvaluestore (>=2.26.0,<2.27.0)", "types-aiobotocore-cloudhsm (>=2.26.0,<2.27.0)", "types-aiobotocore-cloudhsmv2 (>=2.26.0,<2.27.0)", "types-aiobotocore-cloudsearch (>=2.26.0,<2.27.0)", "types-aiobotocore-cloudsearchdomain (>=2.26.0,<2.27.0)", "types-aiobotocore-cloudtrail (>=2.26.0,<2.27.0)", "types-aiobotocore-cloudtrail-data (>=2.26.0,<2.27.0)", "types-aiobotocore-cloudwatch (>=2.26.0,<2.27.0)", "types-aiobotocore-codeartifact (>=2.26.0,<2.27.0)", "types-aiobotocore-codebuild (>=2.26.0,<2.27.0)", "types-aiobotocore-codecatalyst (>=2.26.0,<2.27.0)", "types-aiobotocore-codecommit (>=2.26.0,<2.27.0)", "types-aiobotocore-codeconnections (>=2.26.0,<2.27.0)", "types-aiobotocore-codedeploy (>=2.26.0,<2.27.0)", "types-aiobotocore-codeguru-reviewer (>=2.26.0,<2.27.0)", "types-aiobotocore-codeguru-security (>=2.26.0,<2.27.0)", "types-aiobotocore-codeguruprofiler (>=2.26.0,<2.27.0)", "types-aiobotocore-codepipeline (>=2.26.0,<2.27.0)", "types-aiobotocore-codestar-connections (>=2.26.0,<2.27.0)", "types-aiobotocore-codestar-notifications (>=2.26.0,<2.27.0)", "types-aiobotocore-cognito-identity (>=2.26.0,<2.27.0)", "types-aiobotocore-cognito-idp (>=2.26.0,<2.27.0)", "types-aiobotocore-cognito-sync (>=2.26.0,<2.27.0)", "types-aiobotocore-comprehend (>=2.26.0,<2.27.0)", "types-aiobotocore-comprehendmedical (>=2.26.0,<2.27.0)", "types-aiobotocore-compute-optimizer (>=2.26.0,<2.27.0)", "types-aiobotocore-compute-optimizer-automation (>=2.26.0,<2.27.0)", "types-aiobotocore-config (>=2.26.0,<2.27.0)", "types-aiobotocore-connect (>=2.26.0,<2.27.0)", "types-aiobotocore-connect-contact-lens (>=2.26.0,<2.27.0)", "types-aiobotocore-connectcampaigns (>=2.26.0,<2.27.0)", "types-aiobotocore-connectcampaignsv2 (>=2.26.0,<2.27.0)", "types-aiobotocore-connectcases (>=2.26.0,<2.27.0)", "types-aiobotocore-connectparticipant (>=2.26.0,<2.27.0)", "types-aiobotocore-controlcatalog (>=2.26.0,<2.27.0)", "types-aiobotocore-controltower (>=2.26.0,<2.27.0)", "types-aiobotocore-cost-optimization-hub (>=2.26.0,<2.27.0)", "types-aiobotocore-cur (>=2.26.0,<2.27.0)", "types-aiobotocore-customer-profiles (>=2.26.0,<2.27.0)", "types-aiobotocore-databrew (>=2.26.0,<2.27.0)", "types-aiobotocore-dataexchange (>=2.26.0,<2.27.0)", "types-aiobotocore-datapipeline (>=2.26.0,<2.27.0)", "types-aiobotocore-datasync (>=2.26.0,<2.27.0)", "types-aiobotocore-datazone (>=2.26.0,<2.27.0)", "types-aiobotocore-dax (>=2.26.0,<2.27.0)", "types-aiobotocore-deadline (>=2.26.0,<2.27.0)", "types-aiobotocore-detective (>=2.26.0,<2.27.0)", "types-aiobotocore-devicefarm (>=2.26.0,<2.27.0)", "types-aiobotocore-devops-guru (>=2.26.0,<2.27.0)", "types-aiobotocore-directconnect (>=2.26.0,<2.27.0)", "types-aiobotocore-discovery (>=2.26.0,<2.27.0)", "types-aiobotocore-dlm (>=2.26.0,<2.27.0)", "types-aiobotocore-dms (>=2.26.0,<2.27.0)", "types-aiobotocore-docdb (>=2.26.0,<2.27.0)", "types-aiobotocore-docdb-elastic (>=2.26.0,<2.27.0)", "types-aiobotocore-drs (>=2.26.0,<2.27.0)", "types-aiobotocore-ds (>=2.26.0,<2.27.0)", "types-aiobotocore-ds-data (>=2.26.0,<2.27.0)", "types-aiobotocore-dsql (>=2.26.0,<2.27.0)", "types-aiobotocore-dynamodb (>=2.26.0,<2.27.0)", "types-aiobotocore-dynamodbstreams (>=2.26.0,<2.27.0)", "types-aiobotocore-ebs (>=2.26.0,<2.27.0)", "types-aiobotocore-ec2 (>=2.26.0,<2.27.0)", "types-aiobotocore-ec2-instance-connect (>=2.26.0,<2.27.0)", "types-aiobotocore-ecr (>=2.26.0,<2.27.0)", "types-aiobotocore-ecr-public (>=2.26.0,<2.27.0)", "types-aiobotocore-ecs (>=2.26.0,<2.27.0)", "types-aiobotocore-efs (>=2.26.0,<2.27.0)", "types-aiobotocore-eks (>=2.26.0,<2.27.0)", "types-aiobotocore-eks-auth (>=2.26.0,<2.27.0)", "types-aiobotocore-elasticache (>=2.26.0,<2.27.0)", "types-aiobotocore-elasticbeanstalk (>=2.26.0,<2.27.0)", "types-aiobotocore-elastictranscoder (>=2.26.0,<2.27.0)", "types-aiobotocore-elb (>=2.26.0,<2.27.0)", "types-aiobotocore-elbv2 (>=2.26.0,<2.27.0)", "types-aiobotocore-emr (>=2.26.0,<2.27.0)", "types-aiobotocore-emr-containers (>=2.26.0,<2.27.0)", "types-aiobotocore-emr-serverless (>=2.26.0,<2.27.0)", "types-aiobotocore-entityresolution (>=2.26.0,<2.27.0)", "types-aiobotocore-es (>=2.26.0,<2.27.0)", "types-aiobotocore-events (>=2.26.0,<2.27.0)", "types-aiobotocore-evidently (>=2.26.0,<2.27.0)", "types-aiobotocore-evs (>=2.26.0,<2.27.0)", "types-aiobotocore-finspace (>=2.26.0,<2.27.0)", "types-aiobotocore-finspace-data (>=2.26.0,<2.27.0)", "types-aiobotocore-firehose (>=2.26.0,<2.27.0)", "types-aiobotocore-fis (>=2.26.0,<2.27.0)", "types-aiobotocore-fms (>=2.26.0,<2.27.0)", "types-aiobotocore-forecast (>=2.26.0,<2.27.0)", "types-aiobotocore-forecastquery (>=2.26.0,<2.27.0)", "types-aiobotocore-frauddetector (>=2.26.0,<2.27.0)", "types-aiobotocore-freetier (>=2.26.0,<2.27.0)", "types-aiobotocore-fsx (>=2.26.0,<2.27.0)", "types-aiobotocore-gamelift (>=2.26.0,<2.27.0)", "types-aiobotocore-gameliftstreams (>=2.26.0,<2.27.0)", "types-aiobotocore-geo-maps (>=2.26.0,<2.27.0)", "types-aiobotocore-geo-places (>=2.26.0,<2.27.0)", "types-aiobotocore-geo-routes (>=2.26.0,<2.27.0)", "types-aiobotocore-glacier (>=2.26.0,<2.27.0)", "types-aiobotocore-globalaccelerator (>=2.26.0,<2.27.0)", "types-aiobotocore-glue (>=2.26.0,<2.27.0)", "types-aiobotocore-grafana (>=2.26.0,<2.27.0)", "types-aiobotocore-greengrass (>=2.26.0,<2.27.0)", "types-aiobotocore-greengrassv2 (>=2.26.0,<2.27.0)", "types-aiobotocore-groundstation (>=2.26.0,<2.27.0)", "types-aiobotocore-guardduty (>=2.26.0,<2.27.0)", "types-aiobotocore-health (>=2.26.0,<2.27.0)", "types-aiobotocore-healthlake (>=2.26.0,<2.27.0)", "types-aiobotocore-iam (>=2.26.0,<2.27.0)", "types-aiobotocore-identitystore (>=2.26.0,<2.27.0)", "types-aiobotocore-imagebuilder (>=2.26.0,<2.27.0)", "types-aiobotocore-importexport (>=2.26.0,<2.27.0)", "types-aiobotocore-inspector (>=2.26.0,<2.27.0)", "types-aiobotocore-inspector-scan (>=2.26.0,<2.27.0)", "types-aiobotocore-inspector2 (>=2.26.0,<2.27.0)", "types-aiobotocore-internetmonitor (>=2.26.0,<2.27.0)", "types-aiobotocore-invoicing (>=2.26.0,<2.27.0)", "types-aiobotocore-iot (>=2.26.0,<2.27.0)", "types-aiobotocore-iot-data (>=2.26.0,<2.27.0)", "types-aiobotocore-iot-jobs-data (>=2.26.0,<2.27.0)", "types-aiobotocore-iot-managed-integrations (>=2.26.0,<2.27.0)", "types-aiobotocore-iotanalytics (>=2.26.0,<2.27.0)", "types-aiobotocore-iotdeviceadvisor (>=2.26.0,<2.27.0)", "types-aiobotocore-iotevents (>=2.26.0,<2.27.0)", "types-aiobotocore-iotevents-data (>=2.26.0,<2.27.0)", "types-aiobotocore-iotfleetwise (>=2.26.0,<2.27.0)", "types-aiobotocore-iotsecuretunneling (>=2.26.0,<2.27.0)", "types-aiobotocore-iotsitewise (>=2.26.0,<2.27.0)", "types-aiobotocore-iotthingsgraph (>=2.26.0,<2.27.0)", "types-aiobotocore-iottwinmaker (>=2.26.0,<2.27.0)", "types-aiobotocore-iotwireless (>=2.26.0,<2.27.0)", "types-aiobotocore-ivs (>=2.26.0,<2.27.0)", "types-aiobotocore-ivs-realtime (>=2.26.0,<2.27.0)", "types-aiobotocore-ivschat (>=2.26.0,<2.27.0)", "types-aiobotocore-kafka (>=2.26.0,<2.27.0)", "types-aiobotocore-kafkaconnect (>=2.26.0,<2.27.0)", "types-aiobotocore-kendra (>=2.26.0,<2.27.0)", "types-aiobotocore-kendra-ranking (>=2.26.0,<2.27.0)", "types-aiobotocore-keyspaces (>=2.26.0,<2.27.0)", "types-aiobotocore-keyspacesstreams (>=2.26.0,<2.27.0)", "types-aiobotocore-kinesis (>=2.26.0,<2.27.0)", "types-aiobotocore-kinesis-video-archived-media (>=2.26.0,<2.27.0)", "types-aiobotocore-kinesis-video-media (>=2.26.0,<2.27.0)", "types-aiobotocore-kinesis-video-signaling (>=2.26.0,<2.27.0)", "types-aiobotocore-kinesis-video-webrtc-storage (>=2.26.0,<2.27.0)", "types-aiobotocore-kinesisanalytics (>=2.26.0,<2.27.0)", "types-aiobotocore-kinesisanalyticsv2 (>=2.26.0,<2.27.0)", "types-aiobotocore-kinesisvideo (>=2.26.0,<2.27.0)", "types-aiobotocore-kms (>=2.26.0,<2.27.0)", "types-aiobotocore-lakeformation (>=2.26.0,<2.27.0)", "types-aiobotocore-lambda (>=2.26.0,<2.27.0)", "types-aiobotocore-launch-wizard (>=2.26.0,<2.27.0)", "types-aiobotocore-lex-models (>=2.26.0,<2.27.0)", "types-aiobotocore-lex-runtime (>=2.26.0,<2.27.0)", "types-aiobotocore-lexv2-models (>=2.26.0,<2.27.0)", "types-aiobotocore-lexv2-runtime (>=2.26.0,<2.27.0)", "types-aiobotocore-license-manager (>=2.26.0,<2.27.0)", "types-aiobotocore-license-manager-linux-subscriptions (>=2.26.0,<2.27.0)", "types-aiobotocore-license-manager-user-subscriptions (>=2.26.0,<2.27.0)", "types-aiobotocore-lightsail (>=2.26.0,<2.27.0)", "types-aiobotocore-location (>=2.26.0,<2.27.0)", "types-aiobotocore-logs (>=2.26.0,<2.27.0)", "types-aiobotocore-lookoutequipment (>=2.26.0,<2.27.0)", "types-aiobotocore-m2 (>=2.26.0,<2.27.0)", "types-aiobotocore-machinelearning (>=2.26.0,<2.27.0)", "types-aiobotocore-macie2 (>=2.26.0,<2.27.0)", "types-aiobotocore-mailmanager (>=2.26.0,<2.27.0)", "types-aiobotocore-managedblockchain (>=2.26.0,<2.27.0)", "types-aiobotocore-managedblockchain-query (>=2.26.0,<2.27.0)", "types-aiobotocore-marketplace-agreement (>=2.26.0,<2.27.0)", "types-aiobotocore-marketplace-catalog (>=2.26.0,<2.27.0)", "types-aiobotocore-marketplace-deployment (>=2.26.0,<2.27.0)", "types-aiobotocore-marketplace-entitlement (>=2.26.0,<2.27.0)", "types-aiobotocore-marketplace-reporting (>=2.26.0,<2.27.0)", "types-aiobotocore-marketplacecommerceanalytics (>=2.26.0,<2.27.0)", "types-aiobotocore-mediaconnect (>=2.26.0,<2.27.0)", "types-aiobotocore-mediaconvert (>=2.26.0,<2.27.0)", "types-aiobotocore-medialive (>=2.26.0,<2.27.0)", "types-aiobotocore-mediapackage (>=2.26.0,<2.27.0)", "types-aiobotocore-mediapackage-vod (>=2.26.0,<2.27.0)", "types-aiobotocore-mediapackagev2 (>=2.26.0,<2.27.0)", "types-aiobotocore-mediastore (>=2.26.0,<2.27.0)", "types-aiobotocore-mediastore-data (>=2.26.0,<2.27.0)", "types-aiobotocore-mediatailor (>=2.26.0,<2.27.0)", "types-aiobotocore-medical-imaging (>=2.26.0,<2.27.0)", "types-aiobotocore-memorydb (>=2.26.0,<2.27.0)", "types-aiobotocore-meteringmarketplace (>=2.26.0,<2.27.0)", "types-aiobotocore-mgh (>=2.26.0,<2.27.0)", "types-aiobotocore-mgn (>=2.26.0,<2.27.0)", "types-aiobotocore-migration-hub-refactor-spaces (>=2.26.0,<2.27.0)", "types-aiobotocore-migrationhub-config (>=2.26.0,<2.27.0)", "types-aiobotocore-migrationhuborchestrator (>=2.26.0,<2.27.0)", "types-aiobotocore-migrationhubstrategy (>=2.26.0,<2.27.0)", "types-aiobotocore-mpa (>=2.26.0,<2.27.0)", "types-aiobotocore-mq (>=2.26.0,<2.27.0)", "types-aiobotocore-mturk (>=2.26.0,<2.27.0)", "types-aiobotocore-mwaa (>=2.26.0,<2.27.0)", "types-aiobotocore-mwaa-serverless (>=2.26.0,<2.27.0)", "types-aiobotocore-neptune (>=2.26.0,<2.27.0)", "types-aiobotocore-neptune-graph (>=2.26.0,<2.27.0)", "types-aiobotocore-neptunedata (>=2.26.0,<2.27.0)", "types-aiobotocore-network-firewall (>=2.26.0,<2.27.0)", "types-aiobotocore-networkflowmonitor (>=2.26.0,<2.27.0)", "types-aiobotocore-networkmanager (>=2.26.0,<2.27.0)", "types-aiobotocore-networkmonitor (>=2.26.0,<2.27.0)", "types-aiobotocore-notifications (>=2.26.0,<2.27.0)", "types-aiobotocore-notificationscontacts (>=2.26.0,<2.27.0)", "types-aiobotocore-oam (>=2.26.0,<2.27.0)", "types-aiobotocore-observabilityadmin (>=2.26.0,<2.27.0)", "types-aiobotocore-odb (>=2.26.0,<2.27.0)", "types-aiobotocore-omics (>=2.26.0,<2.27.0)", "types-aiobotocore-opensearch (>=2.26.0,<2.27.0)", "types-aiobotocore-opensearchserverless (>=2.26.0,<2.27.0)", "types-aiobotocore-organizations (>=2.26.0,<2.27.0)", "types-aiobotocore-osis (>=2.26.0,<2.27.0)", "types-aiobotocore-outposts (>=2.26.0,<2.27.0)", "types-aiobotocore-panorama (>=2.26.0,<2.27.0)", "types-aiobotocore-partnercentral-account (>=2.26.0,<2.27.0)", "types-aiobotocore-partnercentral-benefits (>=2.26.0,<2.27.0)", "types-aiobotocore-partnercentral-channel (>=2.26.0,<2.27.0)", "types-aiobotocore-partnercentral-selling (>=2.26.0,<2.27.0)", "types-aiobotocore-payment-cryptography (>=2.26.0,<2.27.0)", "types-aiobotocore-payment-cryptography-data (>=2.26.0,<2.27.0)", "types-aiobotocore-pca-connector-ad (>=2.26.0,<2.27.0)", "types-aiobotocore-pca-connector-scep (>=2.26.0,<2.27.0)", "types-aiobotocore-pcs (>=2.26.0,<2.27.0)", "types-aiobotocore-personalize (>=2.26.0,<2.27.0)", "types-aiobotocore-personalize-events (>=2.26.0,<2.27.0)", "types-aiobotocore-personalize-runtime (>=2.26.0,<2.27.0)", "types-aiobotocore-pi (>=2.26.0,<2.27.0)", "types-aiobotocore-pinpoint (>=2.26.0,<2.27.0)", "types-aiobotocore-pinpoint-email (>=2.26.0,<2.27.0)", "types-aiobotocore-pinpoint-sms-voice (>=2.26.0,<2.27.0)", "types-aiobotocore-pinpoint-sms-voice-v2 (>=2.26.0,<2.27.0)", "types-aiobotocore-pipes (>=2.26.0,<2.27.0)", "types-aiobotocore-polly (>=2.26.0,<2.27.0)", "types-aiobotocore-pricing (>=2.26.0,<2.27.0)", "types-aiobotocore-proton (>=2.26.0,<2.27.0)", "types-aiobotocore-qapps (>=2.26.0,<2.27.0)", "types-aiobotocore-qbusiness (>=2.26.0,<2.27.0)", "types-aiobotocore-qconnect (>=2.26.0,<2.27.0)", "types-aiobotocore-quicksight (>=2.26.0,<2.27.0)", "types-aiobotocore-ram (>=2.26.0,<2.27.0)", "types-aiobotocore-rbin (>=2.26.0,<2.27.0)", "types-aiobotocore-rds (>=2.26.0,<2.27.0)", "types-aiobotocore-rds-data (>=2.26.0,<2.27.0)", "types-aiobotocore-redshift (>=2.26.0,<2.27.0)", "types-aiobotocore-redshift-data (>=2.26.0,<2.27.0)", "types-aiobotocore-redshift-serverless (>=2.26.0,<2.27.0)", "types-aiobotocore-rekognition (>=2.26.0,<2.27.0)", "types-aiobotocore-repostspace (>=2.26.0,<2.27.0)", "types-aiobotocore-resiliencehub (>=2.26.0,<2.27.0)", "types-aiobotocore-resource-explorer-2 (>=2.26.0,<2.27.0)", "types-aiobotocore-resource-groups (>=2.26.0,<2.27.0)", "types-aiobotocore-resourcegroupstaggingapi (>=2.26.0,<2.27.0)", "types-aiobotocore-rolesanywhere (>=2.26.0,<2.27.0)", "types-aiobotocore-route53 (>=2.26.0,<2.27.0)", "types-aiobotocore-route53-recovery-cluster (>=2.26.0,<2.27.0)", "types-aiobotocore-route53-recovery-control-config (>=2.26.0,<2.27.0)", "types-aiobotocore-route53-recovery-readiness (>=2.26.0,<2.27.0)", "types-aiobotocore-route53domains (>=2.26.0,<2.27.0)", "types-aiobotocore-route53globalresolver (>=2.26.0,<2.27.0)", "types-aiobotocore-route53profiles (>=2.26.0,<2.27.0)", "types-aiobotocore-route53resolver (>=2.26.0,<2.27.0)", "types-aiobotocore-rtbfabric (>=2.26.0,<2.27.0)", "types-aiobotocore-rum (>=2.26.0,<2.27.0)", "types-aiobotocore-s3 (>=2.26.0,<2.27.0)", "types-aiobotocore-s3control (>=2.26.0,<2.27.0)", "types-aiobotocore-s3outposts (>=2.26.0,<2.27.0)", "types-aiobotocore-s3tables (>=2.26.0,<2.27.0)", "types-aiobotocore-s3vectors (>=2.26.0,<2.27.0)", "types-aiobotocore-sagemaker (>=2.26.0,<2.27.0)", "types-aiobotocore-sagemaker-a2i-runtime (>=2.26.0,<2.27.0)", "types-aiobotocore-sagemaker-edge (>=2.26.0,<2.27.0)", "types-aiobotocore-sagemaker-featurestore-runtime (>=2.26.0,<2.27.0)", "types-aiobotocore-sagemaker-geospatial (>=2.26.0,<2.27.0)", "types-aiobotocore-sagemaker-metrics (>=2.26.0,<2.27.0)", "types-aiobotocore-sagemaker-runtime (>=2.26.0,<2.27.0)", "types-aiobotocore-savingsplans (>=2.26.0,<2.27.0)", "types-aiobotocore-scheduler (>=2.26.0,<2.27.0)", "types-aiobotocore-schemas (>=2.26.0,<2.27.0)", "types-aiobotocore-sdb (>=2.26.0,<2.27.0)", "types-aiobotocore-secretsmanager (>=2.26.0,<2.27.0)", "types-aiobotocore-security-ir (>=2.26.0,<2.27.0)", "types-aiobotocore-securityhub (>=2.26.0,<2.27.0)", "types-aiobotocore-securitylake (>=2.26.0,<2.27.0)", "types-aiobotocore-serverlessrepo (>=2.26.0,<2.27.0)", "types-aiobotocore-service-quotas (>=2.26.0,<2.27.0)", "types-aiobotocore-servicecatalog (>=2.26.0,<2.27.0)", "types-aiobotocore-servicecatalog-appregistry (>=2.26.0,<2.27.0)", "types-aiobotocore-servicediscovery (>=2.26.0,<2.27.0)", "types-aiobotocore-ses (>=2.26.0,<2.27.0)", "types-aiobotocore-sesv2 (>=2.26.0,<2.27.0)", "types-aiobotocore-shield (>=2.26.0,<2.27.0)", "types-aiobotocore-signer (>=2.26.0,<2.27.0)", "types-aiobotocore-signin (>=2.26.0,<2.27.0)", "types-aiobotocore-simspaceweaver (>=2.26.0,<2.27.0)", "types-aiobotocore-snow-device-management (>=2.26.0,<2.27.0)", "types-aiobotocore-snowball (>=2.26.0,<2.27.0)", "types-aiobotocore-sns (>=2.26.0,<2.27.0)", "types-aiobotocore-socialmessaging (>=2.26.0,<2.27.0)", "types-aiobotocore-sqs (>=2.26.0,<2.27.0)", "types-aiobotocore-ssm (>=2.26.0,<2.27.0)", "types-aiobotocore-ssm-contacts (>=2.26.0,<2.27.0)", "types-aiobotocore-ssm-guiconnect (>=2.26.0,<2.27.0)", "types-aiobotocore-ssm-incidents (>=2.26.0,<2.27.0)", "types-aiobotocore-ssm-quicksetup (>=2.26.0,<2.27.0)", "types-aiobotocore-ssm-sap (>=2.26.0,<2.27.0)", "types-aiobotocore-sso (>=2.26.0,<2.27.0)", "types-aiobotocore-sso-admin (>=2.26.0,<2.27.0)", "types-aiobotocore-sso-oidc (>=2.26.0,<2.27.0)", "types-aiobotocore-stepfunctions (>=2.26.0,<2.27.0)", "types-aiobotocore-storagegateway (>=2.26.0,<2.27.0)", "types-aiobotocore-sts (>=2.26.0,<2.27.0)", "types-aiobotocore-supplychain (>=2.26.0,<2.27.0)", "types-aiobotocore-support (>=2.26.0,<2.27.0)", "types-aiobotocore-support-app (>=2.26.0,<2.27.0)", "types-aiobotocore-swf (>=2.26.0,<2.27.0)", "types-aiobotocore-synthetics (>=2.26.0,<2.27.0)", "types-aiobotocore-taxsettings (>=2.26.0,<2.27.0)", "types-aiobotocore-textract (>=2.26.0,<2.27.0)", "types-aiobotocore-timestream-influxdb (>=2.26.0,<2.27.0)", "types-aiobotocore-timestream-query (>=2.26.0,<2.27.0)", "types-aiobotocore-timestream-write (>=2.26.0,<2.27.0)", "types-aiobotocore-tnb (>=2.26.0,<2.27.0)", "types-aiobotocore-transcribe (>=2.26.0,<2.27.0)", "types-aiobotocore-transfer (>=2.26.0,<2.27.0)", "types-aiobotocore-translate (>=2.26.0,<2.27.0)", "types-aiobotocore-trustedadvisor (>=2.26.0,<2.27.0)", "types-aiobotocore-verifiedpermissions (>=2.26.0,<2.27.0)", "types-aiobotocore-voice-id (>=2.26.0,<2.27.0)", "types-aiobotocore-vpc-lattice (>=2.26.0,<2.27.0)", "types-aiobotocore-waf (>=2.26.0,<2.27.0)", "types-aiobotocore-waf-regional (>=2.26.0,<2.27.0)", "types-aiobotocore-wafv2 (>=2.26.0,<2.27.0)", "types-aiobotocore-wellarchitected (>=2.26.0,<2.27.0)", "types-aiobotocore-wisdom (>=2.26.0,<2.27.0)", "types-aiobotocore-workdocs (>=2.26.0,<2.27.0)", "types-aiobotocore-workmail (>=2.26.0,<2.27.0)", "types-aiobotocore-workmailmessageflow (>=2.26.0,<2.27.0)", "types-aiobotocore-workspaces (>=2.26.0,<2.27.0)", "types-aiobotocore-workspaces-instances (>=2.26.0,<2.27.0)", "types-aiobotocore-workspaces-thin-client (>=2.26.0,<2.27.0)", "types-aiobotocore-workspaces-web (>=2.26.0,<2.27.0)", "types-aiobotocore-xray (>=2.26.0,<2.27.0)"]
+amp = ["types-aiobotocore-amp (>=2.26.0,<2.27.0)"]
+amplify = ["types-aiobotocore-amplify (>=2.26.0,<2.27.0)"]
+amplifybackend = ["types-aiobotocore-amplifybackend (>=2.26.0,<2.27.0)"]
+amplifyuibuilder = ["types-aiobotocore-amplifyuibuilder (>=2.26.0,<2.27.0)"]
+apigateway = ["types-aiobotocore-apigateway (>=2.26.0,<2.27.0)"]
+apigatewaymanagementapi = ["types-aiobotocore-apigatewaymanagementapi (>=2.26.0,<2.27.0)"]
+apigatewayv2 = ["types-aiobotocore-apigatewayv2 (>=2.26.0,<2.27.0)"]
+appconfig = ["types-aiobotocore-appconfig (>=2.26.0,<2.27.0)"]
+appconfigdata = ["types-aiobotocore-appconfigdata (>=2.26.0,<2.27.0)"]
+appfabric = ["types-aiobotocore-appfabric (>=2.26.0,<2.27.0)"]
+appflow = ["types-aiobotocore-appflow (>=2.26.0,<2.27.0)"]
+appintegrations = ["types-aiobotocore-appintegrations (>=2.26.0,<2.27.0)"]
+application-autoscaling = ["types-aiobotocore-application-autoscaling (>=2.26.0,<2.27.0)"]
+application-insights = ["types-aiobotocore-application-insights (>=2.26.0,<2.27.0)"]
+application-signals = ["types-aiobotocore-application-signals (>=2.26.0,<2.27.0)"]
+applicationcostprofiler = ["types-aiobotocore-applicationcostprofiler (>=2.26.0,<2.27.0)"]
+appmesh = ["types-aiobotocore-appmesh (>=2.26.0,<2.27.0)"]
+apprunner = ["types-aiobotocore-apprunner (>=2.26.0,<2.27.0)"]
+appstream = ["types-aiobotocore-appstream (>=2.26.0,<2.27.0)"]
+appsync = ["types-aiobotocore-appsync (>=2.26.0,<2.27.0)"]
+arc-region-switch = ["types-aiobotocore-arc-region-switch (>=2.26.0,<2.27.0)"]
+arc-zonal-shift = ["types-aiobotocore-arc-zonal-shift (>=2.26.0,<2.27.0)"]
+artifact = ["types-aiobotocore-artifact (>=2.26.0,<2.27.0)"]
+athena = ["types-aiobotocore-athena (>=2.26.0,<2.27.0)"]
+auditmanager = ["types-aiobotocore-auditmanager (>=2.26.0,<2.27.0)"]
+autoscaling = ["types-aiobotocore-autoscaling (>=2.26.0,<2.27.0)"]
+autoscaling-plans = ["types-aiobotocore-autoscaling-plans (>=2.26.0,<2.27.0)"]
+b2bi = ["types-aiobotocore-b2bi (>=2.26.0,<2.27.0)"]
+backup = ["types-aiobotocore-backup (>=2.26.0,<2.27.0)"]
+backup-gateway = ["types-aiobotocore-backup-gateway (>=2.26.0,<2.27.0)"]
+backupsearch = ["types-aiobotocore-backupsearch (>=2.26.0,<2.27.0)"]
+batch = ["types-aiobotocore-batch (>=2.26.0,<2.27.0)"]
+bcm-dashboards = ["types-aiobotocore-bcm-dashboards (>=2.26.0,<2.27.0)"]
+bcm-data-exports = ["types-aiobotocore-bcm-data-exports (>=2.26.0,<2.27.0)"]
+bcm-pricing-calculator = ["types-aiobotocore-bcm-pricing-calculator (>=2.26.0,<2.27.0)"]
+bcm-recommended-actions = ["types-aiobotocore-bcm-recommended-actions (>=2.26.0,<2.27.0)"]
+bedrock = ["types-aiobotocore-bedrock (>=2.26.0,<2.27.0)"]
+bedrock-agent = ["types-aiobotocore-bedrock-agent (>=2.26.0,<2.27.0)"]
+bedrock-agent-runtime = ["types-aiobotocore-bedrock-agent-runtime (>=2.26.0,<2.27.0)"]
+bedrock-agentcore = ["types-aiobotocore-bedrock-agentcore (>=2.26.0,<2.27.0)"]
+bedrock-agentcore-control = ["types-aiobotocore-bedrock-agentcore-control (>=2.26.0,<2.27.0)"]
+bedrock-data-automation = ["types-aiobotocore-bedrock-data-automation (>=2.26.0,<2.27.0)"]
+bedrock-data-automation-runtime = ["types-aiobotocore-bedrock-data-automation-runtime (>=2.26.0,<2.27.0)"]
+bedrock-runtime = ["types-aiobotocore-bedrock-runtime (>=2.26.0,<2.27.0)"]
+billing = ["types-aiobotocore-billing (>=2.26.0,<2.27.0)"]
+billingconductor = ["types-aiobotocore-billingconductor (>=2.26.0,<2.27.0)"]
+braket = ["types-aiobotocore-braket (>=2.26.0,<2.27.0)"]
+budgets = ["types-aiobotocore-budgets (>=2.26.0,<2.27.0)"]
+ce = ["types-aiobotocore-ce (>=2.26.0,<2.27.0)"]
+chatbot = ["types-aiobotocore-chatbot (>=2.26.0,<2.27.0)"]
+chime = ["types-aiobotocore-chime (>=2.26.0,<2.27.0)"]
+chime-sdk-identity = ["types-aiobotocore-chime-sdk-identity (>=2.26.0,<2.27.0)"]
+chime-sdk-media-pipelines = ["types-aiobotocore-chime-sdk-media-pipelines (>=2.26.0,<2.27.0)"]
+chime-sdk-meetings = ["types-aiobotocore-chime-sdk-meetings (>=2.26.0,<2.27.0)"]
+chime-sdk-messaging = ["types-aiobotocore-chime-sdk-messaging (>=2.26.0,<2.27.0)"]
+chime-sdk-voice = ["types-aiobotocore-chime-sdk-voice (>=2.26.0,<2.27.0)"]
+cleanrooms = ["types-aiobotocore-cleanrooms (>=2.26.0,<2.27.0)"]
+cleanroomsml = ["types-aiobotocore-cleanroomsml (>=2.26.0,<2.27.0)"]
+cloud9 = ["types-aiobotocore-cloud9 (>=2.26.0,<2.27.0)"]
+cloudcontrol = ["types-aiobotocore-cloudcontrol (>=2.26.0,<2.27.0)"]
+clouddirectory = ["types-aiobotocore-clouddirectory (>=2.26.0,<2.27.0)"]
+cloudformation = ["types-aiobotocore-cloudformation (>=2.26.0,<2.27.0)"]
+cloudfront = ["types-aiobotocore-cloudfront (>=2.26.0,<2.27.0)"]
+cloudfront-keyvaluestore = ["types-aiobotocore-cloudfront-keyvaluestore (>=2.26.0,<2.27.0)"]
+cloudhsm = ["types-aiobotocore-cloudhsm (>=2.26.0,<2.27.0)"]
+cloudhsmv2 = ["types-aiobotocore-cloudhsmv2 (>=2.26.0,<2.27.0)"]
+cloudsearch = ["types-aiobotocore-cloudsearch (>=2.26.0,<2.27.0)"]
+cloudsearchdomain = ["types-aiobotocore-cloudsearchdomain (>=2.26.0,<2.27.0)"]
+cloudtrail = ["types-aiobotocore-cloudtrail (>=2.26.0,<2.27.0)"]
+cloudtrail-data = ["types-aiobotocore-cloudtrail-data (>=2.26.0,<2.27.0)"]
+cloudwatch = ["types-aiobotocore-cloudwatch (>=2.26.0,<2.27.0)"]
+codeartifact = ["types-aiobotocore-codeartifact (>=2.26.0,<2.27.0)"]
+codebuild = ["types-aiobotocore-codebuild (>=2.26.0,<2.27.0)"]
+codecatalyst = ["types-aiobotocore-codecatalyst (>=2.26.0,<2.27.0)"]
+codecommit = ["types-aiobotocore-codecommit (>=2.26.0,<2.27.0)"]
+codeconnections = ["types-aiobotocore-codeconnections (>=2.26.0,<2.27.0)"]
+codedeploy = ["types-aiobotocore-codedeploy (>=2.26.0,<2.27.0)"]
+codeguru-reviewer = ["types-aiobotocore-codeguru-reviewer (>=2.26.0,<2.27.0)"]
+codeguru-security = ["types-aiobotocore-codeguru-security (>=2.26.0,<2.27.0)"]
+codeguruprofiler = ["types-aiobotocore-codeguruprofiler (>=2.26.0,<2.27.0)"]
+codepipeline = ["types-aiobotocore-codepipeline (>=2.26.0,<2.27.0)"]
+codestar-connections = ["types-aiobotocore-codestar-connections (>=2.26.0,<2.27.0)"]
+codestar-notifications = ["types-aiobotocore-codestar-notifications (>=2.26.0,<2.27.0)"]
+cognito-identity = ["types-aiobotocore-cognito-identity (>=2.26.0,<2.27.0)"]
+cognito-idp = ["types-aiobotocore-cognito-idp (>=2.26.0,<2.27.0)"]
+cognito-sync = ["types-aiobotocore-cognito-sync (>=2.26.0,<2.27.0)"]
+comprehend = ["types-aiobotocore-comprehend (>=2.26.0,<2.27.0)"]
+comprehendmedical = ["types-aiobotocore-comprehendmedical (>=2.26.0,<2.27.0)"]
+compute-optimizer = ["types-aiobotocore-compute-optimizer (>=2.26.0,<2.27.0)"]
+compute-optimizer-automation = ["types-aiobotocore-compute-optimizer-automation (>=2.26.0,<2.27.0)"]
+config = ["types-aiobotocore-config (>=2.26.0,<2.27.0)"]
+connect = ["types-aiobotocore-connect (>=2.26.0,<2.27.0)"]
+connect-contact-lens = ["types-aiobotocore-connect-contact-lens (>=2.26.0,<2.27.0)"]
+connectcampaigns = ["types-aiobotocore-connectcampaigns (>=2.26.0,<2.27.0)"]
+connectcampaignsv2 = ["types-aiobotocore-connectcampaignsv2 (>=2.26.0,<2.27.0)"]
+connectcases = ["types-aiobotocore-connectcases (>=2.26.0,<2.27.0)"]
+connectparticipant = ["types-aiobotocore-connectparticipant (>=2.26.0,<2.27.0)"]
+controlcatalog = ["types-aiobotocore-controlcatalog (>=2.26.0,<2.27.0)"]
+controltower = ["types-aiobotocore-controltower (>=2.26.0,<2.27.0)"]
+cost-optimization-hub = ["types-aiobotocore-cost-optimization-hub (>=2.26.0,<2.27.0)"]
+cur = ["types-aiobotocore-cur (>=2.26.0,<2.27.0)"]
+customer-profiles = ["types-aiobotocore-customer-profiles (>=2.26.0,<2.27.0)"]
+databrew = ["types-aiobotocore-databrew (>=2.26.0,<2.27.0)"]
+dataexchange = ["types-aiobotocore-dataexchange (>=2.26.0,<2.27.0)"]
+datapipeline = ["types-aiobotocore-datapipeline (>=2.26.0,<2.27.0)"]
+datasync = ["types-aiobotocore-datasync (>=2.26.0,<2.27.0)"]
+datazone = ["types-aiobotocore-datazone (>=2.26.0,<2.27.0)"]
+dax = ["types-aiobotocore-dax (>=2.26.0,<2.27.0)"]
+deadline = ["types-aiobotocore-deadline (>=2.26.0,<2.27.0)"]
+detective = ["types-aiobotocore-detective (>=2.26.0,<2.27.0)"]
+devicefarm = ["types-aiobotocore-devicefarm (>=2.26.0,<2.27.0)"]
+devops-guru = ["types-aiobotocore-devops-guru (>=2.26.0,<2.27.0)"]
+directconnect = ["types-aiobotocore-directconnect (>=2.26.0,<2.27.0)"]
+discovery = ["types-aiobotocore-discovery (>=2.26.0,<2.27.0)"]
+dlm = ["types-aiobotocore-dlm (>=2.26.0,<2.27.0)"]
+dms = ["types-aiobotocore-dms (>=2.26.0,<2.27.0)"]
+docdb = ["types-aiobotocore-docdb (>=2.26.0,<2.27.0)"]
+docdb-elastic = ["types-aiobotocore-docdb-elastic (>=2.26.0,<2.27.0)"]
+drs = ["types-aiobotocore-drs (>=2.26.0,<2.27.0)"]
+ds = ["types-aiobotocore-ds (>=2.26.0,<2.27.0)"]
+ds-data = ["types-aiobotocore-ds-data (>=2.26.0,<2.27.0)"]
+dsql = ["types-aiobotocore-dsql (>=2.26.0,<2.27.0)"]
+dynamodb = ["types-aiobotocore-dynamodb (>=2.26.0,<2.27.0)"]
+dynamodbstreams = ["types-aiobotocore-dynamodbstreams (>=2.26.0,<2.27.0)"]
+ebs = ["types-aiobotocore-ebs (>=2.26.0,<2.27.0)"]
+ec2 = ["types-aiobotocore-ec2 (>=2.26.0,<2.27.0)"]
+ec2-instance-connect = ["types-aiobotocore-ec2-instance-connect (>=2.26.0,<2.27.0)"]
+ecr = ["types-aiobotocore-ecr (>=2.26.0,<2.27.0)"]
+ecr-public = ["types-aiobotocore-ecr-public (>=2.26.0,<2.27.0)"]
+ecs = ["types-aiobotocore-ecs (>=2.26.0,<2.27.0)"]
+efs = ["types-aiobotocore-efs (>=2.26.0,<2.27.0)"]
+eks = ["types-aiobotocore-eks (>=2.26.0,<2.27.0)"]
+eks-auth = ["types-aiobotocore-eks-auth (>=2.26.0,<2.27.0)"]
+elasticache = ["types-aiobotocore-elasticache (>=2.26.0,<2.27.0)"]
+elasticbeanstalk = ["types-aiobotocore-elasticbeanstalk (>=2.26.0,<2.27.0)"]
+elastictranscoder = ["types-aiobotocore-elastictranscoder (>=2.26.0,<2.27.0)"]
+elb = ["types-aiobotocore-elb (>=2.26.0,<2.27.0)"]
+elbv2 = ["types-aiobotocore-elbv2 (>=2.26.0,<2.27.0)"]
+emr = ["types-aiobotocore-emr (>=2.26.0,<2.27.0)"]
+emr-containers = ["types-aiobotocore-emr-containers (>=2.26.0,<2.27.0)"]
+emr-serverless = ["types-aiobotocore-emr-serverless (>=2.26.0,<2.27.0)"]
+entityresolution = ["types-aiobotocore-entityresolution (>=2.26.0,<2.27.0)"]
+es = ["types-aiobotocore-es (>=2.26.0,<2.27.0)"]
+essential = ["types-aiobotocore-cloudformation (>=2.26.0,<2.27.0)", "types-aiobotocore-dynamodb (>=2.26.0,<2.27.0)", "types-aiobotocore-ec2 (>=2.26.0,<2.27.0)", "types-aiobotocore-lambda (>=2.26.0,<2.27.0)", "types-aiobotocore-rds (>=2.26.0,<2.27.0)", "types-aiobotocore-s3 (>=2.26.0,<2.27.0)", "types-aiobotocore-sqs (>=2.26.0,<2.27.0)"]
+events = ["types-aiobotocore-events (>=2.26.0,<2.27.0)"]
+evidently = ["types-aiobotocore-evidently (>=2.26.0,<2.27.0)"]
+evs = ["types-aiobotocore-evs (>=2.26.0,<2.27.0)"]
+finspace = ["types-aiobotocore-finspace (>=2.26.0,<2.27.0)"]
+finspace-data = ["types-aiobotocore-finspace-data (>=2.26.0,<2.27.0)"]
+firehose = ["types-aiobotocore-firehose (>=2.26.0,<2.27.0)"]
+fis = ["types-aiobotocore-fis (>=2.26.0,<2.27.0)"]
+fms = ["types-aiobotocore-fms (>=2.26.0,<2.27.0)"]
+forecast = ["types-aiobotocore-forecast (>=2.26.0,<2.27.0)"]
+forecastquery = ["types-aiobotocore-forecastquery (>=2.26.0,<2.27.0)"]
+frauddetector = ["types-aiobotocore-frauddetector (>=2.26.0,<2.27.0)"]
+freetier = ["types-aiobotocore-freetier (>=2.26.0,<2.27.0)"]
+fsx = ["types-aiobotocore-fsx (>=2.26.0,<2.27.0)"]
+full = ["types-aiobotocore-full (>=2.26.0,<2.27.0)"]
+gamelift = ["types-aiobotocore-gamelift (>=2.26.0,<2.27.0)"]
+gameliftstreams = ["types-aiobotocore-gameliftstreams (>=2.26.0,<2.27.0)"]
+geo-maps = ["types-aiobotocore-geo-maps (>=2.26.0,<2.27.0)"]
+geo-places = ["types-aiobotocore-geo-places (>=2.26.0,<2.27.0)"]
+geo-routes = ["types-aiobotocore-geo-routes (>=2.26.0,<2.27.0)"]
+glacier = ["types-aiobotocore-glacier (>=2.26.0,<2.27.0)"]
+globalaccelerator = ["types-aiobotocore-globalaccelerator (>=2.26.0,<2.27.0)"]
+glue = ["types-aiobotocore-glue (>=2.26.0,<2.27.0)"]
+grafana = ["types-aiobotocore-grafana (>=2.26.0,<2.27.0)"]
+greengrass = ["types-aiobotocore-greengrass (>=2.26.0,<2.27.0)"]
+greengrassv2 = ["types-aiobotocore-greengrassv2 (>=2.26.0,<2.27.0)"]
+groundstation = ["types-aiobotocore-groundstation (>=2.26.0,<2.27.0)"]
+guardduty = ["types-aiobotocore-guardduty (>=2.26.0,<2.27.0)"]
+health = ["types-aiobotocore-health (>=2.26.0,<2.27.0)"]
+healthlake = ["types-aiobotocore-healthlake (>=2.26.0,<2.27.0)"]
+iam = ["types-aiobotocore-iam (>=2.26.0,<2.27.0)"]
+identitystore = ["types-aiobotocore-identitystore (>=2.26.0,<2.27.0)"]
+imagebuilder = ["types-aiobotocore-imagebuilder (>=2.26.0,<2.27.0)"]
+importexport = ["types-aiobotocore-importexport (>=2.26.0,<2.27.0)"]
+inspector = ["types-aiobotocore-inspector (>=2.26.0,<2.27.0)"]
+inspector-scan = ["types-aiobotocore-inspector-scan (>=2.26.0,<2.27.0)"]
+inspector2 = ["types-aiobotocore-inspector2 (>=2.26.0,<2.27.0)"]
+internetmonitor = ["types-aiobotocore-internetmonitor (>=2.26.0,<2.27.0)"]
+invoicing = ["types-aiobotocore-invoicing (>=2.26.0,<2.27.0)"]
+iot = ["types-aiobotocore-iot (>=2.26.0,<2.27.0)"]
+iot-data = ["types-aiobotocore-iot-data (>=2.26.0,<2.27.0)"]
+iot-jobs-data = ["types-aiobotocore-iot-jobs-data (>=2.26.0,<2.27.0)"]
+iot-managed-integrations = ["types-aiobotocore-iot-managed-integrations (>=2.26.0,<2.27.0)"]
+iotanalytics = ["types-aiobotocore-iotanalytics (>=2.26.0,<2.27.0)"]
+iotdeviceadvisor = ["types-aiobotocore-iotdeviceadvisor (>=2.26.0,<2.27.0)"]
+iotevents = ["types-aiobotocore-iotevents (>=2.26.0,<2.27.0)"]
+iotevents-data = ["types-aiobotocore-iotevents-data (>=2.26.0,<2.27.0)"]
+iotfleetwise = ["types-aiobotocore-iotfleetwise (>=2.26.0,<2.27.0)"]
+iotsecuretunneling = ["types-aiobotocore-iotsecuretunneling (>=2.26.0,<2.27.0)"]
+iotsitewise = ["types-aiobotocore-iotsitewise (>=2.26.0,<2.27.0)"]
+iotthingsgraph = ["types-aiobotocore-iotthingsgraph (>=2.26.0,<2.27.0)"]
+iottwinmaker = ["types-aiobotocore-iottwinmaker (>=2.26.0,<2.27.0)"]
+iotwireless = ["types-aiobotocore-iotwireless (>=2.26.0,<2.27.0)"]
+ivs = ["types-aiobotocore-ivs (>=2.26.0,<2.27.0)"]
+ivs-realtime = ["types-aiobotocore-ivs-realtime (>=2.26.0,<2.27.0)"]
+ivschat = ["types-aiobotocore-ivschat (>=2.26.0,<2.27.0)"]
+kafka = ["types-aiobotocore-kafka (>=2.26.0,<2.27.0)"]
+kafkaconnect = ["types-aiobotocore-kafkaconnect (>=2.26.0,<2.27.0)"]
+kendra = ["types-aiobotocore-kendra (>=2.26.0,<2.27.0)"]
+kendra-ranking = ["types-aiobotocore-kendra-ranking (>=2.26.0,<2.27.0)"]
+keyspaces = ["types-aiobotocore-keyspaces (>=2.26.0,<2.27.0)"]
+keyspacesstreams = ["types-aiobotocore-keyspacesstreams (>=2.26.0,<2.27.0)"]
+kinesis = ["types-aiobotocore-kinesis (>=2.26.0,<2.27.0)"]
+kinesis-video-archived-media = ["types-aiobotocore-kinesis-video-archived-media (>=2.26.0,<2.27.0)"]
+kinesis-video-media = ["types-aiobotocore-kinesis-video-media (>=2.26.0,<2.27.0)"]
+kinesis-video-signaling = ["types-aiobotocore-kinesis-video-signaling (>=2.26.0,<2.27.0)"]
+kinesis-video-webrtc-storage = ["types-aiobotocore-kinesis-video-webrtc-storage (>=2.26.0,<2.27.0)"]
+kinesisanalytics = ["types-aiobotocore-kinesisanalytics (>=2.26.0,<2.27.0)"]
+kinesisanalyticsv2 = ["types-aiobotocore-kinesisanalyticsv2 (>=2.26.0,<2.27.0)"]
+kinesisvideo = ["types-aiobotocore-kinesisvideo (>=2.26.0,<2.27.0)"]
+kms = ["types-aiobotocore-kms (>=2.26.0,<2.27.0)"]
+lakeformation = ["types-aiobotocore-lakeformation (>=2.26.0,<2.27.0)"]
+lambda = ["types-aiobotocore-lambda (>=2.26.0,<2.27.0)"]
+launch-wizard = ["types-aiobotocore-launch-wizard (>=2.26.0,<2.27.0)"]
+lex-models = ["types-aiobotocore-lex-models (>=2.26.0,<2.27.0)"]
+lex-runtime = ["types-aiobotocore-lex-runtime (>=2.26.0,<2.27.0)"]
+lexv2-models = ["types-aiobotocore-lexv2-models (>=2.26.0,<2.27.0)"]
+lexv2-runtime = ["types-aiobotocore-lexv2-runtime (>=2.26.0,<2.27.0)"]
+license-manager = ["types-aiobotocore-license-manager (>=2.26.0,<2.27.0)"]
+license-manager-linux-subscriptions = ["types-aiobotocore-license-manager-linux-subscriptions (>=2.26.0,<2.27.0)"]
+license-manager-user-subscriptions = ["types-aiobotocore-license-manager-user-subscriptions (>=2.26.0,<2.27.0)"]
+lightsail = ["types-aiobotocore-lightsail (>=2.26.0,<2.27.0)"]
+location = ["types-aiobotocore-location (>=2.26.0,<2.27.0)"]
+logs = ["types-aiobotocore-logs (>=2.26.0,<2.27.0)"]
+lookoutequipment = ["types-aiobotocore-lookoutequipment (>=2.26.0,<2.27.0)"]
+m2 = ["types-aiobotocore-m2 (>=2.26.0,<2.27.0)"]
+machinelearning = ["types-aiobotocore-machinelearning (>=2.26.0,<2.27.0)"]
+macie2 = ["types-aiobotocore-macie2 (>=2.26.0,<2.27.0)"]
+mailmanager = ["types-aiobotocore-mailmanager (>=2.26.0,<2.27.0)"]
+managedblockchain = ["types-aiobotocore-managedblockchain (>=2.26.0,<2.27.0)"]
+managedblockchain-query = ["types-aiobotocore-managedblockchain-query (>=2.26.0,<2.27.0)"]
+marketplace-agreement = ["types-aiobotocore-marketplace-agreement (>=2.26.0,<2.27.0)"]
+marketplace-catalog = ["types-aiobotocore-marketplace-catalog (>=2.26.0,<2.27.0)"]
+marketplace-deployment = ["types-aiobotocore-marketplace-deployment (>=2.26.0,<2.27.0)"]
+marketplace-entitlement = ["types-aiobotocore-marketplace-entitlement (>=2.26.0,<2.27.0)"]
+marketplace-reporting = ["types-aiobotocore-marketplace-reporting (>=2.26.0,<2.27.0)"]
+marketplacecommerceanalytics = ["types-aiobotocore-marketplacecommerceanalytics (>=2.26.0,<2.27.0)"]
+mediaconnect = ["types-aiobotocore-mediaconnect (>=2.26.0,<2.27.0)"]
+mediaconvert = ["types-aiobotocore-mediaconvert (>=2.26.0,<2.27.0)"]
+medialive = ["types-aiobotocore-medialive (>=2.26.0,<2.27.0)"]
+mediapackage = ["types-aiobotocore-mediapackage (>=2.26.0,<2.27.0)"]
+mediapackage-vod = ["types-aiobotocore-mediapackage-vod (>=2.26.0,<2.27.0)"]
+mediapackagev2 = ["types-aiobotocore-mediapackagev2 (>=2.26.0,<2.27.0)"]
+mediastore = ["types-aiobotocore-mediastore (>=2.26.0,<2.27.0)"]
+mediastore-data = ["types-aiobotocore-mediastore-data (>=2.26.0,<2.27.0)"]
+mediatailor = ["types-aiobotocore-mediatailor (>=2.26.0,<2.27.0)"]
+medical-imaging = ["types-aiobotocore-medical-imaging (>=2.26.0,<2.27.0)"]
+memorydb = ["types-aiobotocore-memorydb (>=2.26.0,<2.27.0)"]
+meteringmarketplace = ["types-aiobotocore-meteringmarketplace (>=2.26.0,<2.27.0)"]
+mgh = ["types-aiobotocore-mgh (>=2.26.0,<2.27.0)"]
+mgn = ["types-aiobotocore-mgn (>=2.26.0,<2.27.0)"]
+migration-hub-refactor-spaces = ["types-aiobotocore-migration-hub-refactor-spaces (>=2.26.0,<2.27.0)"]
+migrationhub-config = ["types-aiobotocore-migrationhub-config (>=2.26.0,<2.27.0)"]
+migrationhuborchestrator = ["types-aiobotocore-migrationhuborchestrator (>=2.26.0,<2.27.0)"]
+migrationhubstrategy = ["types-aiobotocore-migrationhubstrategy (>=2.26.0,<2.27.0)"]
+mpa = ["types-aiobotocore-mpa (>=2.26.0,<2.27.0)"]
+mq = ["types-aiobotocore-mq (>=2.26.0,<2.27.0)"]
+mturk = ["types-aiobotocore-mturk (>=2.26.0,<2.27.0)"]
+mwaa = ["types-aiobotocore-mwaa (>=2.26.0,<2.27.0)"]
+mwaa-serverless = ["types-aiobotocore-mwaa-serverless (>=2.26.0,<2.27.0)"]
+neptune = ["types-aiobotocore-neptune (>=2.26.0,<2.27.0)"]
+neptune-graph = ["types-aiobotocore-neptune-graph (>=2.26.0,<2.27.0)"]
+neptunedata = ["types-aiobotocore-neptunedata (>=2.26.0,<2.27.0)"]
+network-firewall = ["types-aiobotocore-network-firewall (>=2.26.0,<2.27.0)"]
+networkflowmonitor = ["types-aiobotocore-networkflowmonitor (>=2.26.0,<2.27.0)"]
+networkmanager = ["types-aiobotocore-networkmanager (>=2.26.0,<2.27.0)"]
+networkmonitor = ["types-aiobotocore-networkmonitor (>=2.26.0,<2.27.0)"]
+notifications = ["types-aiobotocore-notifications (>=2.26.0,<2.27.0)"]
+notificationscontacts = ["types-aiobotocore-notificationscontacts (>=2.26.0,<2.27.0)"]
+oam = ["types-aiobotocore-oam (>=2.26.0,<2.27.0)"]
+observabilityadmin = ["types-aiobotocore-observabilityadmin (>=2.26.0,<2.27.0)"]
+odb = ["types-aiobotocore-odb (>=2.26.0,<2.27.0)"]
+omics = ["types-aiobotocore-omics (>=2.26.0,<2.27.0)"]
+opensearch = ["types-aiobotocore-opensearch (>=2.26.0,<2.27.0)"]
+opensearchserverless = ["types-aiobotocore-opensearchserverless (>=2.26.0,<2.27.0)"]
+organizations = ["types-aiobotocore-organizations (>=2.26.0,<2.27.0)"]
+osis = ["types-aiobotocore-osis (>=2.26.0,<2.27.0)"]
+outposts = ["types-aiobotocore-outposts (>=2.26.0,<2.27.0)"]
+panorama = ["types-aiobotocore-panorama (>=2.26.0,<2.27.0)"]
+partnercentral-account = ["types-aiobotocore-partnercentral-account (>=2.26.0,<2.27.0)"]
+partnercentral-benefits = ["types-aiobotocore-partnercentral-benefits (>=2.26.0,<2.27.0)"]
+partnercentral-channel = ["types-aiobotocore-partnercentral-channel (>=2.26.0,<2.27.0)"]
+partnercentral-selling = ["types-aiobotocore-partnercentral-selling (>=2.26.0,<2.27.0)"]
+payment-cryptography = ["types-aiobotocore-payment-cryptography (>=2.26.0,<2.27.0)"]
+payment-cryptography-data = ["types-aiobotocore-payment-cryptography-data (>=2.26.0,<2.27.0)"]
+pca-connector-ad = ["types-aiobotocore-pca-connector-ad (>=2.26.0,<2.27.0)"]
+pca-connector-scep = ["types-aiobotocore-pca-connector-scep (>=2.26.0,<2.27.0)"]
+pcs = ["types-aiobotocore-pcs (>=2.26.0,<2.27.0)"]
+personalize = ["types-aiobotocore-personalize (>=2.26.0,<2.27.0)"]
+personalize-events = ["types-aiobotocore-personalize-events (>=2.26.0,<2.27.0)"]
+personalize-runtime = ["types-aiobotocore-personalize-runtime (>=2.26.0,<2.27.0)"]
+pi = ["types-aiobotocore-pi (>=2.26.0,<2.27.0)"]
+pinpoint = ["types-aiobotocore-pinpoint (>=2.26.0,<2.27.0)"]
+pinpoint-email = ["types-aiobotocore-pinpoint-email (>=2.26.0,<2.27.0)"]
+pinpoint-sms-voice = ["types-aiobotocore-pinpoint-sms-voice (>=2.26.0,<2.27.0)"]
+pinpoint-sms-voice-v2 = ["types-aiobotocore-pinpoint-sms-voice-v2 (>=2.26.0,<2.27.0)"]
+pipes = ["types-aiobotocore-pipes (>=2.26.0,<2.27.0)"]
+polly = ["types-aiobotocore-polly (>=2.26.0,<2.27.0)"]
+pricing = ["types-aiobotocore-pricing (>=2.26.0,<2.27.0)"]
+proton = ["types-aiobotocore-proton (>=2.26.0,<2.27.0)"]
+qapps = ["types-aiobotocore-qapps (>=2.26.0,<2.27.0)"]
+qbusiness = ["types-aiobotocore-qbusiness (>=2.26.0,<2.27.0)"]
+qconnect = ["types-aiobotocore-qconnect (>=2.26.0,<2.27.0)"]
+quicksight = ["types-aiobotocore-quicksight (>=2.26.0,<2.27.0)"]
+ram = ["types-aiobotocore-ram (>=2.26.0,<2.27.0)"]
+rbin = ["types-aiobotocore-rbin (>=2.26.0,<2.27.0)"]
+rds = ["types-aiobotocore-rds (>=2.26.0,<2.27.0)"]
+rds-data = ["types-aiobotocore-rds-data (>=2.26.0,<2.27.0)"]
+redshift = ["types-aiobotocore-redshift (>=2.26.0,<2.27.0)"]
+redshift-data = ["types-aiobotocore-redshift-data (>=2.26.0,<2.27.0)"]
+redshift-serverless = ["types-aiobotocore-redshift-serverless (>=2.26.0,<2.27.0)"]
+rekognition = ["types-aiobotocore-rekognition (>=2.26.0,<2.27.0)"]
+repostspace = ["types-aiobotocore-repostspace (>=2.26.0,<2.27.0)"]
+resiliencehub = ["types-aiobotocore-resiliencehub (>=2.26.0,<2.27.0)"]
+resource-explorer-2 = ["types-aiobotocore-resource-explorer-2 (>=2.26.0,<2.27.0)"]
+resource-groups = ["types-aiobotocore-resource-groups (>=2.26.0,<2.27.0)"]
+resourcegroupstaggingapi = ["types-aiobotocore-resourcegroupstaggingapi (>=2.26.0,<2.27.0)"]
+rolesanywhere = ["types-aiobotocore-rolesanywhere (>=2.26.0,<2.27.0)"]
+route53 = ["types-aiobotocore-route53 (>=2.26.0,<2.27.0)"]
+route53-recovery-cluster = ["types-aiobotocore-route53-recovery-cluster (>=2.26.0,<2.27.0)"]
+route53-recovery-control-config = ["types-aiobotocore-route53-recovery-control-config (>=2.26.0,<2.27.0)"]
+route53-recovery-readiness = ["types-aiobotocore-route53-recovery-readiness (>=2.26.0,<2.27.0)"]
+route53domains = ["types-aiobotocore-route53domains (>=2.26.0,<2.27.0)"]
+route53globalresolver = ["types-aiobotocore-route53globalresolver (>=2.26.0,<2.27.0)"]
+route53profiles = ["types-aiobotocore-route53profiles (>=2.26.0,<2.27.0)"]
+route53resolver = ["types-aiobotocore-route53resolver (>=2.26.0,<2.27.0)"]
+rtbfabric = ["types-aiobotocore-rtbfabric (>=2.26.0,<2.27.0)"]
+rum = ["types-aiobotocore-rum (>=2.26.0,<2.27.0)"]
+s3 = ["types-aiobotocore-s3 (>=2.26.0,<2.27.0)"]
+s3control = ["types-aiobotocore-s3control (>=2.26.0,<2.27.0)"]
+s3outposts = ["types-aiobotocore-s3outposts (>=2.26.0,<2.27.0)"]
+s3tables = ["types-aiobotocore-s3tables (>=2.26.0,<2.27.0)"]
+s3vectors = ["types-aiobotocore-s3vectors (>=2.26.0,<2.27.0)"]
+sagemaker = ["types-aiobotocore-sagemaker (>=2.26.0,<2.27.0)"]
+sagemaker-a2i-runtime = ["types-aiobotocore-sagemaker-a2i-runtime (>=2.26.0,<2.27.0)"]
+sagemaker-edge = ["types-aiobotocore-sagemaker-edge (>=2.26.0,<2.27.0)"]
+sagemaker-featurestore-runtime = ["types-aiobotocore-sagemaker-featurestore-runtime (>=2.26.0,<2.27.0)"]
+sagemaker-geospatial = ["types-aiobotocore-sagemaker-geospatial (>=2.26.0,<2.27.0)"]
+sagemaker-metrics = ["types-aiobotocore-sagemaker-metrics (>=2.26.0,<2.27.0)"]
+sagemaker-runtime = ["types-aiobotocore-sagemaker-runtime (>=2.26.0,<2.27.0)"]
+savingsplans = ["types-aiobotocore-savingsplans (>=2.26.0,<2.27.0)"]
+scheduler = ["types-aiobotocore-scheduler (>=2.26.0,<2.27.0)"]
+schemas = ["types-aiobotocore-schemas (>=2.26.0,<2.27.0)"]
+sdb = ["types-aiobotocore-sdb (>=2.26.0,<2.27.0)"]
+secretsmanager = ["types-aiobotocore-secretsmanager (>=2.26.0,<2.27.0)"]
+security-ir = ["types-aiobotocore-security-ir (>=2.26.0,<2.27.0)"]
+securityhub = ["types-aiobotocore-securityhub (>=2.26.0,<2.27.0)"]
+securitylake = ["types-aiobotocore-securitylake (>=2.26.0,<2.27.0)"]
+serverlessrepo = ["types-aiobotocore-serverlessrepo (>=2.26.0,<2.27.0)"]
+service-quotas = ["types-aiobotocore-service-quotas (>=2.26.0,<2.27.0)"]
+servicecatalog = ["types-aiobotocore-servicecatalog (>=2.26.0,<2.27.0)"]
+servicecatalog-appregistry = ["types-aiobotocore-servicecatalog-appregistry (>=2.26.0,<2.27.0)"]
+servicediscovery = ["types-aiobotocore-servicediscovery (>=2.26.0,<2.27.0)"]
+ses = ["types-aiobotocore-ses (>=2.26.0,<2.27.0)"]
+sesv2 = ["types-aiobotocore-sesv2 (>=2.26.0,<2.27.0)"]
+shield = ["types-aiobotocore-shield (>=2.26.0,<2.27.0)"]
+signer = ["types-aiobotocore-signer (>=2.26.0,<2.27.0)"]
+signin = ["types-aiobotocore-signin (>=2.26.0,<2.27.0)"]
+simspaceweaver = ["types-aiobotocore-simspaceweaver (>=2.26.0,<2.27.0)"]
+snow-device-management = ["types-aiobotocore-snow-device-management (>=2.26.0,<2.27.0)"]
+snowball = ["types-aiobotocore-snowball (>=2.26.0,<2.27.0)"]
+sns = ["types-aiobotocore-sns (>=2.26.0,<2.27.0)"]
+socialmessaging = ["types-aiobotocore-socialmessaging (>=2.26.0,<2.27.0)"]
+sqs = ["types-aiobotocore-sqs (>=2.26.0,<2.27.0)"]
+ssm = ["types-aiobotocore-ssm (>=2.26.0,<2.27.0)"]
+ssm-contacts = ["types-aiobotocore-ssm-contacts (>=2.26.0,<2.27.0)"]
+ssm-guiconnect = ["types-aiobotocore-ssm-guiconnect (>=2.26.0,<2.27.0)"]
+ssm-incidents = ["types-aiobotocore-ssm-incidents (>=2.26.0,<2.27.0)"]
+ssm-quicksetup = ["types-aiobotocore-ssm-quicksetup (>=2.26.0,<2.27.0)"]
+ssm-sap = ["types-aiobotocore-ssm-sap (>=2.26.0,<2.27.0)"]
+sso = ["types-aiobotocore-sso (>=2.26.0,<2.27.0)"]
+sso-admin = ["types-aiobotocore-sso-admin (>=2.26.0,<2.27.0)"]
+sso-oidc = ["types-aiobotocore-sso-oidc (>=2.26.0,<2.27.0)"]
+stepfunctions = ["types-aiobotocore-stepfunctions (>=2.26.0,<2.27.0)"]
+storagegateway = ["types-aiobotocore-storagegateway (>=2.26.0,<2.27.0)"]
+sts = ["types-aiobotocore-sts (>=2.26.0,<2.27.0)"]
+supplychain = ["types-aiobotocore-supplychain (>=2.26.0,<2.27.0)"]
+support = ["types-aiobotocore-support (>=2.26.0,<2.27.0)"]
+support-app = ["types-aiobotocore-support-app (>=2.26.0,<2.27.0)"]
+swf = ["types-aiobotocore-swf (>=2.26.0,<2.27.0)"]
+synthetics = ["types-aiobotocore-synthetics (>=2.26.0,<2.27.0)"]
+taxsettings = ["types-aiobotocore-taxsettings (>=2.26.0,<2.27.0)"]
+textract = ["types-aiobotocore-textract (>=2.26.0,<2.27.0)"]
+timestream-influxdb = ["types-aiobotocore-timestream-influxdb (>=2.26.0,<2.27.0)"]
+timestream-query = ["types-aiobotocore-timestream-query (>=2.26.0,<2.27.0)"]
+timestream-write = ["types-aiobotocore-timestream-write (>=2.26.0,<2.27.0)"]
+tnb = ["types-aiobotocore-tnb (>=2.26.0,<2.27.0)"]
+transcribe = ["types-aiobotocore-transcribe (>=2.26.0,<2.27.0)"]
+transfer = ["types-aiobotocore-transfer (>=2.26.0,<2.27.0)"]
+translate = ["types-aiobotocore-translate (>=2.26.0,<2.27.0)"]
+trustedadvisor = ["types-aiobotocore-trustedadvisor (>=2.26.0,<2.27.0)"]
+verifiedpermissions = ["types-aiobotocore-verifiedpermissions (>=2.26.0,<2.27.0)"]
+voice-id = ["types-aiobotocore-voice-id (>=2.26.0,<2.27.0)"]
+vpc-lattice = ["types-aiobotocore-vpc-lattice (>=2.26.0,<2.27.0)"]
+waf = ["types-aiobotocore-waf (>=2.26.0,<2.27.0)"]
+waf-regional = ["types-aiobotocore-waf-regional (>=2.26.0,<2.27.0)"]
+wafv2 = ["types-aiobotocore-wafv2 (>=2.26.0,<2.27.0)"]
+wellarchitected = ["types-aiobotocore-wellarchitected (>=2.26.0,<2.27.0)"]
+wisdom = ["types-aiobotocore-wisdom (>=2.26.0,<2.27.0)"]
+workdocs = ["types-aiobotocore-workdocs (>=2.26.0,<2.27.0)"]
+workmail = ["types-aiobotocore-workmail (>=2.26.0,<2.27.0)"]
+workmailmessageflow = ["types-aiobotocore-workmailmessageflow (>=2.26.0,<2.27.0)"]
+workspaces = ["types-aiobotocore-workspaces (>=2.26.0,<2.27.0)"]
+workspaces-instances = ["types-aiobotocore-workspaces-instances (>=2.26.0,<2.27.0)"]
+workspaces-thin-client = ["types-aiobotocore-workspaces-thin-client (>=2.26.0,<2.27.0)"]
+workspaces-web = ["types-aiobotocore-workspaces-web (>=2.26.0,<2.27.0)"]
+xray = ["types-aiobotocore-xray (>=2.26.0,<2.27.0)"]
+
+[[package]]
+name = "types-aiobotocore-s3"
+version = "2.26.0"
+description = "Type annotations for aiobotocore S3 2.26.0 service generated with mypy-boto3-builder 8.12.0"
+optional = false
+python-versions = ">=3.9"
+groups = ["dev"]
+files = [
+    {file = "types_aiobotocore_s3-2.26.0-py3-none-any.whl", hash = "sha256:b8c085c93db877d79f0d128c7d21c131bd596e1d8400ae807d25bf7b3ff1eff6"},
+    {file = "types_aiobotocore_s3-2.26.0.tar.gz", hash = "sha256:35eb714401883febb61cca3dd65766724105ead3e8325082146a89d244f74768"},
+]
+
+[package.dependencies]
+typing-extensions = {version = "*", markers = "python_version < \"3.12\""}
+
+[[package]]
+name = "types-awscrt"
+version = "0.29.2"
+description = "Type annotations and code completion for awscrt"
+optional = false
+python-versions = ">=3.8"
+groups = ["dev"]
+files = [
+    {file = "types_awscrt-0.29.2-py3-none-any.whl", hash = "sha256:3f5d1e6c99b0b551af6365f9c04d8ce2effbcfe18bb719a34501efea279ae7bb"},
+    {file = "types_awscrt-0.29.2.tar.gz", hash = "sha256:41e01e14d646877bd310e7e3c49ff193f8361480b9568e97b1639775009bbefa"},
+]
+
+[[package]]
+name = "types-botocore"
+version = "1.0.2"
+description = "Proxy package for botocore-stubs"
+optional = false
+python-versions = "*"
+groups = ["dev"]
+files = [
+    {file = "types-botocore-1.0.2.tar.gz", hash = "sha256:885d4ceb8d0594b73d08d5feb12b6bbd1ef9e7333531acb80477dc7904f02304"},
+    {file = "types_botocore-1.0.2-py3-none-any.whl", hash = "sha256:453fc52a1da8ac162793323d5f0f0dbaa40a3cd9dad915f5a3de79a07fd65674"},
+]
+
+[package.dependencies]
+botocore-stubs = "*"
+
+[[package]]
 name = "types-python-dateutil"
 version = "2.9.0.20251008"
 description = "Typing stubs for python-dateutil"
@@ -3573,4 +4178,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "ceca1006393c4bd4fd92d2278e7be3a1a949c3d4bd89506e7e328f948fa583e4"
+content-hash = "d039cb9a09d1beebd2822072755535f4a00054e7d8962a086e325adf94130e45"
