@@ -191,7 +191,7 @@ class RabbitMQConfig(BaseModel):
         safe_password = quote(self.secrets.password, safe="")
         safe_vhost = quote(self.vhostname, safe="")
 
-        return f"amqp://{safe_username}:{safe_password}@{self.host}:{self.port}/{safe_vhost}"
+        return f"amqps://{safe_username}:{safe_password}@{self.host}:{self.port}/{safe_vhost}"
 
 
 class RunConfig(BaseModel):
