@@ -3,11 +3,17 @@ services:
     image: rabbitmq:4.2.2-management-alpine
     ports:
       - 5672:5672
+      - 5671:5671
       - 15672:15672
+      - 15671:15671
     env_file:
       - .env
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+      - /opt/rabbitmq/ssl:/etc/rabbitmq/ssl:ro
+      - /opt/rabbitmq/conf/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+    networks:
+      - backend_net
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 30s
@@ -17,3 +23,8 @@ services:
 
 volumes:
   rabbitmq_data:
+    driver: local
+
+networks:
+  backend_net:
+    driver: bridge
