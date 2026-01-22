@@ -8,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
 from api import router as api_router
+from api.api_v2.health_views import router as health_router
 from app_lifespan import lifespan
 from core.config import settings
 from paths_constants import (
@@ -62,6 +63,7 @@ routers_for_include = (
     redirect_router,
     main_views_router,
     pages_router,
+    health_router,
     sdelkanv_router,
 )
 
