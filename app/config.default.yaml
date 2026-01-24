@@ -18,11 +18,14 @@ api-backend:
     host: localhost
     port: 5672
     vhostname: vhost
+    secure: true
 
   run:
     host: 127.0.0.1
     port: 8000
     dev_mode: false
+    workers: 1
+    unix_socket: false
 
   s3:
     endpoint_url:

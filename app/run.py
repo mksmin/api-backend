@@ -30,11 +30,14 @@ if __name__ == "__main__":
             "reload": False,
             "log_config": None,
             "use_colors": True,
-            "workers": 1,
+            "workers": settings.run.workers,
             "proxy_headers": True,
             "forwarded_allow_ips": forwarded_allow_ips,
         }
-        if not sys.platform.startswith("win") or os.getenv("FORCE_UNIX_SOCKET"):
+
+        if settings.run.unix_socket and (
+            not sys.platform.startswith("win") or os.getenv("FORCE_UNIX_SOCKET")
+        ):
             run_args["uds"] = "/tmp/uvicorn.sock"  # noqa: S108
 
         uvicorn.run(**run_args)
