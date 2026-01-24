@@ -182,6 +182,7 @@ class RabbitMQConfig(BaseModel):
     host: str
     port: int
     vhostname: str
+    secure: bool = True
     secrets: RabbitSecretsConfig
 
     @computed_field  # type: ignore[prop-decorator]
@@ -190,14 +191,17 @@ class RabbitMQConfig(BaseModel):
         safe_username = quote(self.secrets.username, safe="")
         safe_password = quote(self.secrets.password, safe="")
         safe_vhost = quote(self.vhostname, safe="")
+        protocol = "amqps" if self.secure else "amqp"
 
-        return f"amqps://{safe_username}:{safe_password}@{self.host}:{self.port}/{safe_vhost}"
+        return f"{protocol}://{safe_username}:{safe_password}@{self.host}:{self.port}/{safe_vhost}"
 
 
 class RunConfig(BaseModel):
     host: str
     port: int
     dev_mode: bool
+    workers: int = 1
+    unix_socket: bool = False
 
 
 class S3Config(BaseModel):
