@@ -11,7 +11,8 @@ services:
     volumes:
       - /var/www/api-app/frontend:/frontend
       - ./app/config.local.yaml:/backend/app/config.local.yaml
-
+    networks:
+      - backend_net
 
   rabbitmq:
     image: rabbitmq:4.2.2-management-alpine
