@@ -3,6 +3,7 @@ tmp_files
 .gigaide
 .secrets
 config.local.yaml
+docker-compose.local.yaml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
