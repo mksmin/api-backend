@@ -7,7 +7,7 @@ from urllib.parse import quote
 from pydantic import (
     BaseModel,
     Field,
-    PostgresDsn,
+    SecretStr,
     computed_field,
     field_validator,
 )
@@ -17,6 +17,7 @@ from pydantic_settings import (
     SettingsConfigDict,
     YamlConfigSettingsSource,
 )
+from sqlalchemy import URL
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -124,7 +125,12 @@ class ApiPrefix(BaseModel):
 
 
 class DatabaseConfig(BaseModel):
-    url: PostgresDsn
+    name: str
+    host: str
+    port: int
+    user: str
+    password: SecretStr
+
     echo: bool = False
     echo_pool: bool = False
     pool_size: int = 50
@@ -139,6 +145,17 @@ class DatabaseConfig(BaseModel):
         "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
         "pk": "pk_%(table_name)s",
     }
+
+    @property
+    def async_url(self) -> URL:
+        return URL.create(
+            drivername="postgresql+asyncpg",
+            database=self.name,
+            host=self.host,
+            port=self.port,
+            username=self.user,
+            password=self.password.get_secret_value(),
+        )
 
 
 class LoggerConfig(BaseModel):

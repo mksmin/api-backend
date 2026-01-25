@@ -4,6 +4,7 @@ tmp_files
 .secrets
 config.local.yaml
 docker-compose.local.yaml
+nginx
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
