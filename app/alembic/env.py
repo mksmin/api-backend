@@ -1,5 +1,6 @@
 import asyncio
 from logging.config import fileConfig
+from urllib.parse import unquote
 
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
@@ -31,7 +32,11 @@ target_metadata = Base.metadata
 
 config.set_main_option(
     "sqlalchemy.url",
-    settings.db.async_url.render_as_string(hide_password=False),
+    unquote(
+        settings.db.async_url.render_as_string(
+            hide_password=False,
+        ),
+    ),
 )
 
 
