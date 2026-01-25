@@ -1,6 +1,7 @@
 import uuid
 from collections.abc import AsyncGenerator
 
+from sqlalchemy import URL
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -14,7 +15,7 @@ from core.config import settings
 class DatabaseHelper:
     def __init__(  # noqa: PLR0913
         self,
-        url: str,
+        url: str | URL,
         echo: bool = False,
         echo_pool: bool = False,
         pool_size: int = 5,
@@ -51,7 +52,7 @@ class DatabaseHelper:
 
 
 db_helper = DatabaseHelper(
-    url=str(settings.db.url),
+    url=settings.db.async_url,
     echo=settings.db.echo,
     echo_pool=settings.db.echo_pool,
     pool_size=settings.db.pool_size,
