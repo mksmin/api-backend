@@ -11,6 +11,11 @@ api-backend:
       prefix: "/v2"
       users: "/users"
 
+  db:
+    host: localhost
+    port: 5432
+    name: dbname
+
   log:
     mode: info
 
