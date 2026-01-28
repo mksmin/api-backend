@@ -1,9 +1,9 @@
 services:
   backend:
     build: .
-    container_name: backend_api
+    container_name: ghcr.io/mksmin/api-app:latest
     ports:
-      - "8085:8000"
+      - "127.0.0.1:8085:8000"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
