@@ -6,11 +6,14 @@ services:
       - "8085:8000"
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    environment:
+      - TZ=Europe/Moscow
     env_file:
       - ./app/.env
     volumes:
       - /var/www/api-app/frontend:/frontend
       - ./app/config.local.yaml:/backend/app/config.local.yaml
+      - /etc/localtime:/etc/localtime:ro
     networks:
       - backend_net
 
