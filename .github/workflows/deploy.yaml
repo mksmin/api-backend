@@ -45,3 +45,16 @@ jobs:
             docker compose up -d
             docker image prune -f 
             
+      - name: Send Telegram notification on deploy failure
+        if: failure()
+        run: |
+          curl -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+          -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+          -d text="🚨 Ошибка деплоя api-app"
+
+      - name: Send Telegram notification on deploy success
+        if: success()
+        run: |
+          curl -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+          -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+          -d text="✅ Api-app сервис успешно обновлен"
