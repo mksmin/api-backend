@@ -1,7 +1,7 @@
 services:
   backend:
-    build: .
-    container_name: ghcr.io/mksmin/api-backend:latest
+    image: ghcr.io/mksmin/api-backend:latest
+    container_name: api-app
     ports:
       - "127.0.0.1:8085:8000"
     extra_hosts:
