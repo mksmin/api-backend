@@ -24,18 +24,18 @@ if __name__ == "__main__":
         forwarded_allow_ips = "*"
         run_args: dict[str, Any] = {
             "app": "main_router_config:main_app",
-            "host": settings.run.host,
-            "port": settings.run.port,
+            "host": settings.uvicorn.host,
+            "port": settings.uvicorn.port,
             "log_level": settings.log.level,
             "reload": False,
             "log_config": None,
             "use_colors": True,
-            "workers": settings.run.workers,
+            "workers": settings.uvicorn.workers,
             "proxy_headers": True,
             "forwarded_allow_ips": forwarded_allow_ips,
         }
 
-        if settings.run.unix_socket and (
+        if settings.uvicorn.unix_socket and (
             not sys.platform.startswith("win") or os.getenv("FORCE_UNIX_SOCKET")
         ):
             run_args["uds"] = "/tmp/uvicorn.sock"  # noqa: S108

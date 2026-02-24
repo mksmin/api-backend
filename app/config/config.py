@@ -42,6 +42,10 @@ class ApiPrefix(BaseModel):
     v2: ApiV2Prefix
 
 
+class RunConfig(BaseModel):
+    dev_mode: bool
+
+
 class SecretsConfig(BaseModel):
     bots_tokens: dict[str, str]
     session_secret: str
@@ -104,6 +108,7 @@ class Settings(BaseSettings):
     log: LoggerConfig
     rabbit: RabbitMQConfig
     uvicorn: UvicornConfig
+    run: RunConfig
     secrets: SecretsConfig
     s3: S3Config
     tg: TelegramAuthConfig
