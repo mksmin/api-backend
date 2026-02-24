@@ -48,7 +48,7 @@ plugins = [
 
 
 [tool.ruff] # ruff settings
-required-version = "~=0.13.0"
+required-version = ">=0.13.0"
 src = [
     "app",
 ]
@@ -162,3 +162,6 @@ unfixable = []
 "app/alembic/**" = [
     "INP", # flake8-no-pep420 (INP)
 ]
+
+[tool.ruff.lint.isort]
+combine-as-imports = false
