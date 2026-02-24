@@ -34,7 +34,7 @@ pytest-asyncio = ">=1.2.0"
 mypy = ">=1.17.0"
 pandas-stubs = ">=2.3.2.250827"
 types-python-dateutil = ">=2.9.0.20250822"
-ruff = ">=0.13.0"
+ruff = ">=0.15.2"
 pre-commit = ">=4.3.0"
 types-aiobotocore = {extras = ["s3"], version = ">=2.26.0.post2"}
 types-botocore = ">=1.0.2"
@@ -91,7 +91,7 @@ line-length = 88
 indent-width = 4
 
 # Assume Python 3.10
-target-version = "py310"
+target-version = "py313"
 
 [tool.ruff.lint]
 # Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`) codes by default.
@@ -164,4 +164,4 @@ unfixable = []
 ]
 
 [tool.ruff.lint.isort]
-combine-as-imports = false
+force-single-line = true
