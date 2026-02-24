@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, status
 from fastapi.responses import FileResponse
 
 from api.api_v2.dependencies import file_dependency
-from core.config import settings
+from config import settings
 from paths_constants import HTML_DIR
 
 router = APIRouter()

@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi.responses import FileResponse
 
-from core.config import settings
+from config import settings
 from paths_constants import FRONTEND_DIR_PATH
 
 router = APIRouter()

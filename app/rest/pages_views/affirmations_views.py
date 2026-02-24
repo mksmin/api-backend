@@ -16,7 +16,7 @@ from fastapi.responses import (
 )
 
 from auth import jwt_helper
-from core.config import settings
+from config import settings
 from misc.flash_messages import flash
 from paths_constants import templates
 from rest.pages_views.dependencies.affirmations import (

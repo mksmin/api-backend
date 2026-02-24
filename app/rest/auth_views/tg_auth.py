@@ -21,7 +21,7 @@ from auth import (
     tg_auth_depends,
 )
 from auth.tg_auth_depends import verify_client
-from core.config import settings
+from config import settings
 from core.crud import GetCRUDService
 from paths_constants import templates
 from schemas import UserCreateSchema

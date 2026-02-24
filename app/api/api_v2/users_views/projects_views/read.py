@@ -6,7 +6,7 @@ from api.api_v2.users_views.projects_views.dependencies import (
     get_project_by_uuid,
     get_user_projects,
 )
-from core.config import settings
+from config import settings
 from core.database.schemas import ProjectResponseSchema
 from schemas import ProjectReadSchema
 

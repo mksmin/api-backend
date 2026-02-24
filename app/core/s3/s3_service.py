@@ -11,7 +11,7 @@ from fastapi import Depends
 from types_aiobotocore_s3.client import S3Client
 
 from app_exceptions.exceptions import FailedToUploadS3FileError
-from core.config import settings
+from config import settings
 
 log = logging.getLogger(__name__)
 

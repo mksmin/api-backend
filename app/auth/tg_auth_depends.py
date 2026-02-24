@@ -15,7 +15,7 @@ from auth.tg_data_verify import (
     verification_mini_apps_data,
     verification_widget_data,
 )
-from core.config import settings
+from config import settings
 
 log = logging.getLogger(__name__)
 

@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from api.api_v2.users_views import router as users_router
-from core.config import settings
+from config import settings
 
 from .devs import router as devs_router
 

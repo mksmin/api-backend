@@ -10,7 +10,7 @@ from typing import Any
 
 import uvicorn
 
-from core.config import console_handler, settings
+from config import console_handler, settings
 
 logging.basicConfig(
     level=settings.log.level,
