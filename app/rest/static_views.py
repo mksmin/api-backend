@@ -1,11 +1,13 @@
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter
+from fastapi import Depends
+from fastapi import status
 from fastapi.responses import FileResponse
 
 from api.api_v2.dependencies import file_dependency
-from core.config import settings
+from config import settings
 from paths_constants import HTML_DIR
 
 router = APIRouter()

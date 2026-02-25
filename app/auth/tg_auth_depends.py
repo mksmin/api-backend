@@ -1,29 +1,23 @@
 import json
 import logging
-from enum import Enum
-from typing import Annotated, Any
+from enum import StrEnum
+from typing import Annotated
+from typing import Any
 
-from fastapi import (
-    Depends,
-    HTTPException,
-    status,
-)
+from fastapi import Depends
+from fastapi import HTTPException
+from fastapi import status
 from fastapi.requests import Request
 
 from auth.jwt_helper import BOT_CONFIG
-from auth.tg_data_verify import (
-    verification_mini_apps_data,
-    verification_widget_data,
-)
-from core.config import settings
+from auth.tg_data_verify import verification_mini_apps_data
+from auth.tg_data_verify import verification_widget_data
+from config import settings
 
 log = logging.getLogger(__name__)
 
 
-ALLOWED_CLIENTS = ["TelegramMiniApp", "TelegramWidget"]
-
-
-class ClientType(str, Enum):
+class ClientType(StrEnum):
     TELEGRAM_WIDGET = "TelegramWidget"
     TELEGRAM_MINIAPP = "TelegramMiniApp"
 
@@ -38,7 +32,7 @@ class ClientType(str, Enum):
         }
 
         if self not in verifiers:
-            log.exception(
+            log.error(
                 '"%s" is not "TelegramMiniApp" or "TelegramWidget"',
                 self,
             )
@@ -48,6 +42,9 @@ class ClientType(str, Enum):
             tg_data_str,
             bot_token,
         )
+
+
+ALLOWED_CLIENTS = list(ClientType)
 
 
 async def verify_telegram_data_dep(
@@ -110,14 +107,20 @@ async def verify_client(
     request: Request,
 ) -> str:
     client_source = request.headers.get("X-Client-Source", None)
-    if client_source in ALLOWED_CLIENTS:
-        return client_source
 
-    log.exception("Invalid client source: %s", client_source)
-    raise HTTPException(
-        status_code=status.HTTP_400_BAD_REQUEST,
-        detail="Invalid client",
-    )
+    if not client_source:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Missing client source",
+        )
+    try:
+        return ClientType(client_source)
+    except ValueError as e:
+        log.exception("Invalid client source: %s", client_source)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid client",
+        ) from e
 
 
 async def verified_tg_data_dependency(

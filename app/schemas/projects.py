@@ -1,9 +1,14 @@
 from datetime import datetime
-from typing import Annotated, Any
+from typing import Annotated
+from typing import Any
 from uuid import UUID
 
-from annotated_types import Len, MaxLen
-from pydantic import BaseModel, ConfigDict, field_validator, model_validator
+from annotated_types import Len
+from annotated_types import MaxLen
+from pydantic import BaseModel
+from pydantic import ConfigDict
+from pydantic import field_validator
+from pydantic import model_validator
 from pydantic_core.core_schema import ValidationInfo
 
 DESCRIPTION_MAX_LENGTH = 200

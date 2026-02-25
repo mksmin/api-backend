@@ -11,7 +11,7 @@ from fastapi import Depends
 from types_aiobotocore_s3.client import S3Client
 
 from app_exceptions.exceptions import FailedToUploadS3FileError
-from core.config import settings
+from config import settings
 
 log = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ class S3Service:
         self.session = get_session()
 
     @asynccontextmanager
-    async def get_client(self) -> AsyncGenerator[S3Client, None]:
+    async def get_client(self) -> AsyncGenerator[S3Client]:
         async with self.session.create_client(
             "s3",
             aws_access_key_id=self.config.aws_access_key_id,

@@ -1,9 +1,4 @@
-__all__ = (
-    "ProjectRequestSchema",
-    "ProjectResponseSchema",
-    "ProjectSchema",
-    "UserSchema",
-)
-
-from .project import ProjectRequestSchema, ProjectResponseSchema, ProjectSchema
-from .user import UserSchema
+from .project import ProjectRequestSchema as ProjectRequestSchema
+from .project import ProjectResponseSchema as ProjectResponseSchema
+from .project import ProjectSchema as ProjectSchema
+from .user import UserSchema as UserSchema

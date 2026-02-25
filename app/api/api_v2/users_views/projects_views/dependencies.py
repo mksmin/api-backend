@@ -1,12 +1,12 @@
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends
+from fastapi import HTTPException
+from fastapi import status
 
-from app_exceptions import (
-    InvalidUUIDError,
-    ProjectNotFoundError,
-    UserNotFoundError,
-)
+from app_exceptions import InvalidUUIDError
+from app_exceptions import ProjectNotFoundError
+from app_exceptions import UserNotFoundError
 from auth import jwt_helper
 from core.crud import GetCRUDService
 from schemas import ProjectReadSchema

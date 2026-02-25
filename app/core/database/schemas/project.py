@@ -3,13 +3,11 @@ from datetime import datetime
 from typing import Any
 from uuid import UUID
 
-from pydantic import (
-    UUID4,
-    BaseModel,
-    ConfigDict,
-    Field,
-    field_validator,
-)
+from pydantic import UUID4
+from pydantic import BaseModel
+from pydantic import ConfigDict
+from pydantic import Field
+from pydantic import field_validator
 
 logger = logging.getLogger(__name__)
 

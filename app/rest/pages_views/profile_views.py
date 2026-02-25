@@ -1,9 +1,11 @@
-from typing import Annotated, Any
+from typing import Annotated
+from typing import Any
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
+from fastapi import Depends
 from fastapi.responses import HTMLResponse
 
-from core.config import settings
+from config import settings
 from paths_constants import templates
 from rest.pages_views.dependencies.user_data import (
     return_data_for_user_profile_template,

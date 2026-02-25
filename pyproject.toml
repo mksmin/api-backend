@@ -8,36 +8,36 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.10"
-fastapi = {extras = ["standard"], version = "^0.121.0"}
-sqlalchemy = {extras = ["asyncio"], version = "^2.0.39"}
-asyncpg = "^0.30.0"
-pydantic = {extras = ["email"], version = "^2.10.6"}
-alembic = "^1.15.1"
-pydantic-settings = {extras = ["yaml"], version = "^2.10.1"}
-uvicorn = "^0.37.0"
-python-decouple = "^3.8"
-pyjwt = "^2.10.1"
-python-dateutil = "^2.9.0.post0"
-pandas = "^2.2.3"
-python-multipart = "^0.0.20"
-jinja2 = "^3.1.6"
-faststream = {extras = ["rabbit"], version = "^0.6.1"}
-itsdangerous = "^2.2.0"
-aiobotocore = "^2.26.0"
-pillow = "^12.0.0"
+fastapi = {extras = ["standard"], version = ">=0.121.0"}
+sqlalchemy = {extras = ["asyncio"], version = ">=2.0.39"}
+asyncpg = ">=0.30.0"
+pydantic = {extras = ["email"], version = ">=2.10.6"}
+alembic = ">=1.15.1"
+pydantic-settings = {extras = ["yaml"], version = ">=2.13.1"}
+uvicorn = ">=0.37.0"
+python-decouple = ">=3.8"
+pyjwt = ">=2.10.1"
+python-dateutil = ">=2.9.0.post0"
+pandas = ">=2.2.3"
+python-multipart = ">=0.0.20"
+jinja2 = ">=3.1.6"
+faststream = {extras = ["rabbit"], version = ">=0.6.1"}
+itsdangerous = ">=2.2.0"
+aiobotocore = ">=2.26.0"
+pillow = ">=12.0.0"
 
 [tool.poetry.group.dev.dependencies]
-black = "^25.1.0"
-httpx = "^0.28.1"
-pytest = "^8.3.5"
-pytest-asyncio = "^1.2.0"
-mypy = "^1.17.0"
-pandas-stubs = "^2.3.2.250827"
-types-python-dateutil = "^2.9.0.20250822"
-ruff = "^0.13.0"
-pre-commit = "^4.3.0"
-types-aiobotocore = {extras = ["s3"], version = "^2.26.0.post2"}
-types-botocore = "^1.0.2"
+black = ">=25.1.0"
+httpx = ">=0.28.1"
+pytest = ">=8.3.5"
+pytest-asyncio = ">=1.2.0"
+mypy = ">=1.17.0"
+pandas-stubs = ">=2.3.2.250827"
+types-python-dateutil = ">=2.9.0.20250822"
+ruff = ">=0.15.2"
+pre-commit = ">=4.3.0"
+types-aiobotocore = {extras = ["s3"], version = ">=2.26.0.post2"}
+types-botocore = ">=1.0.2"
 
 
 [tool.mypy]  # mypy settings
@@ -48,7 +48,7 @@ plugins = [
 
 
 [tool.ruff] # ruff settings
-required-version = "~=0.13.0"
+required-version = ">=0.13.0"
 src = [
     "app",
 ]
@@ -91,7 +91,7 @@ line-length = 88
 indent-width = 4
 
 # Assume Python 3.10
-target-version = "py310"
+target-version = "py313"
 
 [tool.ruff.lint]
 # Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`) codes by default.
@@ -162,3 +162,6 @@ unfixable = []
 "app/alembic/**" = [
     "INP", # flake8-no-pep420 (INP)
 ]
+
+[tool.ruff.lint.isort]
+force-single-line = true

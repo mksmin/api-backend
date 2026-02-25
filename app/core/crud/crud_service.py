@@ -4,7 +4,8 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.crud.services import ProjectService, UserService
+from core.crud.services import ProjectService
+from core.crud.services import UserService
 from core.database.db_helper import db_helper
 
 
@@ -22,7 +23,7 @@ async def get_crud_service(
         AsyncSession,
         Depends(db_helper.session_getter),
     ],
-) -> AsyncGenerator[CRUDService, None]:
+) -> AsyncGenerator[CRUDService]:
     yield CRUDService(session)
 
 

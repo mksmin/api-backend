@@ -1,12 +1,11 @@
-from collections.abc import Callable, Coroutine
+from collections.abc import Callable
+from collections.abc import Coroutine
 from pathlib import Path
 from typing import Any
 from uuid import UUID
 
-from fastapi import (
-    HTTPException,
-    status,
-)
+from fastapi import HTTPException
+from fastapi import status
 
 from app_exceptions import InvalidUUIDError
 

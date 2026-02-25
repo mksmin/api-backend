@@ -1,10 +1,8 @@
 import logging
 
-from fastapi import (
-    Depends,
-    HTTPException,
-    status,
-)
+from fastapi import Depends
+from fastapi import HTTPException
+from fastapi import status
 from fastapi.requests import Request
 
 from auth import jwt_helper

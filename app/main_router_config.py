@@ -1,8 +1,6 @@
 import logging
 
-from fastapi import (
-    FastAPI,
-)
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
@@ -10,10 +8,8 @@ from starlette.middleware.sessions import SessionMiddleware
 from api import router as api_router
 from api.api_v2.health_views import router as health_router
 from app_lifespan import lifespan
-from core.config import settings
-from paths_constants import (
-    FRONTEND_DIR_PATH,
-)
+from config import settings
+from paths_constants import FRONTEND_DIR_PATH
 from rest.auth_views import router as auth_router
 from rest.main_views import router as main_views_router
 from rest.pages_views import router as pages_router

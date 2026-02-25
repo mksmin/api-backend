@@ -1,34 +1,23 @@
-import asyncio
 import json
-from typing import (
-    Annotated,
-    Any,
-)
+from typing import Annotated
+from typing import Any
 
-from fastapi import (
-    Depends,
-    HTTPException,
-    status,
-)
-from fastapi.params import (
-    Body,
-    Query,
-)
+from fastapi import Depends
+from fastapi import HTTPException
+from fastapi import status
+from fastapi.params import Body
+from fastapi.params import Query
 
-from api.api_v2.users_views.affirmations_views.schemas import (
-    ChangeAffirmationsSettings,
-    UpdateAffirmation,
-)
+from api.api_v2.users_views.affirmations_views.schemas import ChangeAffirmationsSettings
+from api.api_v2.users_views.affirmations_views.schemas import UpdateAffirmation
 from app_exceptions import UserNotFoundError
 from app_exceptions.exceptions import RabbitMQServiceUnavailableError
 from auth import jwt_helper
 from core.crud import GetCRUDService
 from misc.rabbitmq_broker import GetRabbitBroker
 from rest.pages_views.dependencies.user_data import get_user_data_by_access_token
-from rest.pages_views.schemas import (
-    GetListAffirmationsResponse,
-    UserDataReadSchema,
-)
+from rest.pages_views.schemas import GetListAffirmationsResponse
+from rest.pages_views.schemas import UserDataReadSchema
 from rest.pages_views.schemas.affirmations_data import GetUserSettingsResponse
 
 
@@ -73,7 +62,7 @@ async def get_dict_with_user_affirmations(
         return GetListAffirmationsResponse.model_validate(
             decoded_broker_response,
         ).model_dump()
-    except asyncio.TimeoutError as e:
+    except TimeoutError as e:
         raise RabbitMQServiceUnavailableError from e
 
 
@@ -103,7 +92,7 @@ async def get_user_settings(
         return GetUserSettingsResponse.model_validate(
             decoded_broker_response,
         ).model_dump()
-    except asyncio.TimeoutError as e:
+    except TimeoutError as e:
         raise RabbitMQServiceUnavailableError from e
 
 
@@ -136,7 +125,7 @@ async def delete_user_affirmation(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found",
         ) from e
-    except asyncio.TimeoutError as e:
+    except TimeoutError as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Service unavailable",
@@ -175,7 +164,7 @@ async def update_user_affirmation(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found",
         ) from e
-    except asyncio.TimeoutError as e:
+    except TimeoutError as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Service unavailable",
@@ -212,7 +201,7 @@ async def patch_user_affirmation_settings(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found",
         ) from e
-    except asyncio.TimeoutError as e:
+    except TimeoutError as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Service unavailable",

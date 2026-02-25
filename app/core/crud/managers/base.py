@@ -1,8 +1,5 @@
 import logging
-from typing import (
-    Generic,
-    TypeVar,
-)
+from typing import TypeVar
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,7 +9,7 @@ logger = logging.getLogger(__name__)
 ModelType = TypeVar("ModelType", bound=Base)
 
 
-class BaseCRUDManager(Generic[ModelType]):
+class BaseCRUDManager[ModelType]:
     def __init__(
         self,
         session: AsyncSession,

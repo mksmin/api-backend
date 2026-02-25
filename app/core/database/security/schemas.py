@@ -1,7 +1,9 @@
-from datetime import datetime, timezone
+from datetime import UTC
+from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from pydantic import Field
 
 
 class ProjectUUID(BaseModel):
@@ -61,7 +63,7 @@ class APIKeyOut(APIKeyBase):
     created_at: datetime = Field(
         default=...,
         description="Дата создания ключа",
-        examples=[datetime.now(timezone.utc)],
+        examples=[datetime.now(UTC)],
     )
     project_id: UUID = Field(..., description="Идентификатор проекта")
 
@@ -115,7 +117,7 @@ class APIKeyCreateResponse(BaseModel):
     created_at: datetime = Field(
         ...,
         description="Дата создания ключа",
-        examples=[datetime.now(timezone.utc)],
+        examples=[datetime.now(UTC)],
     )
     expires_at: datetime | None = Field(None, description="Дата истечения ключа")
     project_uuid: UUID = Field(..., description="Идентификатор проекта")
@@ -135,7 +137,7 @@ class APIKeyGetResponse(BaseModel):
     created_at: datetime = Field(
         ...,
         description="Дата создания ключа",
-        examples=[datetime.now(timezone.utc)],
+        examples=[datetime.now(UTC)],
     )
     expires_at: datetime | None = Field(None, description="Дата истечения ключа")
     project_id: UUID = Field(..., description="Идентификатор проекта")

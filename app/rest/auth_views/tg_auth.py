@@ -1,27 +1,22 @@
 import json
 import logging
-from typing import Annotated, Any
+from typing import Annotated
+from typing import Any
 from urllib.parse import parse_qsl
 
-from fastapi import (
-    APIRouter,
-    Depends,
-    status,
-)
+from fastapi import APIRouter
+from fastapi import Depends
+from fastapi import status
 from fastapi.requests import Request
-from fastapi.responses import (
-    HTMLResponse,
-    JSONResponse,
-    RedirectResponse,
-)
+from fastapi.responses import HTMLResponse
+from fastapi.responses import JSONResponse
+from fastapi.responses import RedirectResponse
 
 from app_exceptions import UserAlreadyExistsError
-from auth import (
-    jwt_helper,
-    tg_auth_depends,
-)
+from auth import jwt_helper
+from auth import tg_auth_depends
 from auth.tg_auth_depends import verify_client
-from core.config import settings
+from config import settings
 from core.crud import GetCRUDService
 from paths_constants import templates
 from schemas import UserCreateSchema

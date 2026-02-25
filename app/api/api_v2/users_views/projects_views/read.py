@@ -1,12 +1,11 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
+from fastapi import Depends
 
-from api.api_v2.users_views.projects_views.dependencies import (
-    get_project_by_uuid,
-    get_user_projects,
-)
-from core.config import settings
+from api.api_v2.users_views.projects_views.dependencies import get_project_by_uuid
+from api.api_v2.users_views.projects_views.dependencies import get_user_projects
+from config import settings
 from core.database.schemas import ProjectResponseSchema
 from schemas import ProjectReadSchema
 
@@ -23,7 +22,7 @@ async def get_project(
         Depends(get_project_by_uuid),
     ],
 ) -> ProjectResponseSchema | dict[str, str]:
-    return project if project else {}
+    return project or {}
 
 
 @router.get(

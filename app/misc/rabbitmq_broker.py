@@ -1,9 +1,10 @@
 from typing import Annotated
 
 from fastapi import Depends
-from faststream.rabbit import RabbitBroker, fastapi
+from faststream.rabbit import RabbitBroker
+from faststream.rabbit import fastapi
 
-from core.config import settings
+from config import settings
 
 rabbitmq_broker = fastapi.RabbitRouter(
     settings.rabbit.url,

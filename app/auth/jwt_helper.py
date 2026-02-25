@@ -1,28 +1,20 @@
 import logging
 import uuid
-from datetime import (
-    datetime,
-    timedelta,
-    timezone,
-)
-from typing import (
-    Annotated,
-    Any,
-)
+from datetime import UTC
+from datetime import datetime
+from datetime import timedelta
+from typing import Annotated
+from typing import Any
 
 import jwt
-from fastapi import (
-    Cookie,
-    Depends,
-    HTTPException,
-    status,
-)
-from jwt import (
-    ExpiredSignatureError,
-    InvalidTokenError,
-)
+from fastapi import Cookie
+from fastapi import Depends
+from fastapi import HTTPException
+from fastapi import status
+from jwt import ExpiredSignatureError
+from jwt import InvalidTokenError
 
-from core.config import settings
+from config import settings
 
 log = logging.getLogger(__name__)
 
@@ -54,7 +46,7 @@ async def sign_jwt_token(
     user_id: int,
 ) -> dict[str, str | int]:
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     expire_delta = timedelta(seconds=settings.access_token.lifetime_seconds)
     jti = str(uuid.uuid4())
 
@@ -96,7 +88,7 @@ async def decode_jwt(
         issued_at = int(decoded_token["iat"])
         expires_at = int(decoded_token["exp"])
 
-        log_message = datetime.fromtimestamp(expires_at, tz=timezone.utc).strftime(
+        log_message = datetime.fromtimestamp(expires_at, tz=UTC).strftime(
             "%Y-%m-%d %H:%M:%S",
         )
         log.info("Token expired at: %s", log_message)
