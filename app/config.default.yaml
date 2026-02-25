@@ -15,6 +15,8 @@ api-backend:
     host: localhost
     port: 5432
     name: dbname
+    echo: false
+    echo_pool: false
 
   log:
     mode: info
@@ -26,9 +28,11 @@ api-backend:
     secure: true
 
   run:
+    dev_mode: false
+
+  uvicorn:
     host: 127.0.0.1
     port: 8000
-    dev_mode: false
     workers: 1
     unix_socket: false
 
