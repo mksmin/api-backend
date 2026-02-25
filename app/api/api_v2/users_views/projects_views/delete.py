@@ -1,8 +1,6 @@
-from fastapi import (
-    APIRouter,
-    Depends,
-    status,
-)
+from fastapi import APIRouter
+from fastapi import Depends
+from fastapi import status
 
 from api.api_v2.users_views.projects_views.dependencies import delete_project_by_uuid
 

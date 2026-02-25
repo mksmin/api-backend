@@ -40,7 +40,7 @@ class S3Service:
         self.session = get_session()
 
     @asynccontextmanager
-    async def get_client(self) -> AsyncGenerator[S3Client, None]:
+    async def get_client(self) -> AsyncGenerator[S3Client]:
         async with self.session.create_client(
             "s3",
             aws_access_key_id=self.config.aws_access_key_id,

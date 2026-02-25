@@ -4,18 +4,14 @@ import aiohttp
 from fastapi import status
 from PIL import Image
 
-from app_exceptions.exceptions import (
-    ImageFetchError,
-    ImageFormatError,
-    ImageSizeError,
-)
+from app_exceptions.exceptions import ImageFetchError
+from app_exceptions.exceptions import ImageFormatError
+from app_exceptions.exceptions import ImageSizeError
 from misc.image.security import _is_safe_url
-from misc.image.types import (
-    AIOHTTP_TIMEOUT,
-    ALLOWED_CONTENT_TYPES,
-    MAX_BYTES,
-    MAX_DIMENSION,
-)
+from misc.image.types import AIOHTTP_TIMEOUT
+from misc.image.types import ALLOWED_CONTENT_TYPES
+from misc.image.types import MAX_BYTES
+from misc.image.types import MAX_DIMENSION
 
 log = logging.getLogger(__name__)
 

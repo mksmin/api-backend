@@ -1,8 +1,12 @@
 from collections.abc import Sequence
-from datetime import datetime, timezone
+from datetime import UTC
+from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import and_, func, select, update
+from sqlalchemy import and_
+from sqlalchemy import func
+from sqlalchemy import select
+from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.crud.managers import BaseCRUDManager
@@ -43,7 +47,7 @@ class ProjectManager(BaseCRUDManager[Project]):
                 ),
             )
             .values(
-                deleted_at=datetime.now(timezone.utc).replace(tzinfo=None),
+                deleted_at=datetime.now(UTC).replace(tzinfo=None),
             )
         )
         await self.session.execute(stmt)

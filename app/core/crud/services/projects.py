@@ -2,18 +2,15 @@ from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.api_v2.dependencies import validate_uuid_str
-from app_exceptions import (
-    ProjectAlreadyExistsError,
-    ProjectNotFoundError,
-    UserNotFoundError,
-)
-from core.crud.managers import ProjectManager, UserManager
-from schemas import (
-    ProjectCreateModel,
-    ProjectCreateSchema,
-    ProjectReadSchema,
-    ProjectSchema,
-)
+from app_exceptions import ProjectAlreadyExistsError
+from app_exceptions import ProjectNotFoundError
+from app_exceptions import UserNotFoundError
+from core.crud.managers import ProjectManager
+from core.crud.managers import UserManager
+from schemas import ProjectCreateModel
+from schemas import ProjectCreateSchema
+from schemas import ProjectReadSchema
+from schemas import ProjectSchema
 
 
 class ProjectService:

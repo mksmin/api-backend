@@ -1,6 +1,8 @@
-from typing import Annotated, Any
+from typing import Annotated
+from typing import Any
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
+from fastapi import Depends
 from fastapi.responses import HTMLResponse
 
 from config import settings

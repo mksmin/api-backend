@@ -5,5 +5,7 @@ __all__ = (
     "UserSchema",
 )
 
-from .project import ProjectRequestSchema, ProjectResponseSchema, ProjectSchema
+from .project import ProjectRequestSchema
+from .project import ProjectResponseSchema
+from .project import ProjectSchema
 from .user import UserSchema

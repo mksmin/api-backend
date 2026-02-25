@@ -1,10 +1,9 @@
-from typing import Annotated, Any
+from typing import Annotated
+from typing import Any
 
-from fastapi import (
-    APIRouter,
-    Body,
-    status,
-)
+from fastapi import APIRouter
+from fastapi import Body
+from fastapi import status
 from fastapi.responses import RedirectResponse
 
 from config import settings

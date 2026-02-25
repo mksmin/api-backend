@@ -1,22 +1,19 @@
 import logging
-from typing import Annotated, Any
+from typing import Annotated
+from typing import Any
 
-from fastapi import (
-    APIRouter,
-    Depends,
-    status,
-)
+from fastapi import APIRouter
+from fastapi import Depends
+from fastapi import status
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse
 
 from auth import jwt_helper
 from misc.flash_messages import flash
-from rest.pages_views.dependencies.affirmations import (
-    delete_user_affirmation,
-    get_dict_with_user_affirmations,
-    patch_user_affirmation_settings,
-    update_user_affirmation,
-)
+from rest.pages_views.dependencies.affirmations import delete_user_affirmation
+from rest.pages_views.dependencies.affirmations import get_dict_with_user_affirmations
+from rest.pages_views.dependencies.affirmations import patch_user_affirmation_settings
+from rest.pages_views.dependencies.affirmations import update_user_affirmation
 
 router = APIRouter()
 log = logging.getLogger(__name__)

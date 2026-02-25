@@ -1,11 +1,9 @@
 import logging
 from typing import Any
 
-from pydantic import (
-    BaseModel,
-    ConfigDict,
-    model_validator,
-)
+from pydantic import BaseModel
+from pydantic import ConfigDict
+from pydantic import model_validator
 
 logger = logging.getLogger(__name__)
 

@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter
+from fastapi import Query
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse
 

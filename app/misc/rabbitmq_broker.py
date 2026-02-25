@@ -1,7 +1,8 @@
 from typing import Annotated
 
 from fastapi import Depends
-from faststream.rabbit import RabbitBroker, fastapi
+from faststream.rabbit import RabbitBroker
+from faststream.rabbit import fastapi
 
 from config import settings
 

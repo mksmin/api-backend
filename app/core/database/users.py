@@ -1,17 +1,14 @@
 import uuid
 
-from sqlalchemy import (
-    BigInteger,
-    String,
-)
+from sqlalchemy import BigInteger
+from sqlalchemy import String
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import (
-    Mapped,
-    mapped_column,
-)
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
 
 from .base import Base
-from .mixins import IntIdMixin, TimestampsMixin
+from .mixins import IntIdMixin
+from .mixins import TimestampsMixin
 
 
 class User(IntIdMixin, TimestampsMixin, Base):

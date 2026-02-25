@@ -3,15 +3,11 @@ import io
 
 from PIL import Image
 
-from app_exceptions.exceptions import (
-    ImageFormatError,
-    ImageSizeError,
-)
+from app_exceptions.exceptions import ImageFormatError
+from app_exceptions.exceptions import ImageSizeError
 from misc.image.detect import detect_image_type
-from misc.image.types import (
-    ALLOWED_FORMATS,
-    MAX_DIMENSION,
-)
+from misc.image.types import ALLOWED_FORMATS
+from misc.image.types import MAX_DIMENSION
 
 
 async def validate_image_bytes(

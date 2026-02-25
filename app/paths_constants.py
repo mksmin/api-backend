@@ -1,6 +1,7 @@
 from fastapi.templating import Jinja2Templates
 
-from config import BASE_DIR, settings
+from config import BASE_DIR
+from config import settings
 from misc.flash_messages import get_flashed_messages
 
 FRONTEND_DIR_PATH = (

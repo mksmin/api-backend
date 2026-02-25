@@ -1,10 +1,11 @@
 import logging
 import re
-from typing import ClassVar
 from typing import Any
+from typing import ClassVar
 
 from pydantic import BaseModel
-from pydantic import Field, field_validator
+from pydantic import Field
+from pydantic import field_validator
 
 log = logging.getLogger(__name__)
 

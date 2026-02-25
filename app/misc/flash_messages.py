@@ -1,4 +1,5 @@
-from typing import TypedDict, cast
+from typing import TypedDict
+from typing import cast
 
 from fastapi.requests import Request
 

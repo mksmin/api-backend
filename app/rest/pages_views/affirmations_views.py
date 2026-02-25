@@ -1,32 +1,22 @@
 import logging
-from typing import (
-    Annotated,
-    Any,
-)
+from typing import Annotated
+from typing import Any
 
-from fastapi import (
-    APIRouter,
-    Depends,
-    status,
-)
+from fastapi import APIRouter
+from fastapi import Depends
+from fastapi import status
 from fastapi.requests import Request
-from fastapi.responses import (
-    HTMLResponse,
-    JSONResponse,
-)
+from fastapi.responses import HTMLResponse
+from fastapi.responses import JSONResponse
 
 from auth import jwt_helper
 from config import settings
 from misc.flash_messages import flash
 from paths_constants import templates
-from rest.pages_views.dependencies.affirmations import (
-    delete_user_affirmation,
-    get_dict_with_user_affirmations,
-    get_user_settings,
-)
-from rest.pages_views.dependencies.user_data import (
-    get_user_data_by_access_token,
-)
+from rest.pages_views.dependencies.affirmations import delete_user_affirmation
+from rest.pages_views.dependencies.affirmations import get_dict_with_user_affirmations
+from rest.pages_views.dependencies.affirmations import get_user_settings
+from rest.pages_views.dependencies.user_data import get_user_data_by_access_token
 from rest.pages_views.redirect import redirect_to_login_page
 from rest.pages_views.schemas.user_data import UserDataReadSchema
 

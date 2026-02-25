@@ -1,24 +1,18 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import (
-    Boolean,
-    DateTime,
-    ForeignKey,
-    Integer,
-    String,
-)
-from sqlalchemy.orm import (
-    Mapped,
-    mapped_column,
-    relationship,
-)
+from sqlalchemy import Boolean
+from sqlalchemy import DateTime
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
 
-from core.database import (
-    Base,
-    IntIdMixin,
-    TimestampsMixin,
-)
+from core.database import Base
+from core.database import IntIdMixin
+from core.database import TimestampsMixin
 
 if TYPE_CHECKING:
     from core.database.projects import Project

@@ -1,11 +1,10 @@
-from datetime import datetime, timezone
+from datetime import UTC
+from datetime import datetime
 
 from fastapi import APIRouter
 
-from core.database.security import (
-    schemas,
-    utils,
-)
+from core.database.security import schemas
+from core.database.security import utils
 
 router = APIRouter(
     prefix="/api-key",
@@ -22,7 +21,7 @@ async def generate_api_key(
     raw_key, _ = await utils.generate_api_key_and_hash()
     db_response = {
         "id": 1,
-        "created_at": datetime.now(timezone.utc),
+        "created_at": datetime.now(UTC),
     }
 
     return schemas.APIKeyFull(

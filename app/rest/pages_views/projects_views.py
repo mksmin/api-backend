@@ -1,13 +1,13 @@
-from typing import Annotated, Any
+from typing import Annotated
+from typing import Any
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
+from fastapi import Depends
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse
 
-from api.api_v2.users_views.projects_views.dependencies import (
-    get_project_by_uuid,
-    get_user_projects,
-)
+from api.api_v2.users_views.projects_views.dependencies import get_project_by_uuid
+from api.api_v2.users_views.projects_views.dependencies import get_user_projects
 from config import settings
 from core.database.schemas import ProjectResponseSchema
 from paths_constants import templates

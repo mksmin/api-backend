@@ -2,13 +2,13 @@ from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.api_v2.dependencies import validate_uuid_str
-from app_exceptions import (
-    UserAlreadyExistsError,
-    UserNotFoundError,
-)
+from app_exceptions import UserAlreadyExistsError
+from app_exceptions import UserNotFoundError
 from core.crud.managers import UserManager
-from schemas import UserReadSchema, UserSchema
-from schemas.users import UserCreateModel, UserCreateSchema
+from schemas import UserReadSchema
+from schemas import UserSchema
+from schemas.users import UserCreateModel
+from schemas.users import UserCreateSchema
 
 
 class UserService:

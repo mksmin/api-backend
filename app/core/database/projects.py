@@ -1,18 +1,15 @@
 import uuid
 
-from sqlalchemy import (
-    UUID,
-    ForeignKey,
-    String,
-)
-from sqlalchemy.orm import (
-    Mapped,
-    mapped_column,
-    relationship,
-)
+from sqlalchemy import UUID
+from sqlalchemy import ForeignKey
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
 
 from core.database import Base
-from core.database.mixins import IntIdMixin, TimestampsMixin
+from core.database.mixins import IntIdMixin
+from core.database.mixins import TimestampsMixin
 
 
 class Project(IntIdMixin, TimestampsMixin, Base):
