@@ -2,7 +2,6 @@ from fastapi import APIRouter
 from fastapi.responses import FileResponse
 
 from paths_constants import HTML_DIR
-from rest.static_views import router as static_router
 from rest.system_views import router as system_router
 
 router = APIRouter(
@@ -34,4 +33,3 @@ async def new_index_page() -> FileResponse:
 
 
 router.include_router(system_router)
-router.include_router(static_router)
