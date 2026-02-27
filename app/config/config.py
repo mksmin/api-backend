@@ -7,6 +7,8 @@ from pydantic_settings import PydanticBaseSettingsSource
 from pydantic_settings import SettingsConfigDict
 from pydantic_settings import YamlConfigSettingsSource
 
+from config.auth_bots import AuthBots
+from config.auth_bots import BotsEnum
 from config.database import DatabaseConfig
 from config.log import LoggerConfig
 from config.rabbitmq import RabbitMQConfig
@@ -99,11 +101,15 @@ class Settings(BaseSettings):
             env_settings,
             dotenv_settings,
             file_secret_settings,
-            YamlConfigSettingsSource(settings_cls),
+            YamlConfigSettingsSource(
+                settings_cls,
+                deep_merge=True,
+            ),
         )
 
     access_token: AccessToken
     api: ApiPrefix
+    bots: dict[BotsEnum, AuthBots]
     db: DatabaseConfig
     log: LoggerConfig
     rabbit: RabbitMQConfig
