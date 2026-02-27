@@ -5,9 +5,8 @@ from pydantic import SecretStr
 
 
 class BotsEnum(StrEnum):
-    WORKBOT = "mininwork_bot"
-    TESTBOT = "test_mininbot"
-    MAXBOT = "max_bot"
+    MININWORK_BOT = "mininwork_bot"
+    TEST_MININBOT = "test_mininbot"
 
 
 class AuthBots(BaseModel):
