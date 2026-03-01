@@ -1,5 +1,7 @@
 import logging
+from typing import Annotated
 
+from fastapi import Depends
 from pydantic import SecretStr
 
 from app_exceptions.exceptions import UnsupportedClientTypeError
@@ -24,19 +26,16 @@ class VerifierDispatcher:
         verifier_class: type[BaseVerifier],
     ) -> None:
         if client_type in self._registry:
-            raise ValueError(
-                f"Verifier for {client_type} already registered",
-            )
+            error_msg = f"Verifier for {client_type} already registered"
+            raise ValueError(error_msg)
         if not isinstance(verifier_class, type):
-            raise TypeError(
-                "Registered verifier must be a class",
-            )
+            error_msg = "Registered verifier must be a class"
+            raise TypeError(error_msg)
         if not issubclass(verifier_class, BaseVerifier):
-            raise TypeError(
-                f"{verifier_class.__name__} must inherit from BaseVerifier",
-            )
+            error_msg = f"{verifier_class.__name__} must inherit from BaseVerifier"
+            raise TypeError(error_msg)
         self._registry[client_type] = verifier_class
-        log.info(f"Registered verifier for %s", client_type)
+        log.info("Registered verifier for %s", client_type)
 
     def get(
         self,
@@ -46,9 +45,8 @@ class VerifierDispatcher:
         try:
             verifier_class = self._registry[client_type]
         except KeyError as exc:
-            raise UnsupportedClientTypeError(
-                f"No verifier registered for {client_type}",
-            ) from exc
+            error_msg = f"Verifier for {client_type} not registered"
+            raise UnsupportedClientTypeError(error_msg) from exc
 
         if isinstance(bot_token, SecretStr):
             bot_token = bot_token.get_secret_value()
@@ -59,3 +57,13 @@ class VerifierDispatcher:
 verifier_dispatcher = VerifierDispatcher()
 verifier_dispatcher.register(ClientType.TELEGRAM_WIDGET, TelegramWidgetVerifier)
 verifier_dispatcher.register(ClientType.TELEGRAM_MINIAPP, TelegramMiniAppVerifier)
+
+
+def get_dispatcher() -> VerifierDispatcher:
+    return verifier_dispatcher
+
+
+GetVerifierDispatcher = Annotated[
+    VerifierDispatcher,
+    Depends(get_dispatcher),
+]
