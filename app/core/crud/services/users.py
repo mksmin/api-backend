@@ -2,7 +2,6 @@ from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.api_v2.dependencies import validate_uuid_str
-from app_exceptions import UserAlreadyExistsError
 from app_exceptions import UserNotFoundError
 from core.crud.managers import UserManager
 from schemas import UserReadSchema
@@ -19,13 +18,13 @@ class UserService:
         self.session = session
         self.manager = UserManager(self.session)
 
-    async def create_user(
+    async def create_or_get_user(
         self,
         user_create: UserCreateSchema,
     ) -> UserSchema:
         user_exists = await self.manager.get_by_tg_id(user_create.tg_id)
         if user_exists:
-            raise UserAlreadyExistsError
+            return UserSchema.model_validate(user_exists)
 
         user_create_model = UserCreateModel.model_validate(user_create)
         user = await self.manager.create(user_create_model)
