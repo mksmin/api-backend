@@ -5,7 +5,7 @@ from fastapi import Depends
 from pydantic import SecretStr
 
 from app_exceptions.exceptions import UnsupportedClientTypeError
-from auth.tg_auth_depends import ClientType
+from auth.dependencies import ClientType
 from auth.verifiers.base import BaseVerifier
 from auth.verifiers.tg_miniapp import TelegramMiniAppVerifier
 from auth.verifiers.tg_widget import TelegramWidgetVerifier
