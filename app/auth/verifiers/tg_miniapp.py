@@ -1,5 +1,7 @@
 import hashlib
 import hmac
+import json
+from typing import Any
 from urllib.parse import parse_qsl
 
 from app_exceptions import InvalidPayloadError
@@ -12,9 +14,10 @@ class TelegramMiniAppVerifier(BaseVerifier):
     def verify(
         self,
         raw_data: str,
-    ) -> None:
+    ) -> dict[str, Any]:
         if not raw_data:
-            raise InvalidPayloadError("Empty data provided")
+            error_msg = "Empty data provided"
+            raise InvalidPayloadError(error_msg)
 
         try:
             pairs = parse_qsl(
@@ -38,6 +41,8 @@ class TelegramMiniAppVerifier(BaseVerifier):
             secret_key,
         )
         if not is_valid:
-            raise InvalidSignatureError()
+            raise InvalidSignatureError
 
-        return
+        user_data: dict[str, Any] = json.loads(data_dict["user"])
+        user_data["tg_id"] = user_data.pop("id")
+        return user_data

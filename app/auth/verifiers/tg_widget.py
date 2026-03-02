@@ -1,5 +1,4 @@
 import hashlib
-import json
 from typing import Any
 
 from app_exceptions import InvalidPayloadError
@@ -11,16 +10,11 @@ from auth.verifiers.depends import verify_tg_signature
 class TelegramWidgetVerifier(BaseVerifier):
     def verify(
         self,
-        raw_data: str,
-    ) -> None:
-        if not raw_data:
-            raise InvalidPayloadError("Empty data provided")
-
-        try:
-            data_dict = json.loads(raw_data)
-        except (ValueError, TypeError) as e:
-            msg_error = "Invalid JSON payload format"
-            raise InvalidPayloadError(msg_error) from e
+        data_dict: dict[str, Any],
+    ) -> dict[str, Any]:
+        if not data_dict:
+            error_msg = "Empty data provided"
+            raise InvalidPayloadError(error_msg)
 
         secret_key = hashlib.sha256(
             self._bot_token.encode(),
@@ -31,6 +25,8 @@ class TelegramWidgetVerifier(BaseVerifier):
             secret_key,
         )
         if not is_valid:
-            raise InvalidSignatureError()
+            raise InvalidSignatureError
 
-        return
+        data_dict["tg_id"] = data_dict.pop("id")
+
+        return data_dict

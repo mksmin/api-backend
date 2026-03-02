@@ -1,6 +1,6 @@
 import hashlib
 import hmac
-from typing import Mapping
+from collections.abc import Mapping
 
 
 def verify_tg_signature(

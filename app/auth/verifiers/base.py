@@ -11,6 +11,6 @@ class BaseVerifier(ABC):
         self._bot_token = bot_token
 
     @abstractmethod
-    def verify(self, raw_data: str) -> None:
+    def verify(self, raw_data: Any) -> Any:  # noqa: ANN401
         """Return true if signature is valid"""
-        raise InvalidSignatureError()
+        raise InvalidSignatureError
