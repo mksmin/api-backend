@@ -18,6 +18,10 @@ api-backend:
     echo: false
     echo_pool: false
 
+#  bots:
+#    bot_1_name:
+#      redirect_path: /profile
+
   log:
     mode: info
 

@@ -57,7 +57,7 @@ async def read_and_parse_csv(
             user.pop("created_at", None)
             user.pop("copmetention", None)
 
-            await crud_service.user.create_user(
+            await crud_service.user.create_or_get_user(
                 user_create=UserCreateSchema.model_validate(user),
             )
 
