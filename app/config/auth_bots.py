@@ -9,6 +9,11 @@ class BotsEnum(StrEnum):
     TEST_MININBOT = "test_mininbot"
 
 
+class ClientType(StrEnum):
+    TELEGRAM_WIDGET = "TelegramWidget"
+    TELEGRAM_MINIAPP = "TelegramMiniApp"
+
+
 class AuthBots(BaseModel):
     redirect_path: str
     token: SecretStr

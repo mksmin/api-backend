@@ -1,5 +1,4 @@
 import logging
-from enum import StrEnum
 from typing import Annotated
 from typing import Any
 
@@ -17,15 +16,11 @@ from auth.verifiers_dispatcher import GetVerifierDispatcher
 from auth.verifiers_dispatcher import VerifierDispatcher
 from config import settings
 from config.auth_bots import BotsEnum
+from config.auth_bots import ClientType
 from core.crud import GetCRUDService
 from core.crud.crud_service import CRUDService
 
 log = logging.getLogger(__name__)
-
-
-class ClientType(StrEnum):
-    TELEGRAM_WIDGET = "TelegramWidget"
-    TELEGRAM_MINIAPP = "TelegramMiniApp"
 
 
 async def _auth_tg_dep(

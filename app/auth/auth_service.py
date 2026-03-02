@@ -4,10 +4,10 @@ from typing import Any
 from app_exceptions import UnknownBotAuthError
 from app_exceptions.exceptions import UnsupportedClientTypeError
 from auth import jwt_helper
-from auth.dependencies import ClientType
 from auth.verifiers_dispatcher import VerifierDispatcher
 from config import settings
 from config.auth_bots import BotsEnum
+from config.auth_bots import ClientType
 from core.crud.crud_service import CRUDService
 from schemas import UserCreateSchema
 
