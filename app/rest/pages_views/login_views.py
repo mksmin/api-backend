@@ -10,6 +10,7 @@ from fastapi.responses import RedirectResponse
 
 from auth import jwt_helper
 from config import settings
+from config.auth_bots import BotsEnum
 from paths_constants import templates
 
 router = APIRouter()
@@ -72,6 +73,6 @@ async def get_oidc_login_page(
         context={
             "request": request,
             "redirect_url": redirect_path,
-            "client_id": 6529338226,
+            "client_id": settings.bots[BotsEnum.MININWORK_BOT].client_id,
         },
     )
