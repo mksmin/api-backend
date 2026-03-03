@@ -7,6 +7,7 @@ from pydantic import SecretStr
 class BotsEnum(StrEnum):
     MININWORK_BOT = "mininwork_bot"
     TEST_MININBOT = "test_mininbot"
+    MININLIVE_BOT = "mininlive_bot"
 
 
 class ClientType(StrEnum):
