@@ -12,6 +12,7 @@ from fastapi.responses import RedirectResponse
 
 from auth import jwt_helper
 from auth.dependencies import AuthUserViaTgMiniapp
+from auth.dependencies import AuthUserViaTgOIDC
 from auth.dependencies import AuthUserViaTgWidget
 from config import settings
 from config.auth_bots import BotsEnum
@@ -92,6 +93,16 @@ async def auth_tg_miniapp(
 )
 async def auth_tg_widget(
     response: AuthUserViaTgWidget,
+) -> JSONResponse:
+    return response
+
+
+@router.post(
+    "/auth/tg/oidc/{bot_name}",  # noqa: FAST003
+    name="auth_tg_oidc",
+)
+async def auth_tg_oidc(
+    response: AuthUserViaTgOIDC,
 ) -> JSONResponse:
     return response
 
