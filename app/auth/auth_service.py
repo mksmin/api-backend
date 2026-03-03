@@ -26,7 +26,7 @@ class AuthService:
     async def auth_user_via_bots(
         self,
         bot_name: BotsEnum,
-        bot_data_str: str | dict[str, Any],
+        bot_data: str | dict[str, Any],
         client_type: ClientType,
     ) -> dict[str, str]:
         if bot_name not in settings.bots:
@@ -45,14 +45,12 @@ class AuthService:
             error_msg = f"Unsupported client type: {client_type}"
             raise UnsupportedClientTypeError(error_msg)
 
-        bot_setting = settings.bots[bot_name]
-
-        verifier = self.verifier_dp.get(
-            client_type=client_type,
-            bot_token=bot_setting.token,
+        strategy = self.verifier_dp.get(
+            auth_schema=client_type,
+            bot_name=bot_name,
         )
         user_data = UserCreateSchema.model_validate(
-            verifier.verify(bot_data_str),
+            await strategy.verify(bot_data),
         )
 
         user = await self.crud.user.create_or_get_user(user_data)
