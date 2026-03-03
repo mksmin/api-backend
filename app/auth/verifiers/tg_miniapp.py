@@ -4,14 +4,33 @@ import json
 from typing import Any
 from urllib.parse import parse_qsl
 
+from pydantic import SecretStr
+
 from app_exceptions import InvalidPayloadError
 from app_exceptions import InvalidSignatureError
-from auth.verifiers.base import BaseVerifier
+from auth.verifiers.base import AuthStrategy
 from auth.verifiers.depends import verify_tg_signature
+from config import settings
+from config.auth_bots import BotsEnum
 
 
-class TelegramMiniAppVerifier(BaseVerifier):
-    def verify(
+class TelegramMiniAppVerifier(AuthStrategy):
+    def __init__(self, bot_token: str | SecretStr) -> None:
+        if isinstance(bot_token, SecretStr):
+            bot_token = bot_token.get_secret_value()
+
+        self._bot_token = bot_token
+
+    @classmethod
+    def factory(
+        cls,
+        bot_name: BotsEnum,
+        **_: str,
+    ) -> "TelegramMiniAppVerifier":
+        config = settings.bots[bot_name]
+        return cls(bot_token=config.token)
+
+    async def verify(
         self,
         raw_data: str,
     ) -> dict[str, Any]:
