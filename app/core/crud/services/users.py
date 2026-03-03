@@ -1,8 +1,8 @@
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.api_v2.dependencies import validate_uuid_str
 from app_exceptions import UserNotFoundError
+from core.crud.dependencies import validate_uuid_str
 from core.crud.managers import UserManager
 from schemas import UserReadSchema
 from schemas import UserSchema

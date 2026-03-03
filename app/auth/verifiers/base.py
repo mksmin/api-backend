@@ -2,15 +2,14 @@ from abc import ABC
 from abc import abstractmethod
 from typing import Any
 
-from app_exceptions import InvalidSignatureError
+from config.auth_bots import BotsEnum
 
 
-class BaseVerifier(ABC):
-
-    def __init__(self, bot_token: str) -> None:
-        self._bot_token = bot_token
-
+class AuthStrategy(ABC):
     @abstractmethod
-    def verify(self, raw_data: Any) -> Any:  # noqa: ANN401
+    async def verify(self, *args: Any) -> Any:  # noqa: ANN401
         """Return true if signature is valid"""
-        raise InvalidSignatureError
+
+    @classmethod
+    @abstractmethod
+    def factory(cls, bot_name: BotsEnum, **kwargs: str) -> "AuthStrategy": ...
