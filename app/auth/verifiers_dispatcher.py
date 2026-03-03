@@ -1,13 +1,16 @@
 import logging
+from collections.abc import Callable
+from functools import partial
 from typing import Annotated
 
 from fastapi import Depends
-from pydantic import SecretStr
 
 from app_exceptions.exceptions import UnsupportedClientTypeError
-from auth.verifiers.base import BaseVerifier
+from auth.verifiers.base import AuthStrategy
 from auth.verifiers.tg_miniapp import TelegramMiniAppVerifier
+from auth.verifiers.tg_oidc import TelegramOIDCVerifier
 from auth.verifiers.tg_widget import TelegramWidgetVerifier
+from config.auth_bots import BotsEnum
 from config.auth_bots import ClientType
 
 log = logging.getLogger(__name__)
@@ -17,46 +20,51 @@ class VerifierDispatcher:
     def __init__(self) -> None:
         self._registry: dict[
             ClientType,
-            type[BaseVerifier],
+            Callable[[BotsEnum], AuthStrategy],
         ] = {}
 
     def register(
         self,
-        client_type: ClientType,
-        verifier_class: type[BaseVerifier],
+        auth_schema: ClientType,
+        factory: Callable[[BotsEnum], AuthStrategy],
     ) -> None:
-        if client_type in self._registry:
-            error_msg = f"Verifier for {client_type} already registered"
+        if auth_schema in self._registry:
+            error_msg = f"Verifier for {auth_schema} already registered"
             raise ValueError(error_msg)
-        if not isinstance(verifier_class, type):
-            error_msg = "Registered verifier must be a class"
-            raise TypeError(error_msg)
-        if not issubclass(verifier_class, BaseVerifier):
-            error_msg = f"{verifier_class.__name__} must inherit from BaseVerifier"
-            raise TypeError(error_msg)
-        self._registry[client_type] = verifier_class
-        log.info("Registered verifier for %s", client_type)
+
+        self._registry[auth_schema] = factory
+        log.info("Registered verifier for %s", auth_schema)
 
     def get(
         self,
-        client_type: ClientType,
-        bot_token: str | SecretStr,
-    ) -> BaseVerifier:
+        auth_schema: ClientType,
+        bot_name: BotsEnum,
+    ) -> AuthStrategy:
         try:
-            verifier_class = self._registry[client_type]
+            factory = self._registry[auth_schema]
         except KeyError as exc:
-            error_msg = f"Verifier for {client_type} not registered"
+            error_msg = f"Verifier for {auth_schema} not registered"
             raise UnsupportedClientTypeError(error_msg) from exc
 
-        if isinstance(bot_token, SecretStr):
-            bot_token = bot_token.get_secret_value()
-
-        return verifier_class(bot_token=bot_token)
+        return factory(bot_name)
 
 
 verifier_dispatcher = VerifierDispatcher()
-verifier_dispatcher.register(ClientType.TELEGRAM_WIDGET, TelegramWidgetVerifier)
-verifier_dispatcher.register(ClientType.TELEGRAM_MINIAPP, TelegramMiniAppVerifier)
+verifier_dispatcher.register(
+    ClientType.TELEGRAM_WIDGET,
+    TelegramWidgetVerifier.factory,
+)
+verifier_dispatcher.register(
+    ClientType.TELEGRAM_MINIAPP,
+    TelegramMiniAppVerifier.factory,
+)
+verifier_dispatcher.register(
+    ClientType.TELEGRAM_OPENID,
+    partial(
+        TelegramOIDCVerifier.factory,
+        oid_server="https://oauth.telegram.org",
+    ),
+)
 
 
 def get_dispatcher() -> VerifierDispatcher:
