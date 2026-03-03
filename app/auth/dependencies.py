@@ -42,7 +42,7 @@ async def _auth_tg_dep(
     try:
         auth_data = await auth_service.auth_user_via_bots(
             bot_name=bot_name,
-            bot_data_str=body_data,
+            bot_data=body_data,
             client_type=auth_schema,
         )
     except UnknownBotAuthError as e:
@@ -124,6 +124,27 @@ async def auth_user_via_tg_widget_with_cookie(
     )
 
 
+async def auth_user_via_tg_oidc_with_cookie(
+    bot_name: Annotated[
+        BotsEnum,
+        Path(),
+    ],
+    oidc_token: Annotated[
+        str,
+        Body(),
+    ],
+    crud_service: GetCRUDService,
+    verifier_dispatcher: GetVerifierDispatcher,
+) -> JSONResponse:
+    return await _auth_tg_dep(
+        bot_name,
+        oidc_token,
+        auth_schema=ClientType.TELEGRAM_OPENID,
+        crud_service=crud_service,
+        verifier_dispatcher=verifier_dispatcher,
+    )
+
+
 AuthUserViaTgMiniapp = Annotated[
     JSONResponse,
     Depends(auth_user_via_tg_miniapp_with_cookie),
@@ -131,4 +152,8 @@ AuthUserViaTgMiniapp = Annotated[
 AuthUserViaTgWidget = Annotated[
     JSONResponse,
     Depends(auth_user_via_tg_widget_with_cookie),
+]
+AuthUserViaTgOIDC = Annotated[
+    JSONResponse,
+    Depends(auth_user_via_tg_oidc_with_cookie),
 ]
