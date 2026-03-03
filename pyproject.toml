@@ -16,7 +16,7 @@ alembic = ">=1.15.1"
 pydantic-settings = {extras = ["yaml"], version = ">=2.13.1"}
 uvicorn = ">=0.37.0"
 python-decouple = ">=3.8"
-pyjwt = ">=2.10.1"
+pyjwt = {extras = ["crypto"], version = "^2.11.0"}
 python-dateutil = ">=2.9.0.post0"
 pandas = ">=2.2.3"
 python-multipart = ">=0.0.20"
