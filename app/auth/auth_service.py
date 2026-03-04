@@ -1,15 +1,12 @@
 import logging
-from typing import Any
 
-from app_exceptions import UnknownBotAuthError
 from app_exceptions.exceptions import UnsupportedClientTypeError
-from auth import jwt_helper
+from auth.verifiers.base import AuthPayload
 from auth.verifiers_dispatcher import VerifierDispatcher
-from config import settings
-from config.auth_bots import BotsEnum
 from config.auth_bots import ClientType
 from core.crud.crud_service import CRUDService
 from schemas import UserCreateSchema
+from schemas import UserSchema
 
 log = logging.getLogger(__name__)
 
@@ -25,43 +22,22 @@ class AuthService:
 
     async def auth_user_via_bots(
         self,
-        bot_name: BotsEnum,
-        bot_data: str | dict[str, Any],
-        client_type: ClientType,
-    ) -> dict[str, str]:
-        if bot_name not in settings.bots:
-            log.warning(
-                "Unknown bot requested: %s",
-                bot_name,
-            )
-            error_msg = f"Unknown bot for authentication: {bot_name}"
-            raise UnknownBotAuthError(error_msg)
-
-        if client_type not in list(ClientType):
+        bot_data: AuthPayload,
+        auth_schema: ClientType,
+    ) -> UserSchema:
+        if auth_schema not in list(ClientType):
             log.warning(
                 "Unsupported client type: %s",
-                client_type,
+                auth_schema,
             )
-            error_msg = f"Unsupported client type: {client_type}"
+            error_msg = f"Unsupported client type: {auth_schema}"
             raise UnsupportedClientTypeError(error_msg)
 
         strategy = self.verifier_dp.get(
-            auth_schema=client_type,
-            bot_name=bot_name,
+            auth_schema=auth_schema,
         )
         user_data = UserCreateSchema.model_validate(
             await strategy.verify(bot_data),
         )
 
-        user = await self.crud.user.create_or_get_user(user_data)
-
-        jwt_token = await jwt_helper.sign_jwt_token(user.id)
-        log.info(
-            "Tokens generated | User: %d | JWT expiry: %d",
-            user.id,
-            settings.access_token.lifetime_seconds,
-        )
-        return {
-            "access_token": str(jwt_token.get("access_token", "")),
-            "redirect_path": settings.bots[bot_name].redirect_path,
-        }
+        return await self.crud.user.create_or_get_user(user_data)
