@@ -3,6 +3,7 @@ from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import Field
 
 
@@ -67,8 +68,7 @@ class APIKeyOut(APIKeyBase):
     )
     project_id: UUID = Field(..., description="Идентификатор проекта")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class APIKeyFull(APIKeyOut):
