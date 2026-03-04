@@ -2,6 +2,7 @@ import logging
 from collections.abc import Callable
 from functools import partial
 from typing import Annotated
+from typing import Any
 
 from fastapi import Depends
 
@@ -10,23 +11,24 @@ from auth.verifiers.base import AuthStrategy
 from auth.verifiers.tg_miniapp import TelegramMiniAppVerifier
 from auth.verifiers.tg_oidc import TelegramOIDCVerifier
 from auth.verifiers.tg_widget import TelegramWidgetVerifier
-from config.auth_bots import BotsEnum
 from config.auth_bots import ClientType
 
 log = logging.getLogger(__name__)
+
+type VerifierFactory = Callable[[], AuthStrategy[Any]]
 
 
 class VerifierDispatcher:
     def __init__(self) -> None:
         self._registry: dict[
             ClientType,
-            Callable[[BotsEnum], AuthStrategy],
+            VerifierFactory,
         ] = {}
 
     def register(
         self,
         auth_schema: ClientType,
-        factory: Callable[[BotsEnum], AuthStrategy],
+        factory: VerifierFactory,
     ) -> None:
         if auth_schema in self._registry:
             error_msg = f"Verifier for {auth_schema} already registered"
@@ -38,15 +40,13 @@ class VerifierDispatcher:
     def get(
         self,
         auth_schema: ClientType,
-        bot_name: BotsEnum,
-    ) -> AuthStrategy:
-        try:
-            factory = self._registry[auth_schema]
-        except KeyError as exc:
+    ) -> AuthStrategy[Any]:
+        if auth_schema not in self._registry:
             error_msg = f"Verifier for {auth_schema} not registered"
-            raise UnsupportedClientTypeError(error_msg) from exc
+            raise UnsupportedClientTypeError(error_msg)
 
-        return factory(bot_name)
+        factory = self._registry[auth_schema]
+        return factory()
 
 
 verifier_dispatcher = VerifierDispatcher()
