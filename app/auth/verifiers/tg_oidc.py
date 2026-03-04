@@ -1,5 +1,6 @@
 import json
 from typing import Any
+from typing import TypedDict
 
 import aiohttp
 import jwt
@@ -10,45 +11,45 @@ from pydantic import HttpUrl
 
 from app_exceptions import InvalidSignatureError
 from auth.verifiers.base import AuthStrategy
+from auth.verifiers.base import TelegramOIDCPayload
 from config import settings
-from config.auth_bots import BotsEnum
 
 
-class TelegramOIDCVerifier(AuthStrategy):
+class OIDCFactoryArgs(TypedDict):
+    oid_server: HttpUrl | str
+
+
+class TelegramOIDCVerifier(AuthStrategy[TelegramOIDCPayload]):
     def __init__(
         self,
-        client_id: int | str,
         oid_server: HttpUrl | str,
     ) -> None:
-        self._client_id = str(client_id)
-        self._oid_server = str(oid_server)
+        self._oid_server = str(oid_server).rstrip("/")
         self._tg_jwks_uri = self._oid_server + "/.well-known/jwks.json"
         self._tg_oid_config_uri = self._oid_server + "/.well-known/openid-configuration"
 
     @classmethod
     def factory(
         cls,
-        bot_name: BotsEnum,
-        **kwargs: str,
+        *,
+        oid_server: HttpUrl | str,
     ) -> "TelegramOIDCVerifier":
-        config = settings.bots[bot_name]
-        if not config.client_id:
-            error_msg = "client_id is required"
-            raise ValueError(error_msg)
-
-        oid_server = kwargs.get("oid_server")
-        if not oid_server:
-            error_msg = "oid_server is required"
-            raise ValueError(error_msg)
         return cls(
-            client_id=config.client_id,
             oid_server=oid_server,
         )
 
     async def verify(
         self,
-        tg_access_key: str,
+        payload: TelegramOIDCPayload,
     ) -> dict[str, Any]:
+        config = settings.bots[payload.bot_name]
+        client_id = str(config.client_id)
+        tg_access_key = payload.id_token
+
+        if not config.client_id:
+            error_msg = "client_id is required"
+            raise ValueError(error_msg)
+
         async with aiohttp.ClientSession() as session:
             response = await session.get(self._tg_jwks_uri)
             oid_specs = json.loads(await response.text())
@@ -58,11 +59,11 @@ class TelegramOIDCVerifier(AuthStrategy):
         signing_key = jwk_client.get_signing_key_from_jwt(tg_access_key)
 
         try:
-            payload = jwt.decode(
+            user_data = jwt.decode(
                 tg_access_key,
                 key=signing_key,
                 algorithms=keys_algs,
-                audience=self._client_id,
+                audience=client_id,
                 issuer=self._oid_server,
             )
         except ExpiredSignatureError:
@@ -72,7 +73,7 @@ class TelegramOIDCVerifier(AuthStrategy):
             error_msg = "JWT token has invalid issuer"
             raise InvalidSignatureError(error_msg) from None
         else:
-            return self.map_to_user(payload)
+            return self.map_to_user(user_data)
 
     @classmethod
     def map_to_user(

@@ -1,51 +1,59 @@
 import hashlib
+import time
 from typing import Any
-
-from pydantic import SecretStr
 
 from app_exceptions import InvalidPayloadError
 from app_exceptions import InvalidSignatureError
 from auth.verifiers.base import AuthStrategy
+from auth.verifiers.base import TelegramWidgetPayload
 from auth.verifiers.depends import verify_tg_signature
 from config import settings
-from config.auth_bots import BotsEnum
 
 
-class TelegramWidgetVerifier(AuthStrategy):
-    def __init__(self, bot_token: str | SecretStr) -> None:
-        if isinstance(bot_token, SecretStr):
-            bot_token = bot_token.get_secret_value()
-
-        self._bot_token = bot_token
+class TelegramWidgetVerifier(AuthStrategy[TelegramWidgetPayload]):
+    AUTH_DATA_EXPIRY = 86400
 
     @classmethod
     def factory(
         cls,
-        bot_name: BotsEnum,
         **_: str,
     ) -> "TelegramWidgetVerifier":
-        config = settings.bots[bot_name]
-        return cls(bot_token=config.token)
+        return cls()
 
     async def verify(
         self,
-        raw_data: dict[str, Any],
+        payload: TelegramWidgetPayload,
     ) -> dict[str, Any]:
-        if not raw_data:
+        if not payload:
             error_msg = "Empty data provided"
             raise InvalidPayloadError(error_msg)
 
+        bot_config = settings.bots.get(payload.bot_name)
+        if not bot_config:
+            error_msg = "Invalid bot_name provided"
+            raise InvalidPayloadError(error_msg)
+
+        bot_token = str(bot_config.token.get_secret_value())
+
+        user_data = payload.data
+
+        auth_date = int(user_data.get("auth_date", "0"))
+        if time.time() - auth_date > self.AUTH_DATA_EXPIRY:
+            error_msg = "Telegram widget data has expired"
+            raise InvalidSignatureError(error_msg)
+
         secret_key = hashlib.sha256(
-            self._bot_token.encode(),
+            bot_token.encode(),
         ).digest()
 
         is_valid = verify_tg_signature(
-            raw_data,
+            user_data,
             secret_key,
         )
         if not is_valid:
-            raise InvalidSignatureError
+            error_msg = "Invalid telegram widget signature"
+            raise InvalidSignatureError(error_msg)
 
-        raw_data["tg_id"] = raw_data.pop("id")
+        user_data["tg_id"] = user_data.pop("id")
 
-        return raw_data
+        return user_data

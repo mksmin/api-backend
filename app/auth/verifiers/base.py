@@ -1,15 +1,36 @@
-from abc import ABC
-from abc import abstractmethod
 from typing import Any
+from typing import Protocol
+
+from pydantic import BaseModel
 
 from config.auth_bots import BotsEnum
 
 
-class AuthStrategy(ABC):
-    @abstractmethod
-    async def verify(self, *args: Any) -> Any:  # noqa: ANN401
-        """Return true if signature is valid"""
+class AuthPayload(BaseModel):
+    """Base class for all authentication payloads"""
 
-    @classmethod
-    @abstractmethod
-    def factory(cls, bot_name: BotsEnum, **kwargs: str) -> "AuthStrategy": ...
+
+class TelegramMiniappPayload(AuthPayload):
+    bot_name: BotsEnum
+    data: str
+
+
+class TelegramWidgetPayload(AuthPayload):
+    bot_name: BotsEnum
+    data: dict[str, Any]
+
+
+class TelegramOIDCPayload(AuthPayload):
+    bot_name: BotsEnum
+    client_id: str | int
+    id_token: str
+
+
+class PasswordPayload(AuthPayload):
+    username: str
+    password: str
+
+
+class AuthStrategy[T: AuthPayload](Protocol):
+    async def verify(self, payload: T) -> dict[str, Any]:
+        """Return true if signature is valid"""
