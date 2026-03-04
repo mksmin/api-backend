@@ -10,10 +10,10 @@ class UserBase(BaseModel):
     Базовая схема для модели пользователя
     """
 
-    first_name: str | None
-    last_name: str | None
+    first_name: str | None = None
+    last_name: str | None = None
     tg_id: int
-    username: str | None
+    username: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -41,7 +41,7 @@ class UserSchema(UserBase):
     id: int
     uuid: UUID
     created_at: datetime
-    deleted_at: datetime | None
+    deleted_at: datetime | None = None
 
 
 class UserCreateModel(UserBase):
