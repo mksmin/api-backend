@@ -165,3 +165,6 @@ unfixable = []
 
 [tool.ruff.lint.isort]
 force-single-line = true
+
+[tool.ruff.lint.pylint]
+max-args = 6
