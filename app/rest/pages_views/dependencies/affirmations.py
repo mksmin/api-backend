@@ -1,6 +1,7 @@
 import json
 from typing import Annotated
 from typing import Any
+from typing import Literal
 
 from fastapi import Depends
 from fastapi import HTTPException
@@ -41,6 +42,23 @@ async def get_dict_with_user_affirmations(
             description="Смещение",
         ),
     ] = 0,
+    sort_by: Annotated[
+        Literal[
+            "created_at",
+            "text",
+        ],
+        Query(
+            title="Sort",
+            description="Сортировка по полю",
+        ),
+    ] = "created_at",
+    order: Annotated[
+        Literal[
+            "asc",
+            "desc",
+        ],
+        Query(title="Order", description="По возрастанию или убыванию"),
+    ] = "asc",
 ) -> dict[str, Any]:
     try:
         message = {
@@ -49,6 +67,8 @@ async def get_dict_with_user_affirmations(
                 "user_tg": user_data.tg_id,
                 "limit": limit,
                 "offset": offset,
+                "sort_by": sort_by,
+                "order": order,
             },
         }
         result = await broker.request(
