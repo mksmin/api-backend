@@ -42,9 +42,9 @@ jobs:
             cd ${{ secrets.DEPLOY_PATH }}
             git pull
             docker compose pull
-            docker compose up -d
-            docker image prune -f 
-            
+            docker compose up -d backend
+            docker image prune -f
+
       - name: Send Telegram notification on deploy failure
         if: failure()
         run: |
