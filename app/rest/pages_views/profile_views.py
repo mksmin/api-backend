@@ -3,6 +3,7 @@ from typing import Any
 
 from fastapi import APIRouter
 from fastapi import Depends
+from fastapi import Request
 from fastapi.responses import HTMLResponse
 
 from config import settings
@@ -24,6 +25,7 @@ router = APIRouter()
     ],
 )
 async def page_profile(
+    request: Request,
     template_data: Annotated[
         dict[str, Any],
         Depends(return_data_for_user_profile_template),
@@ -31,6 +33,7 @@ async def page_profile(
 ) -> HTMLResponse:
     """Страница с профилем пользователя"""
     return templates.TemplateResponse(
-        "profiles/profile.html",
-        template_data,
+        request=request,
+        name="profiles/profile.html",
+        context=template_data,
     )

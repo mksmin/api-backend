@@ -22,7 +22,8 @@ async def index_page(
     request: Request,
 ) -> HTMLResponse:
     return templates.TemplateResponse(
-        templates_path + "subscribe.html",
+        request=request,
+        name=templates_path + "subscribe.html",
         context={
             "request": request,
             "redirect_url": "/test",

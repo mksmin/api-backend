@@ -47,7 +47,8 @@ async def get_page_list_projects(
         "user": template_data.get("user"),
     }
     return templates.TemplateResponse(
-        "projects/list.html",
+        request=request,
+        name="projects/list.html",
         context=context,
     )
 
@@ -66,7 +67,8 @@ async def get_page_project_detail(
 ) -> HTMLResponse:
     """Страница с профилем пользователя"""
     return templates.TemplateResponse(
-        "projects/details.html",
+        request=request,
+        name="projects/details.html",
         context={
             "request": request,
             "project": project.model_dump() if project else None,

@@ -38,7 +38,8 @@ async def get_login_page(
 
     redirect_path = redirect_url or None
     return templates.TemplateResponse(
-        "auth/telegram_widget.html",
+        request=request,
+        name="auth/telegram_widget.html",
         context={
             "request": request,
             "redirect_url": redirect_path,
@@ -69,7 +70,8 @@ async def get_oidc_login_page(
 
     redirect_path = redirect_url or None
     return templates.TemplateResponse(
-        "/auth/telegram_login_library.html",
+        request=request,
+        name="/auth/telegram_login_library.html",
         context={
             "request": request,
             "redirect_url": redirect_path,

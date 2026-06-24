@@ -54,8 +54,9 @@ async def tg_mini_app_page(
             errors=errors,
         )
         return templates.TemplateResponse(
-            template_path,
-            ctx,
+            request=request,
+            name=template_path,
+            context=ctx,
         )
 
     if not cookie_token:
@@ -68,8 +69,9 @@ async def tg_mini_app_page(
             bot_auth_path=auth_path,
         )
         return templates.TemplateResponse(
-            template_path,
-            ctx,
+            request=request,
+            name=template_path,
+            context=ctx,
         )
     return RedirectResponse(
         url=settings.bots[bot_enum].redirect_path,

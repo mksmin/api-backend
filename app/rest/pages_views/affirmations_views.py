@@ -59,7 +59,8 @@ async def page_user_affirmations(
     context.update(context_data)
     context.update(settings=user_settings)
     return templates.TemplateResponse(
-        "pages/affirmations.html",
+        request=request,
+        name="pages/affirmations.html",
         context=context,
     )
 
