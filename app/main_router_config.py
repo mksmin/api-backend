@@ -1,15 +1,21 @@
 import logging
 
 from fastapi import FastAPI
+from fastapi import status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.requests import Request
+from fastapi.responses import HTMLResponse
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
 from api import router as api_router
 from api.api_v2.health_views import router as health_router
+from app_exceptions import RabbitMQServiceUnavailableError
 from app_lifespan import lifespan
 from config import settings
 from paths_constants import FRONTEND_DIR_PATH
+from paths_constants import templates
 from rest.auth_views import router as auth_router
 from rest.main_views import router as main_views_router
 from rest.pages_views import router as pages_router
@@ -52,6 +58,35 @@ main_app.add_middleware(
     SessionMiddleware,
     secret_key=settings.secrets.session_secret,
 )
+
+
+@main_app.exception_handler(
+    RabbitMQServiceUnavailableError,
+)
+async def rabbitmq_service_unavailable_handler(
+    request: Request,
+    _exception: RabbitMQServiceUnavailableError,
+) -> JSONResponse | HTMLResponse:
+    log.warning(
+        "Affirmation service timeout: %s",
+        request.url.path,
+    )
+
+    if request.url.path.startswith("/api/"):
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={
+                "detail": "Affirmation service unavailable",
+            },
+        )
+
+    return templates.TemplateResponse(
+        request=request,
+        name="errors/service_unavailable.html",
+        context={},
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+    )
+
 
 routers_for_include = (
     auth_router,
