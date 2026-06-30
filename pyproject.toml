@@ -40,6 +40,10 @@ types-aiobotocore = {extras = ["s3"], version = ">=2.26.0.post2"}
 types-botocore = ">=1.0.2"
 
 
+
+[tool.poetry.group.macos.dependencies]
+greenlet = "^3.5.3"
+
 [tool.mypy]  # mypy settings
 strict = true
 plugins = [
