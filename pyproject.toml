@@ -17,7 +17,7 @@ package-mode = false
 fastapi = { extras = ["standard"], version = ">=0.121.0" }
 sqlalchemy = { extras = ["asyncio"], version = ">=2.0.39" }
 asyncpg = ">=0.30.0"
-pydantic = { extras = ["email"], version = ">=2.10.6" }
+pydantic = {extras = ["email"], version = "^2.14.2"}
 alembic = ">=1.15.1"
 pydantic-settings = { extras = ["yaml"], version = ">=2.13.1" }
 uvicorn = ">=0.37.0"
@@ -31,6 +31,8 @@ faststream = { extras = ["rabbit"], version = ">=0.6.1" }
 itsdangerous = ">=2.2.0"
 aiobotocore = ">=2.26.0"
 pillow = ">=12.0.0"
+pwdlib = {extras = ["argon2"], version = "^0.3.1"}
+fastapi-csrf-protect = "^1.0.7"
 
 [tool.poetry.group.dev.dependencies]
 black = ">=25.1.0"
