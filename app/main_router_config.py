@@ -28,7 +28,6 @@ main_app = FastAPI(
     docs_url="/docs" if settings.run.dev_mode else None,
     redoc_url=None,
     openapi_url="/openapi.json" if settings.run.dev_mode else None,
-    convert_underscores=False,
 )
 
 
