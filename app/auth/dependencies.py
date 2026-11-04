@@ -85,7 +85,7 @@ async def _auth_tg_dep(
         value=str(jwt_token.get("access_token", "")),
         httponly=True,
         secure=True,
-        samesite="none",
+        samesite="lax",
         path="/",
         max_age=settings.access_token.lifetime_seconds,
     )

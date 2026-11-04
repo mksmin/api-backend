@@ -1,4 +1,5 @@
 import logging
+from typing import Literal
 
 from fastapi import FastAPI
 from fastapi import status
@@ -7,6 +8,9 @@ from fastapi.requests import Request
 from fastapi.responses import HTMLResponse
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi_csrf_protect import CsrfProtect
+from fastapi_csrf_protect.exceptions import CsrfProtectError
+from pydantic_settings import BaseSettings
 from starlette.middleware.sessions import SessionMiddleware
 
 from api import router as api_router
@@ -59,6 +63,21 @@ main_app.add_middleware(
 )
 
 
+class CsrfSettings(BaseSettings):
+    secret_key: str
+    token_location: Literal["body"] = "body"
+    token_key: str = "token_key"
+    cookie_samesite: Literal["lax"] = "lax"
+    cookie_secure: bool = True
+
+
+@CsrfProtect.load_config
+def get_csrf_settings() -> CsrfSettings:
+    return CsrfSettings(
+        secret_key=settings.secrets.csrf_secret.get_secret_value(),
+    )
+
+
 @main_app.exception_handler(
     RabbitMQServiceUnavailableError,
 )
@@ -84,6 +103,21 @@ async def rabbitmq_service_unavailable_handler(
         name="errors/service_unavailable.html",
         context={},
         status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+    )
+
+
+@main_app.exception_handler(
+    CsrfProtectError,
+)
+def csrf_protect_exception_handler(
+    request: Request,
+    exc: CsrfProtectError,
+) -> JSONResponse:
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "detail": str(exc.message),
+        },
     )
 
 

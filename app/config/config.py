@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 
 from pydantic import BaseModel
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings
 from pydantic_settings import PydanticBaseSettingsSource
 from pydantic_settings import SettingsConfigDict
@@ -49,8 +50,8 @@ class RunConfig(BaseModel):
 
 
 class SecretsConfig(BaseModel):
-    bots_tokens: dict[str, str]
     session_secret: str
+    csrf_secret: SecretStr
 
 
 class TelegramAuthConfig(BaseModel):
