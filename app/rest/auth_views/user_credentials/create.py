@@ -125,7 +125,7 @@ class CredentialService:
         self,
         user_id: int,
         user_credentials_in: CreateCredentialsForm,
-    ) -> bool:
+    ) -> None:
         user = await self.session.get(User, user_id)
         if user is None or user.deleted_at is not None:
             raise UserUnavailableError

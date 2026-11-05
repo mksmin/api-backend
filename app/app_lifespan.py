@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from core.database.db_helper import db_helper
+from misc.rabbit_lifecycle import rabbit_background_start
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +22,10 @@ async def lifespan(
     :return: None
     """
     logger.info("Start FastAPI")
-    yield
-    logger.info("Stop FastAPI")
-    await db_helper.dispose()
+
+    try:
+        async with rabbit_background_start():
+            yield
+    finally:
+        logger.info("Stop FastAPI")
+        await db_helper.dispose()

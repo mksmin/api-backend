@@ -4,15 +4,23 @@ from fastapi import Depends
 from faststream.rabbit import RabbitBroker
 from faststream.rabbit import fastapi
 
+from app_exceptions import RabbitMQServiceUnavailableError
 from config import settings
 
-rabbitmq_broker = fastapi.RabbitRouter(
+broker = RabbitBroker(
     settings.rabbit.url,
+    fail_fast=False,
+    reconnect_interval=60.0,
+    timeout=8.0,
 )
 
 
-def get_broker() -> RabbitBroker:
-    return rabbitmq_broker.broker
+async def get_broker() -> RabbitBroker:
+    if not await broker.ping(
+        timeout=0.2,
+    ):
+        raise RabbitMQServiceUnavailableError
+    return broker
 
 
 GetRabbitBroker = Annotated[
