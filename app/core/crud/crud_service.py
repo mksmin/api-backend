@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.crud.services import ProjectService
 from core.crud.services import UserService
+from core.crud.services.user_credentials import CredentialService
 from core.database.db_helper import db_helper
 
 
@@ -15,6 +16,7 @@ class CRUDService:
         session: AsyncSession,
     ) -> None:
         self.user: UserService = UserService(session)
+        self.user_credential: CredentialService = CredentialService(session)
         self.project: ProjectService = ProjectService(session)
 
 

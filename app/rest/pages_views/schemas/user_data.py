@@ -11,3 +11,5 @@ class UserDataReadSchema(BaseModel):
     photo_url: str | None = None
     language_code: str | None = None
     allows_write_to_pm: bool | None = None
+    email: str | None = None
+    email_confirmed: bool = False

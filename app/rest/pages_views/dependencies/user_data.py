@@ -16,13 +16,16 @@ async def get_user_data_by_access_token(
     ),
 ) -> UserDataReadSchema | None:
     user = await crud_service.user.get_by_id_or_uuid(user_id)
+    user_credentials = await crud_service.user_credential.get_user_email(int(user_id))
     return UserDataReadSchema(
-        id=user_id,
+        id=int(user_id),
         tg_id=user.tg_id,
         first_name=user.first_name,
         last_name=user.last_name,
         username=user.username,
         photo_url="/static/media/nonePhoto.png",
+        email=user_credentials.email,
+        email_confirmed=user_credentials.email_confirmed,
     )
 
 

@@ -1,8 +1,8 @@
 import asyncio
 import logging
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from contextlib import suppress
-from typing import AsyncGenerator
 
 from misc.rabbitmq_broker import broker
 

@@ -1,161 +1,22 @@
-import datetime as dt
 from typing import Annotated
-from typing import Self
 
 from fastapi import APIRouter
 from fastapi import Form
 from fastapi import HTTPException
 from fastapi import status
-from fastapi.concurrency import run_in_threadpool
 from fastapi.params import Depends
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse
 from fastapi_csrf_protect import CsrfProtect
-from pwdlib import PasswordHash
-from pydantic import BaseModel
-from pydantic import EmailStr
-from pydantic import Field
-from pydantic import field_validator
-from pydantic import model_validator
-from sqlalchemy import Row
-from sqlalchemy import func
-from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.asyncio import AsyncSession
 
+from app_exceptions.exceptions import CredentialAlreadyExistsError
+from app_exceptions.exceptions import UserUnavailableError
 from auth import jwt_helper
-from core.database import User
-from core.database.db_helper import db_helper
-from core.database.users import PasswordCredential
+from core.crud import GetCRUDService
+from schemas.user_credentials import CreateCredentialsForm
+from schemas.user_credentials import LoginCredentialsForm
 
 router = APIRouter()
-passwords = PasswordHash.recommended()
-
-
-class CredentialsForm(BaseModel):
-    email: EmailStr = Field(
-        max_length=254,
-    )
-    password: str = Field(
-        min_length=8,
-        max_length=1024,
-    )
-
-    @field_validator(
-        "email",
-        mode="before",
-    )
-    @classmethod
-    def normalize_email(
-        cls,
-        value: str,
-    ) -> str:
-        return value.strip().lower()
-
-
-class LoginCredentialsForm(CredentialsForm): ...
-
-
-class CreateCredentialsForm(CredentialsForm):
-    password_confirm: str
-
-    @model_validator(
-        mode="after",
-    )
-    def passwords_match(self) -> Self:
-        if self.password != self.password_confirm:
-            msg = "Passwords doesn't match"
-            raise ValueError(msg)
-        return self
-
-
-class UserUnavailableError(Exception): ...
-
-
-class CredentialAlreadyExistsError(Exception): ...
-
-
-class CredentialService:
-    def __init__(
-        self,
-        session: AsyncSession,
-    ) -> None:
-        self.session = session
-
-    async def authenticate_user(
-        self,
-        credentials: LoginCredentialsForm,
-    ) -> User | None:
-        stmt = (
-            select(
-                User,
-                PasswordCredential,
-            )
-            .join(
-                PasswordCredential,
-                PasswordCredential.user_id == User.id,
-            )
-            .where(
-                func.lower(PasswordCredential.email) == credentials.email,
-            )
-        )
-
-        row: Row[User, PasswordCredential] | None = (
-            await self.session.execute(stmt)
-        ).one_or_none()
-        if row is None:
-            return None
-
-        user: User = row[0]
-        credential: PasswordCredential = row[1]
-
-        if user.deleted_at is not None:
-            return None
-        if credential.email_verified_at is None:
-            return None
-
-        valid = await run_in_threadpool(
-            passwords.verify,
-            credentials.password,
-            credential.password_hash,
-        )
-        return user if valid else None
-
-    async def create_user_credentials(
-        self,
-        user_id: int,
-        user_credentials_in: CreateCredentialsForm,
-    ) -> None:
-        user = await self.session.get(User, user_id)
-        if user is None or user.deleted_at is not None:
-            raise UserUnavailableError
-
-        existing = await self.session.get(
-            PasswordCredential,
-            user_id,
-        )
-        if existing is not None:
-            raise CredentialAlreadyExistsError
-
-        password_hash = await run_in_threadpool(
-            passwords.hash,
-            user_credentials_in.password,
-        )
-
-        self.session.add(
-            PasswordCredential(
-                user_id=user_id,
-                email=user_credentials_in.email,
-                password_hash=password_hash,
-                email_verified_at=dt.datetime.now(dt.UTC),
-            ),
-        )
-
-        try:
-            await self.session.commit()
-        except IntegrityError as exc:
-            await self.session.rollback()
-            raise CredentialAlreadyExistsError from exc
 
 
 @router.post(
@@ -173,20 +34,15 @@ async def create_credentials(
             jwt_helper.strict_validate_access_token,
         ),
     ],
-    session: Annotated[
-        AsyncSession,
-        Depends(
-            db_helper.session_getter,
-        ),
-    ],
     csrf_protect: Annotated[
         CsrfProtect,
         Depends(),
     ],
+    crud_service: GetCRUDService,
 ) -> JSONResponse:
     await csrf_protect.validate_csrf(request)
     try:
-        await CredentialService(session).create_user_credentials(
+        await crud_service.user_credential.create_user_credentials(
             user_id,
             user_credentials_in,
         )
@@ -218,14 +74,9 @@ async def authenticate_user(
         LoginCredentialsForm,
         Form(),
     ],
-    session: Annotated[
-        AsyncSession,
-        Depends(
-            db_helper.session_getter,
-        ),
-    ],
+    crud_service: GetCRUDService,
 ) -> JSONResponse:
-    user = await CredentialService(session).authenticate_user(
+    user = await crud_service.user_credential.authenticate_user(
         user_credentials,
     )
 

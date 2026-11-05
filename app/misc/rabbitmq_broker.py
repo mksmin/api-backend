@@ -2,7 +2,6 @@ from typing import Annotated
 
 from fastapi import Depends
 from faststream.rabbit import RabbitBroker
-from faststream.rabbit import fastapi
 
 from app_exceptions import RabbitMQServiceUnavailableError
 from config import settings
