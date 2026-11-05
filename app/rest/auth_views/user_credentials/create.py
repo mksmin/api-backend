@@ -21,6 +21,7 @@ router = APIRouter()
 
 @router.post(
     "/create-credentials",
+    name="user:create-credentials",
 )
 async def create_credentials(
     request: Request,
