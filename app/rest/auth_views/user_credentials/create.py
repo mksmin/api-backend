@@ -68,6 +68,7 @@ async def create_credentials(
 
 @router.post(
     "/authenticate",
+    name="user:authenticate",
 )
 async def authenticate_user(
     _request: Request,

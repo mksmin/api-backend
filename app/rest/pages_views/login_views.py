@@ -78,3 +78,36 @@ async def get_oidc_login_page(
             "client_id": settings.bots[BotsEnum.MININWORK_BOT].client_id,
         },
     )
+
+
+@router.get(
+    "/login/credentials",
+    name="auth:credentials",
+    response_model=None,
+)
+async def get_login_credentials_page(
+    request: Request,
+    cookie_token: Annotated[
+        str,
+        Depends(
+            jwt_helper.soft_validate_access_token,
+        ),
+    ],
+    redirect_url: str | None = Query(
+        default=None,
+    ),
+) -> HTMLResponse | RedirectResponse:
+    if cookie_token:
+        redirect_path = redirect_url or "/profile"
+        return RedirectResponse(
+            url=redirect_path,
+            status_code=status.HTTP_303_SEE_OTHER,
+        )
+
+    return templates.TemplateResponse(
+        request=request,
+        name="/auth/login_credentials.html",
+        context={
+            "request": request,
+        },
+    )
