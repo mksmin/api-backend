@@ -14,7 +14,6 @@ from app_exceptions.exceptions import UserUnavailableError
 from auth import jwt_helper
 from core.crud import GetCRUDService
 from schemas.user_credentials import CreateCredentialsForm
-from schemas.user_credentials import LoginCredentialsForm
 
 router = APIRouter()
 
@@ -62,40 +61,5 @@ async def create_credentials(
         content={
             "id": user_id,
             "email": user_credentials_in.email,
-        },
-    )
-
-
-@router.post(
-    "/authenticate",
-    name="user:authenticate",
-)
-async def authenticate_user(
-    _request: Request,
-    user_credentials: Annotated[
-        LoginCredentialsForm,
-        Form(),
-    ],
-    crud_service: GetCRUDService,
-) -> JSONResponse:
-    user = await crud_service.user_credential.authenticate_user(
-        user_credentials,
-    )
-
-    if user is None:
-        return JSONResponse(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            content={
-                "message": "User not found!",
-            },
-        )
-    return JSONResponse(
-        status_code=status.HTTP_200_OK,
-        content={
-            "id": user.id,
-            "username": user.username,
-            "uuid": str(user.uuid),
-            "first_name": user.first_name,
-            "last_name": user.last_name,
         },
     )
