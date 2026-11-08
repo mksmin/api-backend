@@ -64,8 +64,8 @@ async def create_token(
         key="access_token",
         value=jwt_token["access_token"],
         httponly=True,
-        secure=True,
-        samesite="none",
+        secure=settings.run.auth_cookies_secure,
+        samesite="none" if settings.run.auth_cookies_secure else "lax",
         path="/",
         max_age=settings.access_token.lifetime_seconds,
     )

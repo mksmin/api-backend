@@ -70,7 +70,7 @@ async def authenticate_user(
         key="access_token",
         value=str(jwt_token.get("access_token", "")),
         httponly=True,
-        secure=True,
+        secure=settings.run.auth_cookies_secure,
         samesite="lax",
         path="/",
         max_age=settings.access_token.lifetime_seconds,

@@ -47,6 +47,11 @@ class ApiPrefix(BaseModel):
 
 class RunConfig(BaseModel):
     dev_mode: bool
+    allow_http_auth: bool = False
+
+    @property
+    def auth_cookies_secure(self) -> bool:
+        return not (self.dev_mode and self.allow_http_auth)
 
 
 class SecretsConfig(BaseModel):

@@ -29,6 +29,11 @@ from rest.redirect import router as redirect_router
 from subprojects.sdelkanv.main_views import router as sdelkanv_router
 
 log = logging.getLogger(__name__)
+AUTH_FORM_ROUTES = {
+    "user:authenticate",
+    "user:create-credentials",
+}
+FORM_FIELD_LOCATION_LENGTH = 2
 main_app = FastAPI(
     lifespan=lifespan,
     docs_url="/docs" if settings.run.dev_mode else None,
@@ -77,6 +82,7 @@ class CsrfSettings(BaseSettings):
 def get_csrf_settings() -> CsrfSettings:
     return CsrfSettings(
         secret_key=settings.secrets.csrf_secret.get_secret_value(),
+        cookie_secure=settings.run.auth_cookies_secure,
     )
 
 
@@ -121,13 +127,6 @@ def csrf_protect_exception_handler(
             "detail": str(exc.message),
         },
     )
-
-
-AUTH_FORM_ROUTES = {
-    "user:authenticate",
-    "user:create-credentials",
-}
-FORM_FIELD_LOCATION_LENGTH = 2
 
 
 @main_app.exception_handler(RequestValidationError)
