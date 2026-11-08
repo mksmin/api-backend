@@ -5,6 +5,7 @@ from pydantic import EmailStr
 from pydantic import Field
 from pydantic import field_validator
 from pydantic import model_validator
+from pydantic_core import PydanticCustomError
 
 
 class CredentialsForm(BaseModel):
@@ -25,6 +26,13 @@ class CredentialsForm(BaseModel):
         cls,
         value: str,
     ) -> str:
+        if not isinstance(value, str):
+            error_type = "invalid_email"
+            msg = "Invalid email address"
+            raise PydanticCustomError(
+                error_type,
+                msg,
+            )
         return value.strip().lower()
 
 
@@ -39,8 +47,12 @@ class CreateCredentialsForm(CredentialsForm):
     )
     def passwords_match(self) -> Self:
         if self.password != self.password_confirm:
+            error_type = "passwords_do_not_match"
             msg = "Passwords doesn't match"
-            raise ValueError(msg)
+            raise PydanticCustomError(
+                error_type,
+                msg,
+            )
         return self
 
 

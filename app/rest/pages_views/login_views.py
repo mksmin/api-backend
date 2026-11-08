@@ -7,8 +7,10 @@ from fastapi import status
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse
 from fastapi.responses import RedirectResponse
+from fastapi_csrf_protect import CsrfProtect
 
 from auth import jwt_helper
+from auth.redirects import safe_login_redirect
 from config import settings
 from config.auth_bots import BotsEnum
 from paths_constants import templates
@@ -93,21 +95,34 @@ async def get_login_credentials_page(
             jwt_helper.soft_validate_access_token,
         ),
     ],
-    redirect_url: str | None = Query(
-        default=None,
-    ),
+    csrf_protect: Annotated[
+        CsrfProtect,
+        Depends(),
+    ],
+    redirect_url: Annotated[
+        str | None,
+        Query(),
+    ] = None,
 ) -> HTMLResponse | RedirectResponse:
+    redirect_path = safe_login_redirect(redirect_url)
     if cookie_token:
-        redirect_path = redirect_url or "/profile"
         return RedirectResponse(
             url=redirect_path,
             status_code=status.HTTP_303_SEE_OTHER,
         )
 
-    return templates.TemplateResponse(
+    csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+    response = templates.TemplateResponse(
         request=request,
         name="/auth/login_credentials.html",
         context={
             "request": request,
+            "csrf_token": csrf_token,
+            "redirect_path": redirect_path,
         },
     )
+    csrf_protect.set_csrf_cookie(
+        signed_token,
+        response,
+    )
+    return response

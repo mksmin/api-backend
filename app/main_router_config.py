@@ -3,6 +3,8 @@ from typing import Literal
 
 from fastapi import FastAPI
 from fastapi import status
+from fastapi.exception_handlers import request_validation_exception_handler
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse
@@ -65,8 +67,8 @@ main_app.add_middleware(
 
 class CsrfSettings(BaseSettings):
     secret_key: str
-    token_location: Literal["body"] = "body"
-    token_key: str = "token_key"
+    token_location: Literal["body"] = "body"  # noqa: S105
+    token_key: str = "token_key"  # noqa: S105
     cookie_samesite: Literal["lax"] = "lax"
     cookie_secure: bool = True
 
@@ -110,7 +112,7 @@ async def rabbitmq_service_unavailable_handler(
     CsrfProtectError,
 )
 def csrf_protect_exception_handler(
-    request: Request,
+    _request: Request,
     exc: CsrfProtectError,
 ) -> JSONResponse:
     return JSONResponse(
@@ -118,6 +120,54 @@ def csrf_protect_exception_handler(
         content={
             "detail": str(exc.message),
         },
+    )
+
+
+AUTH_FORM_ROUTES = {
+    "user:authenticate",
+    "user:create-credentials",
+}
+FORM_FIELD_LOCATION_LENGTH = 2
+
+
+@main_app.exception_handler(RequestValidationError)
+async def validation_error_handler(
+    request: Request,
+    exc: RequestValidationError,
+) -> JSONResponse:
+    route_name = getattr(request.scope.get("route"), "name", None)
+    if route_name not in AUTH_FORM_ROUTES:
+        return await request_validation_exception_handler(request, exc)
+
+    detail = []
+    for error in exc.errors():
+        loc = error["loc"]
+        kind = error["type"]
+        field = (
+            loc[1]
+            if len(loc) == FORM_FIELD_LOCATION_LENGTH and loc[0] == "body"
+            else None
+        )
+
+        if kind == "passwords_do_not_match":
+            field = "password_confirm"
+            code = "passwords_do_not_match"
+        elif field == "email":
+            code = "invalid_email"
+        elif field in {"password", "password_confirm"}:
+            code = (
+                "invalid_password_length"
+                if kind in {"string_too_short", "string_too_long"}
+                else "invalid_password"
+            )
+        else:
+            continue
+
+        detail.append({"loc": ["body", field], "type": code})
+
+    return JSONResponse(
+        status_code=422,
+        content={"detail": detail or [{"loc": ["body"], "type": "invalid_form"}]},
     )
 
 
