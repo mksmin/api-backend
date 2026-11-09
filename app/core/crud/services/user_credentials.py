@@ -4,14 +4,18 @@ from pwdlib import PasswordHash
 from sqlalchemy import Row
 from sqlalchemy import func
 from sqlalchemy import select
+from sqlalchemy import update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.concurrency import run_in_threadpool
 
 from app_exceptions.exceptions import CredentialAlreadyExistsError
+from app_exceptions.exceptions import InvalidCurrentPasswordError
+from app_exceptions.exceptions import PasswordChangeConflictError
 from app_exceptions.exceptions import UserUnavailableError
 from core.database import User
 from core.database.users import PasswordCredential
+from schemas.user_credentials import ChangeUserCredentialsForm
 from schemas.user_credentials import CreateCredentialsForm
 from schemas.user_credentials import CredentialsReadSchema
 from schemas.user_credentials import LoginCredentialsForm
@@ -126,3 +130,52 @@ class CredentialService:
             email=row.email,
             email_confirmed=row.email_verified_at is not None,
         )
+
+    async def change_user_password(
+        self,
+        user_id: int,
+        change_password_in: ChangeUserCredentialsForm,
+    ) -> None:
+        async with self.session.begin():
+            user = await self.session.get(User, user_id)
+            if user is None or user.deleted_at is not None:
+                raise UserUnavailableError
+
+            credential = await self.session.get(
+                PasswordCredential,
+                user_id,
+            )
+            if credential is None:
+                raise PasswordChangeConflictError
+
+            old_hash = credential.password_hash
+            valid: bool = await run_in_threadpool(
+                passwords.verify,
+                change_password_in.old_password,
+                old_hash,
+            )
+            if not valid:
+                raise InvalidCurrentPasswordError
+
+            new_hash = await run_in_threadpool(
+                passwords.hash,
+                change_password_in.password,
+            )
+            result = await self.session.execute(
+                update(
+                    PasswordCredential,
+                )
+                .where(
+                    PasswordCredential.user_id == user_id,
+                    PasswordCredential.email == change_password_in.email,
+                    PasswordCredential.password_hash == old_hash,
+                )
+                .values(
+                    password_hash=new_hash,
+                )
+                .returning(
+                    PasswordCredential.user_id,
+                ),
+            )
+            if result.scalar_one_or_none() is None:
+                raise PasswordChangeConflictError

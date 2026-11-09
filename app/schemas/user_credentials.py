@@ -56,6 +56,36 @@ class CreateCredentialsForm(CredentialsForm):
         return self
 
 
+class ChangeUserCredentialsForm(BaseModel):
+    email: EmailStr = Field(
+        max_length=254,
+    )
+    old_password: str = Field(
+        min_length=8,
+        max_length=1024,
+    )
+    password: str = Field(
+        min_length=8,
+        max_length=1024,
+    )
+    password_confirm: str = Field(
+        max_length=1024,
+    )
+
+    @model_validator(
+        mode="after",
+    )
+    def passwords_match(self) -> Self:
+        if self.password != self.password_confirm:
+            error_type = "passwords_do_not_match"
+            msg = "Passwords doesn't match"
+            raise PydanticCustomError(
+                error_type,
+                msg,
+            )
+        return self
+
+
 class CredentialsReadSchema(BaseModel):
     email: EmailStr | None
     email_confirmed: bool

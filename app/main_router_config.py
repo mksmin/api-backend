@@ -32,6 +32,7 @@ log = logging.getLogger(__name__)
 AUTH_FORM_ROUTES = {
     "user:authenticate",
     "user:create-credentials",
+    "user:change-password",
 }
 FORM_FIELD_LOCATION_LENGTH = 2
 main_app = FastAPI(
@@ -153,7 +154,7 @@ async def validation_error_handler(
             code = "passwords_do_not_match"
         elif field == "email":
             code = "invalid_email"
-        elif field in {"password", "password_confirm"}:
+        elif field in {"old_password", "password", "password_confirm"}:
             code = (
                 "invalid_password_length"
                 if kind in {"string_too_short", "string_too_long"}
