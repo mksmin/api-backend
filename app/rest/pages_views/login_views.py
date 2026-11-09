@@ -19,8 +19,8 @@ router = APIRouter()
 
 
 @router.get(
-    "/login",
-    name="auth:login",
+    "/login/tg",
+    name="auth:telegram",
     response_model=None,
 )
 async def get_login_page(
@@ -83,8 +83,8 @@ async def get_oidc_login_page(
 
 
 @router.get(
-    "/login/credentials",
-    name="auth:credentials",
+    "/login",
+    name="auth:login",
     response_model=None,
 )
 async def get_login_credentials_page(
