@@ -19,6 +19,8 @@ from api import router as api_router
 from api.api_v2.health_views import router as health_router
 from app_exceptions import RabbitMQServiceUnavailableError
 from app_lifespan import lifespan
+from auth.csrf_helper import CSRF_COOKIE_NAME
+from auth.csrf_helper import CSRF_MAX_AGE
 from config import settings
 from paths_constants import FRONTEND_DIR_PATH
 from paths_constants import templates
@@ -68,6 +70,7 @@ main_app.add_middleware(
 main_app.add_middleware(
     SessionMiddleware,
     secret_key=settings.secrets.session_secret,
+    https_only=settings.run.auth_cookies_secure,
 )
 
 
@@ -75,6 +78,8 @@ class CsrfSettings(BaseSettings):
     secret_key: str
     token_location: Literal["body"] = "body"  # noqa: S105
     token_key: str = "token_key"  # noqa: S105
+    cookie_key: str = CSRF_COOKIE_NAME
+    max_age: int = CSRF_MAX_AGE
     cookie_samesite: Literal["lax"] = "lax"
     cookie_secure: bool = True
 

@@ -10,6 +10,7 @@ from fastapi.responses import RedirectResponse
 from fastapi_csrf_protect import CsrfProtect
 
 from auth import jwt_helper
+from auth.csrf_helper import get_or_create_login_csrf
 from auth.redirects import safe_login_redirect
 from config import settings
 from config.auth_bots import BotsEnum
@@ -110,8 +111,10 @@ async def get_login_credentials_page(
             url=redirect_path,
             status_code=status.HTTP_303_SEE_OTHER,
         )
-
-    csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+    csrf_token, signed_token = get_or_create_login_csrf(
+        request,
+        csrf_protect,
+    )
     response = templates.TemplateResponse(
         request=request,
         name="/auth/login_credentials.html",
@@ -121,8 +124,9 @@ async def get_login_credentials_page(
             "redirect_path": redirect_path,
         },
     )
-    csrf_protect.set_csrf_cookie(
-        signed_token,
-        response,
-    )
+    if signed_token is not None:
+        csrf_protect.set_csrf_cookie(
+            signed_token,
+            response,
+        )
     return response

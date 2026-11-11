@@ -1,17 +1,15 @@
 from typing import Annotated
 
 from fastapi import APIRouter
+from fastapi import Depends
 from fastapi import Form
 from fastapi import HTTPException
 from fastapi import status
-from fastapi.params import Depends
-from fastapi.requests import Request
 from fastapi.responses import JSONResponse
-from fastapi_csrf_protect import CsrfProtect
 
 from app_exceptions.exceptions import CredentialAlreadyExistsError
 from app_exceptions.exceptions import UserUnavailableError
-from auth import jwt_helper
+from auth.csrf_helper import require_auth_csrf
 from core.crud import GetCRUDService
 from schemas.user_credentials import CreateCredentialsForm
 
@@ -23,24 +21,16 @@ router = APIRouter()
     name="user:create-credentials",
 )
 async def create_credentials(
-    request: Request,
     user_credentials_in: Annotated[
         CreateCredentialsForm,
         Form(),
     ],
     user_id: Annotated[
         int,
-        Depends(
-            jwt_helper.strict_validate_access_token,
-        ),
-    ],
-    csrf_protect: Annotated[
-        CsrfProtect,
-        Depends(),
+        Depends(require_auth_csrf),
     ],
     crud_service: GetCRUDService,
 ) -> JSONResponse:
-    await csrf_protect.validate_csrf(request)
     try:
         await crud_service.user_credential.create_user_credentials(
             user_id,

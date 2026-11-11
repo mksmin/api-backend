@@ -5,8 +5,9 @@ from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import Request
 from fastapi.responses import HTMLResponse
-from fastapi_csrf_protect import CsrfProtect
 
+from auth import jwt_helper
+from auth.csrf_helper import csrf_token_for
 from config import settings
 from paths_constants import templates
 from rest.pages_views.dependencies.user_data import (
@@ -31,24 +32,16 @@ async def page_profile(
         dict[str, Any],
         Depends(return_data_for_user_profile_template),
     ],
-    csrf_protect: Annotated[
-        CsrfProtect,
-        Depends(),
-    ],
 ) -> HTMLResponse:
     """Страница с профилем пользователя"""
-    csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-
-    response = templates.TemplateResponse(
+    claims = await jwt_helper.decode_jwt(
+        request.cookies["access_token"],
+    )
+    return templates.TemplateResponse(
         request=request,
         name="profiles/profile.html",
         context={
             **template_data,
-            "csrf_token": csrf_token,
+            "csrf_token": csrf_token_for(claims["jti"]),
         },
     )
-    csrf_protect.set_csrf_cookie(
-        signed_token,
-        response,
-    )
-    return response
