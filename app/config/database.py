@@ -27,11 +27,18 @@ class DatabaseConfig(BaseModel):
 
     @property
     def async_url(self) -> URL:
+        is_socket = self.host.startswith("/")
+
         return URL.create(
             drivername="postgresql+asyncpg",
             database=self.name,
-            host=self.host,
-            port=self.port,
+            host=None if is_socket else self.host,
+            port=None if is_socket else self.port,
             username=self.user,
             password=self.password.get_secret_value(),
+            query={
+                "host": self.host,
+            }
+            if is_socket
+            else {},
         )
