@@ -3,6 +3,7 @@ LOGIN_REDIRECT_PATHS = frozenset(
         "/profile",
         "/projects",
         "/affirmations",
+        "/lms",
     },
 )
 
