@@ -56,6 +56,8 @@ class ProjectCreateSchema(ProjectBase):
 
 
 class ProjectReadValidation(ProjectBase):
+    description: DescriptionString | None = ""
+
     @model_validator(
         mode="before",
     )
