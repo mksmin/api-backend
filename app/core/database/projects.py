@@ -25,15 +25,8 @@ class Project(IntIdMixin, TimestampsMixin, Base):
         ForeignKey("users.id"),
         comment="id пользователя",
     )
-    parent_id: Mapped[int | None] = mapped_column(
-        ForeignKey("projects.id"),
-        comment="id родительского проекта",
-    )
 
-    parent: Mapped["Project"] = relationship(
-        "Project",
-        remote_side="Project.id",
-        backref="subprojects",
-        lazy="joined",
+    api_keys = relationship(
+        "APIKey",
+        back_populates="project",
     )
-    api_keys = relationship("APIKey", back_populates="project")

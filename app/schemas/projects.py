@@ -45,7 +45,6 @@ class ProjectBase(BaseModel):
 
 class ProjectCreateModel(ProjectBase):
     owner_id: int
-    parent_id: int | None = None
 
 
 class ProjectCreateSchema(ProjectBase):
@@ -78,7 +77,6 @@ class ProjectReadSchema(ProjectReadValidation):
     uuid: UUID
     created_at: datetime
     owner_uuid: UUID
-    parent_id: int | None = None
 
 
 class ProjectSchema(ProjectReadValidation):
@@ -88,4 +86,3 @@ class ProjectSchema(ProjectReadValidation):
     deleted_at: datetime | None = None
     owner_id: int
     owner_uuid: UUID | None = None
-    parent_id: int | None = None
