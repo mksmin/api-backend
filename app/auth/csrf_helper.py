@@ -4,9 +4,9 @@ from typing import Annotated
 
 from fastapi import Cookie
 from fastapi import HTTPException
+from fastapi import Request
 from fastapi import status
 from fastapi_csrf_protect import CsrfProtect
-from starlette.requests import Request
 
 from auth import jwt_helper
 from config import settings
@@ -71,9 +71,8 @@ async def require_auth_csrf(
         submitted = form.get("token_key")
 
     expected = csrf_token_for(claims["jti"])
-    if (
-        not isinstance(submitted, str)
-        or not hmac.compare_digest(submitted.encode(), expected.encode())
+    if not isinstance(submitted, str) or not hmac.compare_digest(
+        submitted.encode(), expected.encode(),
     ):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
