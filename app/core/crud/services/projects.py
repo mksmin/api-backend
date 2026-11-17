@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app_exceptions import ProjectAlreadyExistsError
 from app_exceptions import ProjectNotFoundError
 from app_exceptions import UserNotFoundError
+from app_exceptions.exceptions import ProjectCreationForbiddenError
 from config import settings
 from core.crud.dependencies import validate_uuid_str
 from core.crud.managers import ProjectManager
@@ -33,7 +34,7 @@ class ProjectService:
             raise UserNotFoundError
 
         if user.id not in settings.lms.organizer_user_ids:
-            raise UserNotFoundError
+            raise ProjectCreationForbiddenError
 
         project_data = project_create.model_dump()
         if await self.manager.get_project_by_field(

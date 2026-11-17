@@ -35,12 +35,17 @@ class ProjectBase(BaseModel):
     title: TitleString
     description: DescriptionString = ""
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(
+        from_attributes=True,
+    )
 
-    @field_validator("title", mode="after")
+    @field_validator(
+        "title",
+        mode="before",
+    )
     @classmethod
-    def validate_title(cls, v: str) -> str:
-        return v.strip()
+    def validate_title(cls, value: str) -> str:
+        return value.strip() if isinstance(value, str) else value
 
 
 class ProjectCreateModel(ProjectBase):

@@ -37,6 +37,8 @@ async def get_index_lms_page(
         name="subprojects/lms/projects/list.html",
         context={
             "projects": projects,
-            "can_create_projects": user_id in settings.lms.organizer_user_ids,
+            "can_create_projects": settings.lms.can_create_project(
+                int(user_id),
+            ),
         },
     )
