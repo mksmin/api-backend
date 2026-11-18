@@ -30,3 +30,9 @@ class Project(IntIdMixin, TimestampsMixin, Base):
         "APIKey",
         back_populates="project",
     )
+    prj_flows = relationship(
+        "LMSFlow",
+        back_populates="project",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
