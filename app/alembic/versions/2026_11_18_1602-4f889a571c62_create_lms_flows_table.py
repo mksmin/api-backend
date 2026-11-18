@@ -7,7 +7,6 @@ Create Date: 2026-11-18 16:02:45.197931
 """
 
 from collections.abc import Sequence
-from typing import Union
 
 import sqlalchemy as sa
 
@@ -57,7 +56,6 @@ def upgrade() -> None:
             sa.Text(),
             nullable=False,
         ),
-
         sa.CheckConstraint(
             "char_length(title) BETWEEN 1 AND 254 AND btrim(title) <> ''",
             name=op.f("ck_lms_flows_title_length"),

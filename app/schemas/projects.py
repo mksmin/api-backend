@@ -33,7 +33,7 @@ class ProjectBase(BaseModel):
     """
 
     title: TitleString
-    description: DescriptionString = ""
+    description: DescriptionString | None = ""
 
     model_config = ConfigDict(
         from_attributes=True,
@@ -49,6 +49,7 @@ class ProjectBase(BaseModel):
 
 
 class ProjectCreateModel(ProjectBase):
+    description: DescriptionString = ""
     owner_id: int
 
 
@@ -57,12 +58,10 @@ class ProjectCreateSchema(ProjectBase):
     Схема для создания проекта
     """
 
-    # owner_uuid: UUID
+    description: DescriptionString = ""
 
 
 class ProjectReadValidation(ProjectBase):
-    description: DescriptionString | None = ""
-
     @model_validator(
         mode="before",
     )
