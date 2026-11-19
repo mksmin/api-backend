@@ -1,17 +1,16 @@
 from typing import Annotated
 
 from fastapi import APIRouter
-from fastapi import Depends
-from fastapi import HTTPException
 from fastapi import Request
-from fastapi import status
+from fastapi.params import Depends
 from fastapi.responses import HTMLResponse
 
-from api.api_v2.users_views.projects_views.dependencies import get_project_by_uuid
+from auth import jwt_helper
 from config import settings
+from core.crud import GetCRUDService
 from paths_constants import templates
-from schemas import ProjectReadSchema
 from subprojects.lms.constraints import LMS_TEMPLATE_PATH
+from subprojects.lms.projects.flows.list import OwnedProject
 
 router = APIRouter()
 
@@ -23,22 +22,27 @@ router = APIRouter()
 )
 async def get_page_project_detail(
     request: Request,
-    project: Annotated[
-        ProjectReadSchema | None,
-        Depends(get_project_by_uuid),
+    project: OwnedProject,
+    crud_service: GetCRUDService,
+    user_id: Annotated[
+        str,
+        Depends(
+            jwt_helper.strict_validate_access_token,
+        ),
     ],
 ) -> HTMLResponse:
-    if project is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Project not found",
-        )
+    flows_count = await crud_service.lms_flow.count_by_project(
+        project_id=project.id,
+        user_id=int(user_id),
+    )
 
     return templates.TemplateResponse(
         request=request,
         name=f"{LMS_TEMPLATE_PATH}/projects/details.html",
         context={
             "request": request,
-            "project": project.model_dump(),
+            "project": project,
+            "flows_count": flows_count,
+            "project_section": "overview",
         },
     )

@@ -7,9 +7,12 @@ from annotated_types import Len
 from annotated_types import MaxLen
 from pydantic import BaseModel
 from pydantic import ConfigDict
+from pydantic import Field
 from pydantic import field_validator
 from pydantic import model_validator
 from pydantic_core.core_schema import ValidationInfo
+
+from schemas.lms_flows import LMSFlowsReadSchema
 
 DESCRIPTION_MAX_LENGTH = 200
 TITLE_MAX_LENGTH = 50
@@ -92,3 +95,9 @@ class ProjectSchema(ProjectReadValidation):
     deleted_at: datetime | None = None
     owner_id: int
     owner_uuid: UUID | None = None
+
+
+class LMSProjectReadSchema(ProjectReadSchema):
+    flows: list[LMSFlowsReadSchema] = Field(
+        validation_alias="prj_flows",
+    )

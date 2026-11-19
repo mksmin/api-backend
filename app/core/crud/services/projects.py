@@ -13,6 +13,7 @@ from schemas import ProjectCreateModel
 from schemas import ProjectCreateSchema
 from schemas import ProjectReadSchema
 from schemas import ProjectSchema
+from schemas.projects import LMSProjectReadSchema
 
 
 class ProjectService:
@@ -88,7 +89,7 @@ class ProjectService:
     async def get_all(
         self,
         user_id: int,
-    ) -> list[ProjectReadSchema]:
+    ) -> list[LMSProjectReadSchema]:
         user = await self.user_manager.get_by_id(user_id)
         if not user:
             raise UserNotFoundError
@@ -96,11 +97,11 @@ class ProjectService:
         projects = await self.manager.get_all(user_id=user.id)
 
         return [
-            ProjectReadSchema.model_validate(
-                projects,
+            LMSProjectReadSchema.model_validate(
+                project,
                 context={"owner_uuid": user.uuid},
             )
-            for projects in projects
+            for project in projects
         ]
 
     async def delete_project(

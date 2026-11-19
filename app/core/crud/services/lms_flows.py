@@ -135,3 +135,18 @@ class LMSFlowsService:
 
             await self.session.flush()
             return LMSFlowsReadSchema.model_validate(flow)
+
+    async def count_by_project(
+        self,
+        project_id: int,
+        *,
+        user_id: int,
+    ) -> int:
+        await self._require_project_access(
+            project_id=project_id,
+            user_id=user_id,
+        )
+
+        return await self.manager.count_by_project(
+            project_id=project_id,
+        )

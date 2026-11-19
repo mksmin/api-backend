@@ -2,7 +2,9 @@ import logging
 from typing import Literal
 
 from fastapi import FastAPI
+from fastapi import HTTPException
 from fastapi import status
+from fastapi.exception_handlers import http_exception_handler
 from fastapi.exception_handlers import request_validation_exception_handler
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,6 +16,7 @@ from fastapi_csrf_protect import CsrfProtect
 from fastapi_csrf_protect.exceptions import CsrfProtectError
 from pydantic_settings import BaseSettings
 from starlette.middleware.sessions import SessionMiddleware
+from starlette.responses import Response
 
 from api import router as api_router
 from api.api_v2.health_views import router as health_router
@@ -136,7 +139,9 @@ def csrf_protect_exception_handler(
     )
 
 
-@main_app.exception_handler(RequestValidationError)
+@main_app.exception_handler(
+    RequestValidationError,
+)
 async def validation_error_handler(
     request: Request,
     exc: RequestValidationError,
@@ -174,6 +179,31 @@ async def validation_error_handler(
     return JSONResponse(
         status_code=422,
         content={"detail": detail or [{"loc": ["body"], "type": "invalid_form"}]},
+    )
+
+
+@main_app.exception_handler(
+    status.HTTP_404_NOT_FOUND,
+)
+async def not_found_exception_handler(
+    request: Request,
+    exc: HTTPException,
+) -> Response:
+    path = request.url.path
+    is_lms = path == "/lms" or path.startswith("/lms/")
+
+    if is_lms:
+        return templates.TemplateResponse(
+            request=request,
+            name="subprojects/lms/errors/404.html",
+            context={},
+            status_code=status.HTTP_404_NOT_FOUND,
+            headers=exc.headers,
+        )
+
+    return await http_exception_handler(
+        request,
+        exc,
     )
 
 
