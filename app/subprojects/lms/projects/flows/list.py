@@ -14,6 +14,7 @@ from auth import jwt_helper
 from core.crud import GetCRUDService
 from paths_constants import templates
 from schemas import ProjectSchema
+from subprojects.lms.constraints import FLOWS_TEMPLATE_PATH
 
 router = APIRouter()
 
@@ -73,7 +74,7 @@ async def get_flows_list_page(
 
     return templates.TemplateResponse(
         request=request,
-        name="subprojects/lms/projects/flows/list.html",
+        name=f"{FLOWS_TEMPLATE_PATH}/list.html",
         context={
             "project": project,
             "project_section": "flows",

@@ -14,7 +14,7 @@ from core.crud import GetCRUDService
 from core.crud.services.lms_flows import FlowNotFoundError
 from paths_constants import templates
 from schemas.lms_flows import LMSFlowsReadSchema
-from subprojects.lms.constraints import LMS_TEMPLATE_PATH
+from subprojects.lms.constraints import FLOWS_TEMPLATE_PATH
 from subprojects.lms.projects.flows.list import OwnedProject
 
 router = APIRouter()
@@ -68,7 +68,7 @@ async def get_page_flow_details(
     ]
     return templates.TemplateResponse(
         request=request,
-        name=f"{LMS_TEMPLATE_PATH}/projects/flows/details.html",
+        name=f"{FLOWS_TEMPLATE_PATH}/details.html",
         context={
             "project": project,
             "flow": flow,

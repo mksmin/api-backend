@@ -16,7 +16,7 @@ router = APIRouter()
 
 
 @router.get(
-    "/{project_uuid}",
+    "/{project_uuid}",  # noqa: FAST003
     name="lms-project:detail",
     include_in_schema=settings.run.dev_mode,
 )

@@ -196,7 +196,9 @@ async def not_found_exception_handler(
         return templates.TemplateResponse(
             request=request,
             name="subprojects/lms/errors/404.html",
-            context={},
+            context={
+                "message": exc.detail,
+            },
             status_code=status.HTTP_404_NOT_FOUND,
             headers=exc.headers,
         )

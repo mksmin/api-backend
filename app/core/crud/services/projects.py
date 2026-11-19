@@ -65,7 +65,6 @@ class ProjectService:
         project_uuid: str,
     ) -> ProjectSchema:
 
-        # TODO: Добавить проверку, что у пользователь владеет проектом
         project_uuid_validated = validate_uuid_str(project_uuid)
         user = await self.user_manager.get_by_id(user_id)
         if not user:

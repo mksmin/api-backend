@@ -10,6 +10,7 @@ from app_exceptions import UserNotFoundError
 from auth import jwt_helper
 from core.crud import GetCRUDService
 from schemas import ProjectReadSchema
+from schemas.projects import LMSProjectReadSchema
 
 
 async def get_user_projects(
@@ -18,9 +19,11 @@ async def get_user_projects(
         str,
         Depends(jwt_helper.strict_validate_access_token),
     ],
-) -> list[ProjectReadSchema]:
+) -> list[LMSProjectReadSchema]:
     try:
-        return await crud_service.project.get_all(int(user_id))
+        return await crud_service.project.get_all(
+            int(user_id),
+        )
 
     except UserNotFoundError as e:
         raise HTTPException(
