@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 
+from config import settings
 from rest.pages_views.affirmations_views import router as affirmations_router
 from rest.pages_views.login_views import router as auth_router
 from rest.pages_views.profile_views import router as profile_router
@@ -15,9 +16,10 @@ router.include_router(
 router.include_router(
     auth_router,
 )
-router.include_router(
-    projects_router,
-)
+if not settings.lms.enabled:
+    router.include_router(
+        projects_router,
+    )
 router.include_router(
     profile_router,
 )

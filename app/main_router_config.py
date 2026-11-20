@@ -11,12 +11,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse
 from fastapi.responses import JSONResponse
+from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
 from fastapi_csrf_protect import CsrfProtect
 from fastapi_csrf_protect.exceptions import CsrfProtectError
 from pydantic_settings import BaseSettings
 from starlette.middleware.sessions import SessionMiddleware
-from starlette.responses import Response
 
 from api import router as api_router
 from api.api_v2.health_views import router as health_router

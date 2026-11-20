@@ -10,9 +10,10 @@ router = APIRouter(
 )
 
 
-router.include_router(
-    user_projects_router,
-)
+if not settings.lms.enabled:
+    router.include_router(
+        user_projects_router,
+    )
 router.include_router(
     user_affirmations_router,
 )

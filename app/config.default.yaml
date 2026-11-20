@@ -21,6 +21,7 @@ api-backend:
   #  bots:
   #    bot_1_name:
   #      redirect_path: /profile
+
   lms:
     enabled: false
 

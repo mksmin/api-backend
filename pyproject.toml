@@ -52,6 +52,9 @@ types-botocore = ">=1.0.2"
 [tool.poetry.group.macos.dependencies]
 greenlet = "^3.5.3"
 
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"
+
 [tool.mypy]  # mypy settings
 strict = true
 plugins = [
