@@ -1,6 +1,9 @@
 services:
   backend:
-    image: ghcr.io/mksmin/api-backend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: api-backend:local
     container_name: api-app
     ports:
       - "127.0.0.1:8085:8000"
@@ -11,35 +14,12 @@ services:
     env_file:
       - ./app/.env
     volumes:
-      - /var/www/api-app/frontend:/frontend
+      - /srv/api-app/api-frontend:/frontend
       - ./app/config.local.yaml:/backend/app/config.local.yaml
       - /etc/localtime:/etc/localtime:ro
+      - /var/run/postgresql:/var/run/postgresql:ro
     networks:
       - backend_net
-
-  rabbitmq:
-    image: rabbitmq:4.2.2-management-alpine
-    ports:
-      - "5671:5671"
-      - "15672:15672"
-    env_file:
-      - .env
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-      - /opt/rabbitmq/ssl:/etc/rabbitmq/ssl:ro
-      - /opt/rabbitmq/conf/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
-    networks:
-      - backend_net
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    restart: unless-stopped
-
-volumes:
-  rabbitmq_data:
-    driver: local
 
 networks:
   backend_net:
