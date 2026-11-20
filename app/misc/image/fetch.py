@@ -27,9 +27,12 @@ async def fetch_image_stream(
 
     timeout = aiohttp.ClientTimeout(total=AIOHTTP_TIMEOUT)
     try:
-        async with aiohttp.ClientSession(
-            timeout=timeout,
-        ) as session, session.get(url) as response:
+        async with (
+            aiohttp.ClientSession(
+                timeout=timeout,
+            ) as session,
+            session.get(url) as response,
+        ):
             if response.status != status.HTTP_200_OK:
                 message_error = f"HTTP {response.status}"
                 raise ImageFetchError(message_error)

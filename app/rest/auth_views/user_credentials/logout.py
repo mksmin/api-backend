@@ -7,7 +7,7 @@ from fastapi import status
 from fastapi.responses import RedirectResponse
 from fastapi_csrf_protect import CsrfProtect
 
-from auth.csrf_helper import require_auth_csrf
+from auth.csrf_helper import require_csrf_token
 from config import settings
 
 router = APIRouter()
@@ -17,7 +17,7 @@ router = APIRouter()
     "/logout",
     status_code=status.HTTP_303_SEE_OTHER,
     name="user:logout",
-    dependencies=[Depends(require_auth_csrf)],
+    dependencies=[Depends(require_csrf_token)],
 )
 async def logout(
     request: Request,

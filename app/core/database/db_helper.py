@@ -14,6 +14,7 @@ class DatabaseHelper:
     def __init__(  # noqa: PLR0913
         self,
         url: str | URL,
+        *,
         echo: bool = False,
         echo_pool: bool = False,
         pool_size: int = 5,

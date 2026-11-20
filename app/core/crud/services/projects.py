@@ -4,6 +4,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app_exceptions import ProjectAlreadyExistsError
 from app_exceptions import ProjectNotFoundError
 from app_exceptions import UserNotFoundError
+from app_exceptions.exceptions import ProjectCreationForbiddenError
+from config import settings
 from core.crud.dependencies import validate_uuid_str
 from core.crud.managers import ProjectManager
 from core.crud.managers import UserManager
@@ -11,6 +13,7 @@ from schemas import ProjectCreateModel
 from schemas import ProjectCreateSchema
 from schemas import ProjectReadSchema
 from schemas import ProjectSchema
+from schemas.projects import LMSProjectReadSchema
 
 
 class ProjectService:
@@ -30,6 +33,9 @@ class ProjectService:
         user = await self.user_manager.get_by_id(user_id)
         if not user:
             raise UserNotFoundError
+
+        if user.id not in settings.lms.organizer_user_ids:
+            raise ProjectCreationForbiddenError
 
         project_data = project_create.model_dump()
         if await self.manager.get_project_by_field(
@@ -59,14 +65,14 @@ class ProjectService:
         project_uuid: str,
     ) -> ProjectSchema:
 
-        # TODO: Добавить проверку, что у пользователь владеет проектом
         project_uuid_validated = validate_uuid_str(project_uuid)
         user = await self.user_manager.get_by_id(user_id)
         if not user:
             raise UserNotFoundError
 
         project = await self.manager.get_by_uuid(project_uuid_validated)
-        if not project:
+
+        if project is None or project.owner_id != user.id:
             raise ProjectNotFoundError
 
         try:
@@ -82,7 +88,7 @@ class ProjectService:
     async def get_all(
         self,
         user_id: int,
-    ) -> list[ProjectReadSchema]:
+    ) -> list[LMSProjectReadSchema]:
         user = await self.user_manager.get_by_id(user_id)
         if not user:
             raise UserNotFoundError
@@ -90,11 +96,11 @@ class ProjectService:
         projects = await self.manager.get_all(user_id=user.id)
 
         return [
-            ProjectReadSchema.model_validate(
-                projects,
+            LMSProjectReadSchema.model_validate(
+                project,
                 context={"owner_uuid": user.uuid},
             )
-            for projects in projects
+            for project in projects
         ]
 
     async def delete_project(

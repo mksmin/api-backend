@@ -2,13 +2,16 @@ import logging
 from typing import Literal
 
 from fastapi import FastAPI
+from fastapi import HTTPException
 from fastapi import status
+from fastapi.exception_handlers import http_exception_handler
 from fastapi.exception_handlers import request_validation_exception_handler
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse
 from fastapi.responses import JSONResponse
+from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
 from fastapi_csrf_protect import CsrfProtect
 from fastapi_csrf_protect.exceptions import CsrfProtectError
@@ -28,6 +31,7 @@ from rest.auth_views import router as auth_router
 from rest.main_views import router as main_views_router
 from rest.pages_views import router as pages_router
 from rest.redirect import router as redirect_router
+from subprojects.lms import router as lms_router
 from subprojects.sdelkanv.main_views import router as sdelkanv_router
 
 log = logging.getLogger(__name__)
@@ -135,7 +139,9 @@ def csrf_protect_exception_handler(
     )
 
 
-@main_app.exception_handler(RequestValidationError)
+@main_app.exception_handler(
+    RequestValidationError,
+)
 async def validation_error_handler(
     request: Request,
     exc: RequestValidationError,
@@ -176,6 +182,33 @@ async def validation_error_handler(
     )
 
 
+@main_app.exception_handler(
+    status.HTTP_404_NOT_FOUND,
+)
+async def not_found_exception_handler(
+    request: Request,
+    exc: HTTPException,
+) -> Response:
+    path = request.url.path
+    is_lms = path == "/lms" or path.startswith("/lms/")
+
+    if is_lms:
+        return templates.TemplateResponse(
+            request=request,
+            name="subprojects/lms/errors/404.html",
+            context={
+                "message": exc.detail,
+            },
+            status_code=status.HTTP_404_NOT_FOUND,
+            headers=exc.headers,
+        )
+
+    return await http_exception_handler(
+        request,
+        exc,
+    )
+
+
 routers_for_include = (
     auth_router,
     api_router,
@@ -188,3 +221,8 @@ routers_for_include = (
 
 for router in routers_for_include:
     main_app.include_router(router)
+
+if settings.lms.enabled is not False:
+    main_app.include_router(
+        lms_router,
+    )

@@ -7,9 +7,12 @@ from annotated_types import Len
 from annotated_types import MaxLen
 from pydantic import BaseModel
 from pydantic import ConfigDict
+from pydantic import Field
 from pydantic import field_validator
 from pydantic import model_validator
 from pydantic_core.core_schema import ValidationInfo
+
+from schemas.lms_flows import LMSFlowsReadSchema
 
 DESCRIPTION_MAX_LENGTH = 200
 TITLE_MAX_LENGTH = 50
@@ -33,19 +36,24 @@ class ProjectBase(BaseModel):
     """
 
     title: TitleString
-    description: DescriptionString = ""
+    description: DescriptionString | None = ""
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(
+        from_attributes=True,
+    )
 
-    @field_validator("title", mode="after")
+    @field_validator(
+        "title",
+        mode="before",
+    )
     @classmethod
-    def validate_title(cls, v: str) -> str:
-        return v.strip()
+    def validate_title(cls, value: str) -> str:
+        return value.strip() if isinstance(value, str) else value
 
 
 class ProjectCreateModel(ProjectBase):
+    description: DescriptionString = ""
     owner_id: int
-    parent_id: int | None = None
 
 
 class ProjectCreateSchema(ProjectBase):
@@ -53,7 +61,7 @@ class ProjectCreateSchema(ProjectBase):
     Схема для создания проекта
     """
 
-    # owner_uuid: UUID
+    description: DescriptionString = ""
 
 
 class ProjectReadValidation(ProjectBase):
@@ -78,7 +86,6 @@ class ProjectReadSchema(ProjectReadValidation):
     uuid: UUID
     created_at: datetime
     owner_uuid: UUID
-    parent_id: int | None = None
 
 
 class ProjectSchema(ProjectReadValidation):
@@ -88,4 +95,9 @@ class ProjectSchema(ProjectReadValidation):
     deleted_at: datetime | None = None
     owner_id: int
     owner_uuid: UUID | None = None
-    parent_id: int | None = None
+
+
+class LMSProjectReadSchema(ProjectReadSchema):
+    flows: list[LMSFlowsReadSchema] = Field(
+        validation_alias="prj_flows",
+    )

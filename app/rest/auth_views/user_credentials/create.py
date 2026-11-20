@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 
 from app_exceptions.exceptions import CredentialAlreadyExistsError
 from app_exceptions.exceptions import UserUnavailableError
-from auth.csrf_helper import require_auth_csrf
+from auth.csrf_helper import require_csrf_token
 from core.crud import GetCRUDService
 from schemas.user_credentials import CreateCredentialsForm
 
@@ -27,7 +27,7 @@ async def create_credentials(
     ],
     user_id: Annotated[
         int,
-        Depends(require_auth_csrf),
+        Depends(require_csrf_token),
     ],
     crud_service: GetCRUDService,
 ) -> JSONResponse:

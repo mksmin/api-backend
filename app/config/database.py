@@ -36,9 +36,11 @@ class DatabaseConfig(BaseModel):
             port=None if is_socket else self.port,
             username=self.user,
             password=self.password.get_secret_value(),
-            query={
-                "host": self.host,
-            }
-            if is_socket
-            else {},
+            query=(
+                {
+                    "host": self.host,
+                }
+                if is_socket
+                else {}
+            ),
         )

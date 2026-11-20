@@ -22,5 +22,7 @@ async def redirect_to_login_page(
         )
         raise HTTPException(
             status_code=status.HTTP_303_SEE_OTHER,
-            headers={"Location": str(login_url)},
+            headers={
+                "Location": str(login_url),
+            },
         )

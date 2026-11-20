@@ -8,6 +8,7 @@ from fastapi import status
 from app_exceptions import InvalidUUIDError
 from app_exceptions import ProjectAlreadyExistsError
 from app_exceptions import UserNotFoundError
+from app_exceptions.exceptions import ProjectCreationForbiddenError
 from auth import jwt_helper
 from core.crud import GetCRUDService
 from schemas import ProjectCreateSchema
@@ -46,6 +47,11 @@ async def create_project(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Project already exists",
+        ) from e
+    except ProjectCreationForbiddenError as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Permission denied",
         ) from e
     else:
         return result

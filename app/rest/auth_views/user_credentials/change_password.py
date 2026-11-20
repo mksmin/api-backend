@@ -10,7 +10,7 @@ from fastapi.responses import Response
 from app_exceptions.exceptions import InvalidCurrentPasswordError
 from app_exceptions.exceptions import PasswordChangeConflictError
 from app_exceptions.exceptions import UserUnavailableError
-from auth.csrf_helper import require_auth_csrf
+from auth.csrf_helper import require_csrf_token
 from core.crud import GetCRUDService
 from schemas.user_credentials import ChangeUserCredentialsForm
 
@@ -28,7 +28,7 @@ async def change_password(
     ],
     user_id: Annotated[
         int,
-        Depends(require_auth_csrf),
+        Depends(require_csrf_token),
     ],
     crud_service: GetCRUDService,
 ) -> Response:
