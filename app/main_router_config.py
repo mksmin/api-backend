@@ -192,7 +192,7 @@ async def not_found_exception_handler(
     path = request.url.path
     is_lms = path == "/lms" or path.startswith("/lms/")
 
-    if is_lms:
+    if settings.lms.enabled and is_lms:
         return templates.TemplateResponse(
             request=request,
             name="subprojects/lms/errors/404.html",

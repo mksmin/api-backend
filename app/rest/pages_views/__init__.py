@@ -16,10 +16,7 @@ router.include_router(
 router.include_router(
     auth_router,
 )
-if not settings.lms.enabled:
-    router.include_router(
-        projects_router,
-    )
+
 router.include_router(
     profile_router,
 )

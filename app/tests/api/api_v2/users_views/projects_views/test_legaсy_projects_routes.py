@@ -58,10 +58,7 @@ def test_legacy_project_routes_follow_feature_flag() -> None:
             and (route.path == prefix or route.path.startswith(prefix + "/"))
         ]
 
-        if settings.lms.enabled:
-            assert legacy_routes == [], prefix
-        else:
-            assert legacy_routes, prefix
+        assert legacy_routes == []
 
 
 @pytest.mark.parametrize(
@@ -80,10 +77,6 @@ def test_legacy_urls_return_404(
     method: str,
     path: str,
 ) -> None:
-    if not settings.lms.enabled:
-        pytest.skip(
-            "При выключенной LMS старые Projects доступны",
-        )
     response = client.request(
         method=method,
         url=path,
