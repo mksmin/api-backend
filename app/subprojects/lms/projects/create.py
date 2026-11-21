@@ -18,12 +18,12 @@ from auth import jwt_helper
 from auth.csrf_helper import csrf_token_for
 from auth.csrf_helper import require_csrf_token
 from config import settings
-from core.crud import GetCRUDService
 from paths_constants import templates
 from schemas import ProjectCreateSchema
 from schemas.projects import DESCRIPTION_MAX_LENGTH
 from schemas.projects import TITLE_MAX_LENGTH
 from subprojects.lms.constraints import LMS_TEMPLATE_PATH
+from subprojects.lms.crud import GetLMSCRUDService
 
 router = APIRouter(
     prefix="/new",
@@ -105,7 +105,7 @@ class ProjectCreateFormSchema(BaseModel):
 )
 async def form_create_project(
     request: Request,
-    crud_service: GetCRUDService,
+    lms_crud_service: GetLMSCRUDService,
     user_id: Annotated[
         int,
         Depends(require_csrf_token),
@@ -148,7 +148,7 @@ async def form_create_project(
         )
 
     try:
-        await crud_service.project.create_project(
+        await lms_crud_service.projects.create_project(
             project_create=project_in,
             user_id=user_id,
         )

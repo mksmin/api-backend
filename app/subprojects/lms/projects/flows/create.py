@@ -17,11 +17,11 @@ from auth import jwt_helper
 from auth.csrf_helper import csrf_token_for
 from auth.csrf_helper import require_csrf_token
 from config import settings
-from core.crud import GetCRUDService
-from core.crud.services.lms_flows import FlowAlreadyExistsError
 from paths_constants import templates
 from schemas.lms_flows import LMSFlowsCreateSchema
 from subprojects.lms.constraints import FLOWS_TEMPLATE_PATH
+from subprojects.lms.crud import GetLMSCRUDService
+from subprojects.lms.crud.services.lms_flows import FlowAlreadyExistsError
 from subprojects.lms.projects.flows.list import OwnedProject
 
 TEMPLATE_PATH = FLOWS_TEMPLATE_PATH + "/create.html"
@@ -106,7 +106,7 @@ async def get_page_create_flow(
 async def create_flow(
     request: Request,
     project: OwnedProject,
-    crud_service: GetCRUDService,
+    lms_crud_service: GetLMSCRUDService,
     user_id: Annotated[
         int,
         Depends(
@@ -171,7 +171,7 @@ async def create_flow(
         )
 
     try:
-        await crud_service.lms_flow.create_flow(
+        await lms_crud_service.lms_flows.create_flow(
             project_id=project.id,
             flow_in=flow_in,
             user_id=user_id,

@@ -11,17 +11,17 @@ from app_exceptions import InvalidUUIDError
 from app_exceptions import ProjectNotFoundError
 from app_exceptions import UserNotFoundError
 from auth import jwt_helper
-from core.crud import GetCRUDService
 from paths_constants import templates
 from schemas import ProjectSchema
 from subprojects.lms.constraints import FLOWS_TEMPLATE_PATH
+from subprojects.lms.crud import GetLMSCRUDService
 
 router = APIRouter()
 
 
 async def get_owned_project(
     project_uuid: str,
-    crud_service: GetCRUDService,
+    lms_crud_service: GetLMSCRUDService,
     user_id: Annotated[
         int,
         Depends(
@@ -30,7 +30,7 @@ async def get_owned_project(
     ],
 ) -> ProjectSchema:
     try:
-        return await crud_service.project.get_by_uuid(
+        return await lms_crud_service.projects.get_by_uuid(
             user_id=user_id,
             project_uuid=project_uuid,
         )
@@ -57,7 +57,7 @@ OwnedProject = Annotated[
 )
 async def get_flows_list_page(
     request: Request,
-    crud_service: GetCRUDService,
+    lms_crud_service: GetLMSCRUDService,
     user_id: Annotated[
         int,
         Depends(
@@ -67,7 +67,7 @@ async def get_flows_list_page(
     project: OwnedProject,
 ) -> HTMLResponse:
 
-    flows = await crud_service.lms_flow.get_all(
+    flows = await lms_crud_service.lms_flows.get_all(
         user_id=user_id,
         project_id=project.id,
     )

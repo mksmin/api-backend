@@ -8,20 +8,20 @@ from app_exceptions import InvalidUUIDError
 from app_exceptions import ProjectNotFoundError
 from app_exceptions import UserNotFoundError
 from auth import jwt_helper
-from core.crud import GetCRUDService
 from schemas import ProjectReadSchema
 from schemas.projects import LMSProjectReadSchema
+from subprojects.lms.crud import GetLMSCRUDService
 
 
 async def get_user_projects(
-    crud_service: GetCRUDService,
+    lms_crud_service: GetLMSCRUDService,
     user_id: Annotated[
         str,
         Depends(jwt_helper.strict_validate_access_token),
     ],
 ) -> list[LMSProjectReadSchema]:
     try:
-        return await crud_service.project.get_all(
+        return await lms_crud_service.projects.get_all(
             int(user_id),
         )
 
@@ -38,10 +38,10 @@ async def get_project_by_uuid(
         str,
         Depends(jwt_helper.strict_validate_access_token),
     ],
-    crud_service: GetCRUDService,
+    lms_crud_service: GetLMSCRUDService,
 ) -> ProjectReadSchema | None:
     try:
-        project = await crud_service.project.get_by_uuid(
+        project = await lms_crud_service.projects.get_by_uuid(
             user_id=int(user_id),
             project_uuid=project_uuid,
         )
@@ -57,10 +57,10 @@ async def delete_project_by_uuid(
         str,
         Depends(jwt_helper.strict_validate_access_token),
     ],
-    crud_service: GetCRUDService,
+    lms_crud_service: GetLMSCRUDService,
 ) -> None:
     try:
-        await crud_service.project.delete_project(
+        await lms_crud_service.projects.delete_project(
             user_id=int(user_id),
             project_uuid=project_uuid,
         )

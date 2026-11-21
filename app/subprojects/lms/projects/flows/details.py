@@ -10,11 +10,11 @@ from fastapi.responses import HTMLResponse
 from app_exceptions import InvalidUUIDError
 from auth import jwt_helper
 from config import settings
-from core.crud import GetCRUDService
-from core.crud.services.lms_flows import FlowNotFoundError
 from paths_constants import templates
 from schemas.lms_flows import LMSFlowsReadSchema
 from subprojects.lms.constraints import FLOWS_TEMPLATE_PATH
+from subprojects.lms.crud import GetLMSCRUDService
+from subprojects.lms.crud.services.lms_flows import FlowNotFoundError
 from subprojects.lms.projects.flows.list import OwnedProject
 
 router = APIRouter()
@@ -26,11 +26,11 @@ async def get_flow_by_uuid(
         str,
         Depends(jwt_helper.strict_validate_access_token),
     ],
-    crud_service: GetCRUDService,
+    lms_crud_service: GetLMSCRUDService,
     project: OwnedProject,
 ) -> LMSFlowsReadSchema:
     try:
-        flow = await crud_service.lms_flow.get_by_uuid(
+        flow = await lms_crud_service.lms_flows.get_by_uuid(
             flow_uuid=flow_uuid,
             project_id=project.id,
             user_id=int(user_id),

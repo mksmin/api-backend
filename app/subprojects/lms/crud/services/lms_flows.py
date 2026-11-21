@@ -8,12 +8,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app_exceptions import ProjectNotFoundError
 from app_exceptions import UserNotFoundError
 from core.crud.dependencies import validate_uuid_str
-from core.crud.managers import ProjectManager
 from core.crud.managers import UserManager
-from core.crud.managers.lms_flows import LMSFlowManager
 from schemas.lms_flows import LMSFlowsCreateModel
 from schemas.lms_flows import LMSFlowsCreateSchema
 from schemas.lms_flows import LMSFlowsReadSchema
+from subprojects.lms.crud.managers import ProjectManager
+from subprojects.lms.crud.managers.lms_flows import LMSFlowManager
 
 FLOW_TITLE_UNIQUE_INDEX = "uq_lms_flows_project_id_title_active"
 

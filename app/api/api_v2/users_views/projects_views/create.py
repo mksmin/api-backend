@@ -10,9 +10,9 @@ from app_exceptions import ProjectAlreadyExistsError
 from app_exceptions import UserNotFoundError
 from app_exceptions.exceptions import ProjectCreationForbiddenError
 from auth import jwt_helper
-from core.crud import GetCRUDService
 from schemas import ProjectCreateSchema
 from schemas import ProjectReadSchema
+from subprojects.lms.crud import GetLMSCRUDService
 
 router = APIRouter()
 
@@ -21,7 +21,7 @@ router = APIRouter()
     "/",
 )
 async def create_project(
-    crud_service: GetCRUDService,
+    lms_crud_service: GetLMSCRUDService,
     project_create: ProjectCreateSchema,
     user_id: Annotated[
         str,
@@ -29,7 +29,7 @@ async def create_project(
     ],
 ) -> ProjectReadSchema:
     try:
-        result = await crud_service.project.create_project(
+        result = await lms_crud_service.projects.create_project(
             project_create=project_create,
             user_id=int(user_id),
         )

@@ -7,13 +7,13 @@ from app_exceptions import UserNotFoundError
 from app_exceptions.exceptions import ProjectCreationForbiddenError
 from config import settings
 from core.crud.dependencies import validate_uuid_str
-from core.crud.managers import ProjectManager
 from core.crud.managers import UserManager
 from schemas import ProjectCreateModel
 from schemas import ProjectCreateSchema
 from schemas import ProjectReadSchema
 from schemas import ProjectSchema
 from schemas.projects import LMSProjectReadSchema
+from subprojects.lms.crud.managers import ProjectManager
 
 
 class ProjectService:

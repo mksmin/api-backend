@@ -4,8 +4,6 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.crud.services import LMSFlowsService
-from core.crud.services import ProjectService
 from core.crud.services import UserService
 from core.crud.services.user_credentials import CredentialService
 from core.database.db_helper import db_helper
@@ -18,8 +16,6 @@ class CRUDService:
     ) -> None:
         self.user: UserService = UserService(session)
         self.user_credential: CredentialService = CredentialService(session)
-        self.project: ProjectService = ProjectService(session)
-        self.lms_flow: LMSFlowsService = LMSFlowsService(session)
 
 
 async def get_crud_service(

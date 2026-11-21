@@ -7,9 +7,9 @@ from fastapi.responses import HTMLResponse
 
 from auth import jwt_helper
 from config import settings
-from core.crud import GetCRUDService
 from paths_constants import templates
 from subprojects.lms.constraints import LMS_TEMPLATE_PATH
+from subprojects.lms.crud import GetLMSCRUDService
 from subprojects.lms.projects.flows.list import OwnedProject
 
 router = APIRouter()
@@ -23,7 +23,7 @@ router = APIRouter()
 async def get_page_project_detail(
     request: Request,
     project: OwnedProject,
-    crud_service: GetCRUDService,
+    lms_crud_service: GetLMSCRUDService,
     user_id: Annotated[
         str,
         Depends(
@@ -31,7 +31,7 @@ async def get_page_project_detail(
         ),
     ],
 ) -> HTMLResponse:
-    flows_count = await crud_service.lms_flow.count_by_project(
+    flows_count = await lms_crud_service.lms_flows.count_by_project(
         project_id=project.id,
         user_id=int(user_id),
     )

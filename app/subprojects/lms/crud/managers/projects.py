@@ -16,7 +16,9 @@ from core.database import Project
 from schemas import ProjectCreateModel
 
 
-class ProjectManager(BaseCRUDManager[Project]):
+class ProjectManager(
+    BaseCRUDManager[Project],
+):
     def __init__(
         self,
         session: AsyncSession,
