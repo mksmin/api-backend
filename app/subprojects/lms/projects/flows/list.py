@@ -20,8 +20,8 @@ router = APIRouter()
 
 
 async def get_owned_project(
-    project_uuid: str,
     lms_crud_service: GetLMSCRUDService,
+    project_uuid: str,
     user_id: Annotated[
         int,
         Depends(

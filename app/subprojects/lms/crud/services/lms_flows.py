@@ -12,6 +12,7 @@ from core.crud.managers import UserManager
 from schemas.lms_flows import LMSFlowsCreateModel
 from schemas.lms_flows import LMSFlowsCreateSchema
 from schemas.lms_flows import LMSFlowsReadSchema
+from schemas.lms_flows import LMSFlowsUpdateSchema
 from subprojects.lms.crud.managers import ProjectManager
 from subprojects.lms.crud.managers.lms_flows import LMSFlowManager
 
@@ -150,3 +151,29 @@ class LMSFlowsService:
         return await self.manager.count_by_project(
             project_id=project_id,
         )
+
+    async def update_title(
+        self,
+        project_id: int,
+        flow_uuid: UUID | str,
+        flow_in: LMSFlowsUpdateSchema,
+        *,
+        user_id: int,
+    ) -> LMSFlowsReadSchema:
+        async with self._write():
+            await self._require_project_access(
+                project_id=project_id,
+                user_id=user_id,
+            )
+
+            flow = await self.manager.update_title(
+                project_id=project_id,
+                flow_uuid=self._validate_uuid(
+                    flow_uuid,
+                ),
+                title=flow_in.title,
+            )
+            if flow is None:
+                raise FlowNotFoundError
+
+            return LMSFlowsReadSchema.model_validate(flow)
