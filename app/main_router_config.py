@@ -63,7 +63,6 @@ main_app.add_middleware(
     allow_origins=[
         "http://127.0.0.1",
         "http://127.0.0.1:8000",
-        "https://api.xn----7sbbe2cen5a.xn--p1ai",
         "https://web.telegram.org",
     ],
     allow_methods=["POST"],
