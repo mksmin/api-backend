@@ -12,7 +12,7 @@ from pydantic import field_validator
 from pydantic import model_validator
 from pydantic_core.core_schema import ValidationInfo
 
-from schemas.lms_flows import LMSFlowsReadSchema
+from schemas.lms.flows import LMSFlowsReadSchema
 
 DESCRIPTION_MAX_LENGTH = 200
 TITLE_MAX_LENGTH = 50

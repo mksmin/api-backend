@@ -11,7 +11,7 @@ from app_exceptions import InvalidUUIDError
 from auth import jwt_helper
 from config import settings
 from paths_constants import templates
-from schemas.lms_flows import LMSFlowsReadSchema
+from schemas.lms.flows import LMSFlowsReadSchema
 from subprojects.lms.constraints import FLOWS_TEMPLATE_PATH
 from subprojects.lms.crud import GetLMSCRUDService
 from subprojects.lms.crud.services.lms_flows import FlowNotFoundError

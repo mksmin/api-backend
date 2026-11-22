@@ -20,8 +20,8 @@ from core.database import Project
 from core.database import User
 from core.database.db_helper import db_helper
 from schemas import ProjectSchema
-from schemas.lms_flows import LMSFlowsCreateSchema
-from schemas.lms_flows import LMSFlowsReadSchema
+from schemas.lms.flows import LMSFlowsCreateSchema
+from schemas.lms.flows import LMSFlowsReadSchema
 from subprojects.lms.crud.services import LMSFlowsService
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]

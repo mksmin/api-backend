@@ -4,9 +4,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import LMSFlow
 from schemas import ProjectSchema
-from schemas.lms_flows import LMSFlowsCreateSchema
-from schemas.lms_flows import LMSFlowsReadSchema
-from schemas.lms_flows import LMSFlowsUpdateSchema
+from schemas.lms.flows import LMSFlowsCreateSchema
+from schemas.lms.flows import LMSFlowsReadSchema
+from schemas.lms.flows import LMSFlowsUpdateSchema
 from subprojects.lms.crud.services import LMSFlowsService
 from subprojects.lms.crud.services.lms_flows import FlowAlreadyExistsError
 

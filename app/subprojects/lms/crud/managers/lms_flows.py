@@ -7,7 +7,7 @@ from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import LMSFlow
-from schemas.lms_flows import LMSFlowsCreateModel
+from schemas.lms.flows import LMSFlowsCreateModel
 
 
 class LMSFlowManager:

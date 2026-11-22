@@ -18,7 +18,7 @@ from auth.csrf_helper import csrf_token_for
 from auth.csrf_helper import require_csrf_token
 from config import settings
 from paths_constants import templates
-from schemas.lms_flows import LMSFlowsCreateSchema
+from schemas.lms.flows import LMSFlowsCreateSchema
 from subprojects.lms.constraints import FLOWS_TEMPLATE_PATH
 from subprojects.lms.crud import GetLMSCRUDService
 from subprojects.lms.crud.services.lms_flows import FlowAlreadyExistsError

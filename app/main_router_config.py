@@ -55,6 +55,7 @@ main_app.mount(
         directory=FRONTEND_DIR_PATH / "static",
         html=True,
     ),
+    name="static",
 )
 
 

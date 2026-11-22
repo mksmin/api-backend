@@ -33,6 +33,7 @@ aiobotocore = ">=2.26.0"
 pillow = ">=12.0.0"
 pwdlib = { extras = ["argon2"], version = "^0.3.1" }
 fastapi-csrf-protect = "^1.0.7"
+annotated-types = "^0.8.0"
 
 [tool.poetry.group.dev.dependencies]
 black = ">=25.1.0"

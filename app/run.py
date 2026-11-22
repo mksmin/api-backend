@@ -28,7 +28,7 @@ if __name__ == "__main__":
             "host": settings.uvicorn.host,
             "port": settings.uvicorn.port,
             "log_level": settings.log.level,
-            "reload": False,
+            "reload": settings.run.dev_mode,
             "log_config": None,
             "use_colors": True,
             "workers": settings.uvicorn.workers,

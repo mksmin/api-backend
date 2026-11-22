@@ -9,10 +9,10 @@ from app_exceptions import ProjectNotFoundError
 from app_exceptions import UserNotFoundError
 from core.crud.dependencies import validate_uuid_str
 from core.crud.managers import UserManager
-from schemas.lms_flows import LMSFlowsCreateModel
-from schemas.lms_flows import LMSFlowsCreateSchema
-from schemas.lms_flows import LMSFlowsReadSchema
-from schemas.lms_flows import LMSFlowsUpdateSchema
+from schemas.lms.flows import LMSFlowsCreateModel
+from schemas.lms.flows import LMSFlowsCreateSchema
+from schemas.lms.flows import LMSFlowsReadSchema
+from schemas.lms.flows import LMSFlowsUpdateSchema
 from subprojects.lms.crud.managers import ProjectManager
 from subprojects.lms.crud.managers.lms_flows import LMSFlowManager
 
