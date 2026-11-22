@@ -9,8 +9,6 @@ from fastapi import status
 from fastapi.params import Body
 from fastapi.params import Query
 
-from api.api_v2.users_views.affirmations_views.schemas import ChangeAffirmationsSettings
-from api.api_v2.users_views.affirmations_views.schemas import UpdateAffirmation
 from app_exceptions import UserNotFoundError
 from app_exceptions.exceptions import RabbitMQServiceUnavailableError
 from auth import jwt_helper
@@ -20,6 +18,8 @@ from rest.pages_views.dependencies.user_data import get_user_data_by_access_toke
 from rest.pages_views.schemas import GetListAffirmationsResponse
 from rest.pages_views.schemas import UserDataReadSchema
 from rest.pages_views.schemas.affirmations_data import GetUserSettingsResponse
+from schemas.user_affirmations import ChangeAffirmationsSettings
+from schemas.user_affirmations import UpdateAffirmation
 
 
 async def get_dict_with_user_affirmations(
