@@ -1,6 +1,8 @@
+import uuid
 from datetime import UTC
 from datetime import datetime
 
+from sqlalchemy import UUID
 from sqlalchemy import func
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
@@ -19,4 +21,15 @@ class IntIdMixin:
     id: Mapped[int] = mapped_column(
         primary_key=True,
         autoincrement=True,
+    )
+
+
+class UUIDMixin:
+    uuid: Mapped[uuid.UUID] = mapped_column(
+        UUID(
+            as_uuid=True,
+        ),
+        default=uuid.uuid4,
+        unique=True,
+        nullable=False,
     )

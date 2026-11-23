@@ -12,6 +12,8 @@ on:
       - "app/**"
       - "Dockerfile"
       - "docker-compose.yaml"
+      - "pyproject.toml"
+      - "poetry.lock"
 
 jobs:
   run-checks:
@@ -21,15 +23,13 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version: "3.14"
 
-      - name: Install poetry
+      - name: Install Poetry
         run: |
-          export POETRY_HOME="opt/poetry"
-          python3 -m venv $POETRY_HOME
-          export PATH="$POETRY_HOME/bin:$PATH"
-          pip install "poetry==2.3.2"
-          echo "$POETRY_HOME/bin" >> $GITHUB_PATH
+          python -m venv "$RUNNER_TEMP/poetry"
+          "$RUNNER_TEMP/poetry/bin/pip" install "poetry==2.3.2"
+          echo "$RUNNER_TEMP/poetry/bin" >> "$GITHUB_PATH"
 
       - name: Poetry config disable virtualenv
         if: ${{ !env.ACT }}
@@ -56,3 +56,25 @@ jobs:
 
       - name: Run mypy
         run: mypy app
+
+      - name: Run tests with LMS enabled and disabled
+        env:
+          PYTHONPATH: app
+          API_CONFIG__RUN__DEV_MODE: "false"
+          API_CONFIG__BOTS: "{}"
+          API_CONFIG__ACCESS_TOKEN__SECRETS__SECRET: "ci-only-jwt-secret-32-characters-long"
+          API_CONFIG__SECRETS__SESSION_SECRET: "ci-only-session-secret"
+          API_CONFIG__SECRETS__CSRF_SECRET: "ci-only-csrf-secret"
+          API_CONFIG__DB__USER: "test"
+          API_CONFIG__DB__PASSWORD: "test"
+          API_CONFIG__RABBIT__SECRETS__USERNAME: "test"
+          API_CONFIG__RABBIT__SECRETS__PASSWORD: "test"
+          API_CONFIG__S3__ACCESS_KEY: "test"
+          API_CONFIG__S3__SECRET_KEY: "test"
+          API_CONFIG__S3__ENDPOINT_URL: "http://localhost:9000"
+          API_CONFIG__S3__BUCKET_NAME: "test"
+        run: |
+          mkdir -p ../frontend/static
+
+          API_CONFIG__LMS__ENABLED=true poetry run pytest app/tests -v
+          API_CONFIG__LMS__ENABLED=false poetry run pytest app/tests -v

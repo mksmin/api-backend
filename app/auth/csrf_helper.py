@@ -4,9 +4,9 @@ from typing import Annotated
 
 from fastapi import Cookie
 from fastapi import HTTPException
+from fastapi import Request
 from fastapi import status
 from fastapi_csrf_protect import CsrfProtect
-from starlette.requests import Request
 
 from auth import jwt_helper
 from config import settings
@@ -15,7 +15,7 @@ CSRF_COOKIE_NAME = "fastapi-csrf-token"
 CSRF_MAX_AGE = settings.access_token.lifetime_seconds
 
 
-def get_or_create_login_csrf(
+def get_or_create_csrf_token(
     request: Request,
     csrf: CsrfProtect,
 ) -> tuple[str, str | None]:
@@ -46,18 +46,25 @@ def get_or_create_login_csrf(
     return state["token"], None
 
 
-def csrf_token_for(jti: str) -> str:
+def csrf_token_for(
+    jti: str,
+) -> str:
     key = settings.secrets.csrf_secret.get_secret_value().encode()
-    return hmac.digest(key, f"csrf:v1:{jti}".encode(), "sha256").hex()
+    return hmac.digest(
+        key,
+        f"csrf:v1:{jti}".encode(),
+        "sha256",
+    ).hex()
 
 
-async def require_auth_csrf(
+async def require_csrf_token(
     request: Request,
     access_token: Annotated[
         str | None,
         Cookie(),
     ] = None,
 ) -> int:
+    """Validate the form token against the access JWT and return the user ID."""
     if not access_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -71,9 +78,9 @@ async def require_auth_csrf(
         submitted = form.get("token_key")
 
     expected = csrf_token_for(claims["jti"])
-    if (
-        not isinstance(submitted, str)
-        or not hmac.compare_digest(submitted.encode(), expected.encode())
+    if not isinstance(submitted, str) or not hmac.compare_digest(
+        submitted.encode(),
+        expected.encode(),
     ):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

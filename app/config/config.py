@@ -11,6 +11,7 @@ from pydantic_settings import YamlConfigSettingsSource
 from config.auth_bots import AuthBots
 from config.auth_bots import BotsEnum
 from config.database import DatabaseConfig
+from config.lms import LMSSettings
 from config.log import LoggerConfig
 from config.rabbitmq import RabbitMQConfig
 from config.s3 import S3Config
@@ -48,6 +49,7 @@ class ApiPrefix(BaseModel):
 class RunConfig(BaseModel):
     dev_mode: bool
     allow_http_auth: bool = False
+    reload: bool = False
 
     @property
     def auth_cookies_secure(self) -> bool:
@@ -118,6 +120,7 @@ class Settings(BaseSettings):
     bots: dict[BotsEnum, AuthBots]
     db: DatabaseConfig
     log: LoggerConfig
+    lms: LMSSettings
     rabbit: RabbitMQConfig
     uvicorn: UvicornConfig
     run: RunConfig

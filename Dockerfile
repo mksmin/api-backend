@@ -1,4 +1,4 @@
-FROM python:3.13-slim
+FROM python:3.14-slim
 LABEL authors="mks_min"
 
 RUN pip install poetry && poetry config virtualenvs.create false

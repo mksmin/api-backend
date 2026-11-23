@@ -8,13 +8,17 @@ from sqlalchemy import func
 from sqlalchemy import select
 from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from core.crud.managers import BaseCRUDManager
+from core.database import LMSFlow
 from core.database import Project
 from schemas import ProjectCreateModel
 
 
-class ProjectManager(BaseCRUDManager[Project]):
+class ProjectManager(
+    BaseCRUDManager[Project],
+):
     def __init__(
         self,
         session: AsyncSession,
@@ -86,6 +90,13 @@ class ProjectManager(BaseCRUDManager[Project]):
             select(self.model)
             .where(self.model.deleted_at.is_(None))
             .where(self.model.owner_id == user_id)
+            .options(
+                selectinload(
+                    Project.prj_flows.and_(
+                        LMSFlow.deleted_at.is_(None),
+                    ),
+                ),
+            )
         )
         result = await self.session.execute(query)
         return result.scalars().all()

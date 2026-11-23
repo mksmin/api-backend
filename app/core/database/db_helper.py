@@ -2,6 +2,7 @@ import uuid
 from collections.abc import AsyncGenerator
 
 from sqlalchemy import URL
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -14,6 +15,7 @@ class DatabaseHelper:
     def __init__(  # noqa: PLR0913
         self,
         url: str | URL,
+        *,
         echo: bool = False,
         echo_pool: bool = False,
         pool_size: int = 5,
@@ -36,6 +38,12 @@ class DatabaseHelper:
             autocommit=False,
             expire_on_commit=False,
         )
+
+    async def ping(self) -> None:
+        async with self.engine.connect() as connection:
+            await connection.execute(
+                text("SELECT 1"),
+            )
 
     async def dispose(self) -> None:
         await self.engine.dispose()
