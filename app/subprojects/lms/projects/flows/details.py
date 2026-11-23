@@ -59,13 +59,18 @@ async def get_page_flow_details(
         Depends(get_flow_by_uuid),
     ],
     project: OwnedProject,
+    lms_crud_service: GetLMSCRUDService,
+    user_id: Annotated[
+        str,
+        Depends(jwt_helper.strict_validate_access_token),
+    ],
 ) -> HTMLResponse:
-    participants = [
-        {
-            "full_name": "Минин Максим Алексеевич",
-            "email": "mininname@vk.com",
-        },
-    ]
+    participants = await lms_crud_service.enrollments.get_all(
+        project_id=project.id,
+        user_id=int(user_id),
+        flow_uuid=flow.uuid,
+        active_only=True,
+    )
     return templates.TemplateResponse(
         request=request,
         name=f"{FLOWS_TEMPLATE_PATH}/details.html",

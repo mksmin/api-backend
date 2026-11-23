@@ -35,6 +35,10 @@ async def get_page_project_detail(
         project_id=project.id,
         user_id=int(user_id),
     )
+    participant_count = await lms_crud_service.enrollments.count_by_project(
+        project_id=project.id,
+        user_id=int(user_id),
+    )
 
     return templates.TemplateResponse(
         request=request,
@@ -43,6 +47,7 @@ async def get_page_project_detail(
             "request": request,
             "project": project,
             "flows_count": flows_count,
+            "participant_count": participant_count,
             "project_section": "overview",
         },
     )

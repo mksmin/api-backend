@@ -4,6 +4,7 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database.db_helper import db_helper
+from subprojects.lms.crud.services.enrollments import LMSEnrollmentsService
 from subprojects.lms.crud.services.lms_flows import LMSFlowsService
 from subprojects.lms.crud.services.projects import ProjectService
 
@@ -15,6 +16,7 @@ class LMSCRUDService:
     ) -> None:
         self.lms_flows: LMSFlowsService = LMSFlowsService(session)
         self.projects: ProjectService = ProjectService(session)
+        self.enrollments: LMSEnrollmentsService = LMSEnrollmentsService(session)
 
 
 async def get_lms_crud_service(

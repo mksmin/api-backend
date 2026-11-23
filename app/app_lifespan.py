@@ -15,13 +15,6 @@ log = logging.getLogger(__name__)
 async def lifespan(
     app: FastAPI,  # noqa: ARG001
 ) -> AsyncGenerator[None]:
-    """
-    WIP
-
-    This function executes the code before 'yield' before running FastAPI
-    and code after 'yield' after the FastAPI stops
-    :return: None
-    """
     log.info("Start FastAPI")
     try:
         async with asyncio.timeout(5):

@@ -10,6 +10,7 @@ from auth import jwt_helper
 from config import settings
 from paths_constants import templates
 from schemas import ProjectReadSchema
+from subprojects.lms.crud import GetLMSCRUDService
 
 router = APIRouter()
 
@@ -20,6 +21,7 @@ router = APIRouter()
 )
 async def get_index_lms_page(
     request: Request,
+    lms_crud_service: GetLMSCRUDService,
     projects: Annotated[
         list[ProjectReadSchema],
         Depends(
@@ -31,12 +33,16 @@ async def get_index_lms_page(
         Depends(jwt_helper.soft_validate_access_token),
     ],
 ) -> HTMLResponse:
+    participant_counts = await lms_crud_service.enrollments.count_by_owned_projects(
+        user_id=int(user_id),
+    )
 
     return templates.TemplateResponse(
         request=request,
         name="subprojects/lms/projects/list.html",
         context={
             "projects": projects,
+            "participant_counts": participant_counts,
             "can_create_projects": settings.lms.can_create_project(
                 int(user_id),
             ),
