@@ -73,7 +73,7 @@ def test_db_url() -> Iterator[str]:
     )
 
     try:
-        subprocess.run(  # noqa: S603
+        subprocess.run(
             [
                 sys.executable,
                 "-m",
